@@ -4,9 +4,14 @@
 
 Patchwork creates `config/patchwork.properties` on startup (`run/config/` in
 the development environment). Set any feature switch to `false` to disable
-it; every switch defaults to `true`. Restart the game/server after editing.
+it; every switch defaults to `true`. With Mod Menu 21.0.0 installed on the
+client, open Patchwork's Config button to edit the switches and recall radius
+in a scrolling settings screen. Hover over each option for a detailed
+description. Save writes the local config file; Cancel discards your edits.
+Restart the game/server after saving or editing the file.
 On multiplayer servers, gameplay switches are controlled by the server's
-config. Clients use their own `wolfBanners` setting to control whether
+config; the client's Mod Menu screen cannot change server settings. Clients
+use their own `wolfBanners` setting to control whether
 existing wolf banners are rendered; changing the server switch prevents
 equipping or removing banners but does not delete banners already on wolves.
 

@@ -14,6 +14,9 @@
 		],
 		"client": [
 			"com.JulieISBaka.patchwork.client.PatchworkClient"
+		],
+		"modmenu": [
+			"com.JulieISBaka.patchwork.client.PatchworkModMenu"
 		]
 	},
 	"mixins": [

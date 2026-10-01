@@ -40,6 +40,10 @@ public final class PatchworkConfig {
 	}
 
 	public static void load() {
+		settings = read();
+	}
+
+	public static Settings read() {
 		Path path = FabricLoader.getInstance().getConfigDir().resolve("patchwork.properties");
 		Properties properties = new Properties();
 		try {
@@ -85,9 +89,38 @@ public final class PatchworkConfig {
 				throw new IllegalStateException("Unable to write Patchwork config: " + path, e);
 			}
 		}
-		settings = new Settings(witherDifficultyHealth, witherBirthExplosion, chainmailRecipes, wolfBanners,
+		Settings loaded = new Settings(witherDifficultyHealth, witherBirthExplosion, chainmailRecipes, wolfBanners,
 			ownerSweepProtection, shulkerDyeing, throwableSlimeballs, callHornRecall, radius);
 		Patchwork.LOGGER.info("Patchwork config loaded from {}", path);
+		return loaded;
+	}
+
+	public static void save(Settings updated) {
+		int radius = updated.callHornRecallRadius();
+		if (radius < MIN_RECALL_RADIUS || radius > MAX_RECALL_RADIUS) {
+			throw new IllegalArgumentException(RECALL_RADIUS_KEY + " must be from 16 to 256: " + radius);
+		}
+		Path path = FabricLoader.getInstance().getConfigDir().resolve("patchwork.properties");
+		Properties properties = new Properties();
+		try {
+			try (Reader reader = Files.newBufferedReader(path)) {
+				properties.load(reader);
+			}
+			properties.setProperty("witherDifficultyHealth", Boolean.toString(updated.witherDifficultyHealth()));
+			properties.setProperty("witherBirthExplosion", Boolean.toString(updated.witherBirthExplosion()));
+			properties.setProperty("chainmailRecipes", Boolean.toString(updated.chainmailRecipes()));
+			properties.setProperty("wolfBanners", Boolean.toString(updated.wolfBanners()));
+			properties.setProperty("ownerSweepProtection", Boolean.toString(updated.ownerSweepProtection()));
+			properties.setProperty("shulkerDyeing", Boolean.toString(updated.shulkerDyeing()));
+			properties.setProperty("throwableSlimeballs", Boolean.toString(updated.throwableSlimeballs()));
+			properties.setProperty("callHornRecall", Boolean.toString(updated.callHornRecall()));
+			properties.setProperty(RECALL_RADIUS_KEY, Integer.toString(radius));
+			try (Writer writer = Files.newBufferedWriter(path)) {
+				properties.store(writer, "Patchwork features: true/false; callHornRecallRadius: 16-256 blocks. Restart to apply.");
+			}
+		} catch (IOException e) {
+			throw new IllegalStateException("Unable to save Patchwork config: " + path, e);
+		}
 	}
 
 	private static boolean enabled(Properties properties, String key, Path path) {
