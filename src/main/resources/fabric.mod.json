@@ -3,7 +3,7 @@
 	"id": "patchwork",
 	"version": "${version}",
 	"name": "Patchwork",
-	"description": "A Fabric mod for Minecraft Java Edition 26.3.",
+	"description": "A Fabric mod for Minecraft Java Edition that adds a patchwork of new features and changes to the game.",
 	"authors": [
 		"JulieISBaka"
 	],
