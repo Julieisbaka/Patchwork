@@ -17,7 +17,11 @@
 		]
 	},
 	"mixins": [
-		"patchwork.mixins.json"
+		"patchwork.mixins.json",
+		{
+			"config": "patchwork.client.mixins.json",
+			"environment": "client"
+		}
 	],
 	"depends": {
 		"fabricloader": ">=0.19.5",

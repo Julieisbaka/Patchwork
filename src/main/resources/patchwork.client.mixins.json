@@ -1,0 +1,12 @@
+{
+	"required": true,
+	"package": "com.JulieISBaka.patchwork.client.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"client": [
+		"WolfRenderStateMixin",
+		"WolfRendererMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}
