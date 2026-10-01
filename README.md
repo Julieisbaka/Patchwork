@@ -16,10 +16,10 @@ to 108 HP on Hard. Cover, distance, and armor still affect damage.
 
 ## Chainmail armor
 
-Craft chainmail helmets, chestplates, leggings, and boots using chains in the
+Craft chainmail helmets, chestplates, leggings, and boots using iron chains in the
 same crafting-grid patterns as the corresponding iron armor. Each recipe uses
 the vanilla number of ingredients: 5, 8, 7, and 4 chains, respectively.
-The recipes appear in the recipe book after obtaining a chain.
+The recipes appear in the recipe book after obtaining an iron chain.
 
 ## Wolf banners
 
