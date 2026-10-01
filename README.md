@@ -35,3 +35,10 @@ Use any dye on a living shulker to change it to that color. This uses the
 vanilla shulker colors and changes appearance only. One dye is consumed when
 the color changes (unless the player has infinite materials); using the same
 color again does not consume a dye.
+
+## Throwable slimeballs
+
+Use the existing slimeball item to throw it like a snowball. The projectile
+shows the vanilla slimeball texture, deals 1 HP on a successful hit, and gives
+living targets Slowness I for 3 seconds. Each throw consumes one slimeball
+(except in creative mode); ordinary snowballs are unchanged.

@@ -5,6 +5,7 @@
 	"mixins": [
 		"DyeItemMixin",
 		"ShulkerVariantAccessor",
+		"SlimeballSnowballMixin",
 		"WitherBossMixin",
 		"WolfBannerMixin"
 	],
