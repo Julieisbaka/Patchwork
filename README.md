@@ -1,7 +1,7 @@
 # Patchwork
 
 A starter Fabric mod for Minecraft Java Edition 26.3. The common initializer is
-`src/main/java/com/example/patchwork/Patchwork.java`; client-only code belongs
+`src/main/java/com/JulieISBaka/patchwork/Patchwork.java`; client-only code belongs
 under `src/client/java/`.
 
 ## Getting started
@@ -18,6 +18,10 @@ JAR is produced in `build/libs/` (not the `-sources.jar` or `-dev.jar`).
 Install Fabric Loader and Fabric API for Minecraft 26.3 when running the mod
 outside the development environment.
 
-The Java package and Gradle `group` use `com.example.patchwork` as a
-placeholder. Before publishing, change both to a namespace you control,
-and add your own license and project description to `fabric.mod.json`.
+Mod Menu 21.0.0 for Minecraft 26.3 is optional. When installed, it lists
+Patchwork using the name, author, version, and description in `fabric.mod.json`.
+Patchwork does not yet have configurable settings, so it does not expose a
+Configure button.
+
+The Java package and Gradle `group` use `com.JulieISBaka.patchwork`. Before
+publishing, add your own license and project description to `fabric.mod.json`.

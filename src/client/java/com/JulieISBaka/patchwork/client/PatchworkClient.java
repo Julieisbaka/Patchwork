@@ -1,4 +1,4 @@
-package com.example.patchwork.client;
+package com.JulieISBaka.patchwork.client;
 
 import net.fabricmc.api.ClientModInitializer;
 

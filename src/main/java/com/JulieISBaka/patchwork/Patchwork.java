@@ -1,4 +1,4 @@
-package com.example.patchwork;
+package com.JulieISBaka.patchwork;
 
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.resources.Identifier;
