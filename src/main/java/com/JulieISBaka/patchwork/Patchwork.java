@@ -1,7 +1,10 @@
 package com.JulieISBaka.patchwork;
 
+import com.mojang.serialization.MapCodec;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.resource.conditions.v1.ResourceCondition;
+import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditionType;
+import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -20,13 +23,28 @@ public class Patchwork implements ModInitializer {
 	public static final String MOD_ID = "patchwork";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 	private static final int SLIMEBALL_COOLDOWN_TICKS = 20;
+	private static final ResourceConditionType<ChainmailCondition> CHAINMAIL_CONDITION =
+		ResourceConditionType.create(id("chainmail_recipes"), MapCodec.unit(new ChainmailCondition()));
+
+	private record ChainmailCondition() implements ResourceCondition {
+		@Override
+		public ResourceConditionType<?> getType() {
+			return CHAINMAIL_CONDITION;
+		}
+
+		@Override
+		public boolean test(net.minecraft.resources.RegistryOps.RegistryInfoLookup registries) {
+			return PatchworkConfig.settings().chainmailRecipes();
+		}
+	}
 
 	@Override
 	public void onInitialize() {
-		ServerLifecycleEvents.SERVER_STARTING.register(server -> PatchworkConfig.load());
+		PatchworkConfig.load();
+		ResourceConditions.register(CHAINMAIL_CONDITION);
 		UseItemCallback.EVENT.register((player, level, hand) -> {
 			ItemStack stack = player.getItemInHand(hand);
-			if (!stack.is(Items.SLIME_BALL)) {
+			if (!PatchworkConfig.settings().throwableSlimeballs() || !stack.is(Items.SLIME_BALL)) {
 				return InteractionResult.PASS;
 			}
 			if (player.getCooldowns().isOnCooldown(stack)) {

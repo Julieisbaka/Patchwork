@@ -1,5 +1,6 @@
 package com.JulieISBaka.patchwork.mixin;
 
+import com.JulieISBaka.patchwork.PatchworkConfig;
 import java.util.Objects;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Difficulty;
@@ -21,14 +22,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class WitherBossMixin {
 	@Inject(method = "<init>", at = @At("TAIL"))
 	private void patchwork$initializeHealth(EntityType<? extends WitherBoss> type, Level level, CallbackInfo ci) {
-		if (!level.isClientSide()) {
+		if (!level.isClientSide() && PatchworkConfig.settings().witherDifficultyHealth()) {
 			this.patchwork$updateHealth(level.getDifficulty());
 		}
 	}
 
 	@Inject(method = "customServerAiStep", at = @At("HEAD"))
 	private void patchwork$updateHealthForDifficulty(ServerLevel level, CallbackInfo ci) {
-		this.patchwork$updateHealth(level.getDifficulty());
+		if (PatchworkConfig.settings().witherDifficultyHealth()) {
+			this.patchwork$updateHealth(level.getDifficulty());
+		}
 	}
 
 	@Redirect(
@@ -38,6 +41,10 @@ public abstract class WitherBossMixin {
 	private void patchwork$boostBirthExplosion(
 		ServerLevel level, Entity source, double x, double y, double z, float radius, boolean fire, Level.ExplosionInteraction interaction
 	) {
+		if (!PatchworkConfig.settings().witherBirthExplosion()) {
+			level.explode(source, x, y, z, radius, fire, interaction);
+			return;
+		}
 		level.explode(source, Explosion.getDefaultDamageSource(level, source), new EntityBasedExplosionDamageCalculator(source) {
 			@Override
 			public float getEntityDamageAmount(Explosion explosion, Entity entity, float exposure) {

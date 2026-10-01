@@ -1,5 +1,6 @@
 package com.JulieISBaka.patchwork.mixin;
 
+import com.JulieISBaka.patchwork.PatchworkConfig;
 import java.util.Optional;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.sounds.SoundEvents;
@@ -23,7 +24,7 @@ public class DyeItemMixin {
 	private void patchwork$dyeShulker(
 		ItemStack dye, Player player, LivingEntity target, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir
 	) {
-		if (target instanceof Shulker shulker && shulker.isAlive()) {
+		if (PatchworkConfig.settings().shulkerDyeing() && target instanceof Shulker shulker && shulker.isAlive()) {
 			DyeColor color = dye.get(DataComponents.DYE);
 			if (color != null && shulker.getColor() != color) {
 				shulker.level().playSound(player, shulker, SoundEvents.DYE_USE, SoundSource.PLAYERS, 1.0F, 1.0F);

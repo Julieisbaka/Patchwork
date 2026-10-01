@@ -1,5 +1,6 @@
 package com.JulieISBaka.patchwork.mixin;
 
+import com.JulieISBaka.patchwork.PatchworkConfig;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -18,7 +19,7 @@ public abstract class WolfBannerMixin {
 	@Inject(method = "mobInteract", at = @At("HEAD"), cancellable = true)
 	private void patchwork$interactWithBanner(Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
 		Wolf wolf = (Wolf)(Object)this;
-		if (!wolf.isTame() || !wolf.isOwnedBy(player)) {
+		if (!PatchworkConfig.settings().wolfBanners() || !wolf.isTame() || !wolf.isOwnedBy(player)) {
 			return;
 		}
 

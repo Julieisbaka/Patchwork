@@ -1,4 +1,5 @@
 {
+  "fabric:load_conditions": [{"condition": "patchwork:chainmail_recipes"}],
   "parent": "minecraft:recipes/root",
   "criteria": {
     "has_chain": {

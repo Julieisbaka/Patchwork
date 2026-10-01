@@ -1,5 +1,32 @@
 # Patchwork
 
+## Configuration
+
+Patchwork creates `config/patchwork.properties` on startup (`run/config/` in
+the development environment). Set any feature switch to `false` to disable
+it; every switch defaults to `true`. Restart the game/server after editing.
+On multiplayer servers, gameplay switches are controlled by the server's
+config. Clients use their own `wolfBanners` setting to control whether
+existing wolf banners are rendered; changing the server switch prevents
+equipping or removing banners but does not delete banners already on wolves.
+
+| Property | Feature |
+| --- | --- |
+| `witherDifficultyHealth` | Difficulty-based Wither maximum health |
+| `witherBirthExplosion` | Increased Wither birth explosion damage |
+| `chainmailRecipes` | Chainmail crafting recipes and recipe-book unlocks |
+| `wolfBanners` | Wolf banner interactions and client-side banner rendering |
+| `ownerSweepProtection` | Owned wolf/cat protection from indirect sword sweeps |
+| `shulkerDyeing` | Recoloring shulkers with dye |
+| `throwableSlimeballs` | Slimeball throwing, hit effects, and cooldown |
+| `callHornRecall` | Call goat horn pet recall |
+| `callHornRecallRadius` | Recall radius in blocks, 16–256 (default: 32) |
+
+Existing config files receive the new switches automatically; invalid values
+produce a startup error instead of silently changing behavior. Disabling
+`witherDifficultyHealth` restores vanilla maximum health for newly spawned
+Withers, but does not reset health already saved on existing Withers.
+
 ## Wither
 
 The Wither's maximum health depends on world difficulty: Easy has 300 HP,
@@ -56,9 +83,8 @@ consume another slimeball. Ordinary snowballs are unchanged.
 
 Using the Call variant of the goat horn instantly recalls your sitting tamed
 pets within the configured radius to safe spaces around you. The default is
-32 blocks. On first server start, Patchwork creates
-`config/patchwork.properties` (under `run/config/` for a development server).
-Set `callHornRecallRadius` to an integer from 16 to 256 and restart the server
+32 blocks. Set `callHornRecallRadius` in `config/patchwork.properties` to an
+integer from 16 to 256 and restart the server
 to apply it. Invalid or missing values produce a startup error rather than
 silently using a different distance. The server controls this setting in
 multiplayer; clients do not need to configure it.

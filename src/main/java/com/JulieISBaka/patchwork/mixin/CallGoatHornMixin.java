@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class CallGoatHornMixin {
 	@Inject(method = "use", at = @At("RETURN"))
 	private void patchwork$recallPets(Level level, Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
-		if (!(level instanceof ServerLevel serverLevel) || !cir.getReturnValue().consumesAction()) {
+		if (!PatchworkConfig.settings().callHornRecall() || !(level instanceof ServerLevel serverLevel) || !cir.getReturnValue().consumesAction()) {
 			return;
 		}
 

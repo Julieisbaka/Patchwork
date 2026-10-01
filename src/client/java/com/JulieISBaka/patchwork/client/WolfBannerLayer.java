@@ -1,5 +1,6 @@
 package com.JulieISBaka.patchwork.client;
 
+import com.JulieISBaka.patchwork.PatchworkConfig;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.animal.wolf.WolfModel;
 import net.minecraft.client.model.geom.EntityModelSet;
@@ -27,7 +28,7 @@ public class WolfBannerLayer extends RenderLayer<WolfRenderState, WolfModel> {
 	@Override
 	public void submit(PoseStack poseStack, SubmitNodeCollector nodes, int light, WolfRenderState state, float yRot, float xRot) {
 		ItemStack banner = ((WolfBannerState)state).patchwork$getBanner();
-		if (!(banner.getItem() instanceof BannerItem bannerItem) || state.isInvisible) {
+		if (!PatchworkConfig.settings().wolfBanners() || !(banner.getItem() instanceof BannerItem bannerItem) || state.isInvisible) {
 			return;
 		}
 

@@ -1,5 +1,6 @@
 package com.JulieISBaka.patchwork.mixin;
 
+import com.JulieISBaka.patchwork.PatchworkConfig;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -19,7 +20,7 @@ public class SlimeballSnowballMixin {
 	@Inject(method = "onHitEntity", at = @At("HEAD"), cancellable = true)
 	private void patchwork$onSlimeballHit(EntityHitResult hit, CallbackInfo ci) {
 		Snowball projectile = (Snowball)(Object)this;
-		if (!projectile.getItem().is(Items.SLIME_BALL)) {
+		if (!PatchworkConfig.settings().throwableSlimeballs() || !projectile.getItem().is(Items.SLIME_BALL)) {
 			return;
 		}
 
