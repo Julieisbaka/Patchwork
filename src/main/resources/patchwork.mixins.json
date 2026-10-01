@@ -3,6 +3,8 @@
 	"package": "com.JulieISBaka.patchwork.mixin",
 	"compatibilityLevel": "JAVA_25",
 	"mixins": [
+		"DyeItemMixin",
+		"ShulkerVariantAccessor",
 		"WitherBossMixin",
 		"WolfBannerMixin"
 	],

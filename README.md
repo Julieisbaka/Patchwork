@@ -28,3 +28,10 @@ as a flag above its back. You can change the banner while keeping its wolf
 armor and collar, or sneak-right-click with an empty hand to take the banner
 back. Banners are returned when replaced or removed, and drop if the wolf
 dies. Only the owner can equip or remove a banner.
+
+## Shulker colors
+
+Use any dye on a living shulker to change it to that color. This uses the
+vanilla shulker colors and changes appearance only. One dye is consumed when
+the color changes (unless the player has infinite materials); using the same
+color again does not consume a dye.
