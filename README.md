@@ -13,3 +13,10 @@ distance and exposure, while retaining the vanilla radius, knockback, and
 block interaction. For the vanilla reference values, this changes unarmored
 player damage from 35.5 to 37 HP on Easy, 69 to 72 HP on Normal, and 103.5
 to 108 HP on Hard. Cover, distance, and armor still affect damage.
+
+## Chainmail armor
+
+Craft chainmail helmets, chestplates, leggings, and boots using chains in the
+same crafting-grid patterns as the corresponding iron armor. Each recipe uses
+the vanilla number of ingredients: 5, 8, 7, and 4 chains, respectively.
+The recipes appear in the recipe book after obtaining a chain.
