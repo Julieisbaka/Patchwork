@@ -42,7 +42,9 @@ Use the existing slimeball item to throw it like a snowball. The projectile
 shows the vanilla slimeball texture, deals 1 HP on a successful hit, and gives
 living targets Slowness I for 3 seconds. On slimes, it instead restores 1 HP
 and grants Speed I for 3 seconds without dealing damage. Each throw consumes
-one slimeball (except in creative mode); ordinary snowballs are unchanged.
+one slimeball (except in creative mode) and starts a 1-second (20-tick)
+cooldown shown on the hotbar. Attempts during the cooldown do not throw or
+consume another slimeball. Ordinary snowballs are unchanged.
 
 ## Call goat horn
 

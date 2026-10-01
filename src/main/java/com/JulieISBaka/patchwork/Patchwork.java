@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 public class Patchwork implements ModInitializer {
 	public static final String MOD_ID = "patchwork";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+	private static final int SLIMEBALL_COOLDOWN_TICKS = 20;
 
 	@Override
 	public void onInitialize() {
@@ -28,6 +29,9 @@ public class Patchwork implements ModInitializer {
 			if (!stack.is(Items.SLIME_BALL)) {
 				return InteractionResult.PASS;
 			}
+			if (player.getCooldowns().isOnCooldown(stack)) {
+				return InteractionResult.CONSUME;
+			}
 
 			level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.SNOWBALL_THROW,
 				SoundSource.NEUTRAL, 0.5F, 0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
@@ -36,6 +40,7 @@ public class Patchwork implements ModInitializer {
 			}
 
 			player.awardStat(Stats.ITEM_USED.get(Items.SLIME_BALL));
+			player.getCooldowns().addCooldown(stack, SLIMEBALL_COOLDOWN_TICKS);
 			stack.consume(1, player);
 			return InteractionResult.SUCCESS;
 		});
