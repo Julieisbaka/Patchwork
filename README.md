@@ -47,6 +47,13 @@ one slimeball (except in creative mode); ordinary snowballs are unchanged.
 ## Call goat horn
 
 Using the Call variant of the goat horn instantly recalls your sitting tamed
-pets within 32 blocks to safe spaces around you. Recalled pets stand up so
-they can follow you. Pets that cannot find a safe landing spot remain seated;
-other goat horn variants are unchanged.
+pets within the configured radius to safe spaces around you. The default is
+32 blocks. On first server start, Patchwork creates
+`config/patchwork.properties` (under `run/config/` for a development server).
+Set `callHornRecallRadius` to an integer from 16 to 256 and restart the server
+to apply it. Invalid or missing values produce a startup error rather than
+silently using a different distance. The server controls this setting in
+multiplayer; clients do not need to configure it.
+
+Recalled pets stand up so they can follow you. Pets that cannot find a safe
+landing spot remain seated; other goat horn variants are unchanged.

@@ -1,5 +1,6 @@
 package com.JulieISBaka.patchwork.mixin;
 
+import com.JulieISBaka.patchwork.PatchworkConfig;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
@@ -31,11 +32,12 @@ public class CallGoatHornMixin {
 			return;
 		}
 
+		int radius = PatchworkConfig.callHornRecallRadius();
 		for (TamableAnimal pet : serverLevel.getEntitiesOfClass(
 			TamableAnimal.class,
-			player.getBoundingBox().inflate(32.0),
+			player.getBoundingBox().inflate(radius),
 			pet -> pet.isAlive() && pet.isTame() && pet.isOrderedToSit()
-				&& pet.isOwnedBy(player) && pet.distanceToSqr(player) <= 32.0 * 32.0
+				&& pet.isOwnedBy(player) && pet.distanceToSqr(player) <= (double)radius * radius
 		)) {
 			pet.tryToTeleportToOwner();
 			if (pet.distanceToSqr(player) <= 25.0) {
