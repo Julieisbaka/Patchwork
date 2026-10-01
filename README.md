@@ -29,6 +29,12 @@ armor and collar, or sneak-right-click with an empty hand to take the banner
 back. Banners are returned when replaced or removed, and drop if the wolf
 dies. Only the owner can equip or remove a banner.
 
+## Sweeping attacks and pets
+
+Owned tamed wolves and cats are excluded from the indirect sweep of their
+owner's sword attacks, including Sweep Edge damage and knockback. Direct hits
+on a pet and other players' attacks are unchanged.
+
 ## Shulker colors
 
 Use any dye on a living shulker to change it to that color. This uses the

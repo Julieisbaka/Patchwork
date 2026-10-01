@@ -5,6 +5,7 @@
 	"mixins": [
 		"CallGoatHornMixin",
 		"DyeItemMixin",
+		"PlayerSweepMixin",
 		"ShulkerVariantAccessor",
 		"SlimeballSnowballMixin",
 		"WitherBossMixin",
