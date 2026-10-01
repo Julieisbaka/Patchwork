@@ -1,0 +1,22 @@
+{
+	"schemaVersion": 1,
+	"id": "patchwork",
+	"version": "${version}",
+	"name": "Patchwork",
+	"description": "A Fabric mod for Minecraft Java Edition 26.3.",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.example.patchwork.Patchwork"
+		],
+		"client": [
+			"com.example.patchwork.client.PatchworkClient"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.19.5",
+		"minecraft": "~26.3",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}
