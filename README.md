@@ -4,6 +4,14 @@ A starter Fabric mod for Minecraft Java Edition 26.3. The common initializer is
 `src/main/java/com/JulieISBaka/patchwork/Patchwork.java`; client-only code belongs
 under `src/client/java/`.
 
+## Wither health
+
+The Wither's maximum health depends on world difficulty: Easy has 300 HP,
+Normal has 450 HP, and Hard has 600 HP. Peaceful keeps the vanilla 300 HP
+maximum (Withers cannot normally exist there). Existing Withers adjust when
+the difficulty changes, retaining the same percentage of health rather than
+healing to full.
+
 ## Getting started
 
 Install JDK 25 and open this folder as a Gradle project in your IDE. On Windows:
