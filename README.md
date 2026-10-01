@@ -40,5 +40,13 @@ color again does not consume a dye.
 
 Use the existing slimeball item to throw it like a snowball. The projectile
 shows the vanilla slimeball texture, deals 1 HP on a successful hit, and gives
-living targets Slowness I for 3 seconds. Each throw consumes one slimeball
-(except in creative mode); ordinary snowballs are unchanged.
+living targets Slowness I for 3 seconds. On slimes, it instead restores 1 HP
+and grants Speed I for 3 seconds without dealing damage. Each throw consumes
+one slimeball (except in creative mode); ordinary snowballs are unchanged.
+
+## Call goat horn
+
+Using the Call variant of the goat horn instantly recalls your sitting tamed
+pets within 32 blocks to safe spaces around you. Recalled pets stand up so
+they can follow you. Pets that cannot find a safe landing spot remain seated;
+other goat horn variants are unchanged.

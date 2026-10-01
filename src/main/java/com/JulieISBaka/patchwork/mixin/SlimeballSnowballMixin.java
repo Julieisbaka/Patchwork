@@ -5,6 +5,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.cubemob.Slime;
 import net.minecraft.world.entity.projectile.throwableitemprojectile.Snowball;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.EntityHitResult;
@@ -24,7 +25,10 @@ public class SlimeballSnowballMixin {
 
 		if (projectile.level() instanceof ServerLevel level) {
 			Entity target = hit.getEntity();
-			if (target.hurtServer(level, projectile.damageSources().thrown(projectile, projectile.getOwner()), 1.0F)
+			if (target instanceof Slime slime) {
+				slime.heal(1.0F);
+				slime.addEffect(new MobEffectInstance(MobEffects.SPEED, 60, 0), projectile.getOwner());
+			} else if (target.hurtServer(level, projectile.damageSources().thrown(projectile, projectile.getOwner()), 1.0F)
 				&& target instanceof LivingEntity living) {
 				living.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 60, 0), projectile.getOwner());
 			}
