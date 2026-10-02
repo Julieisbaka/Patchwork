@@ -34,6 +34,8 @@ equipping or removing banners but does not delete banners already on wolves.
 | `spiderWebs` | Spiders spin cobwebs while chasing prey |
 | `slimeSplitClouds` | Five-second slowing particle cloud when larger Slimes split |
 | `breezeShockwave` | Breeze melee shockwave and extinguished torches/campfires |
+| `unlitTorches` | Breeze gusts create recoverable unlit torch items (requires shockwave) |
+| `hoglinCharge` | Charging Hoglins launch victims, with extra wall/ceiling impact damage |
 | `callHornRecallRadius` | Recall radius in blocks, 16–256 (default: 32) |
 
 Existing config files receive the new switches automatically; invalid values
@@ -154,7 +156,19 @@ ground are skipped.
 When a Breeze survives a melee hit, it immediately releases a gust that
 pushes nearby entities away by approximately three blocks. It cannot do so
 again for 10 seconds. If `mobGriefing` is enabled, the gust also extinguishes
-lit campfires and ordinary, soul, and copper torches within five blocks.
-Extinguished torches give off no light or flame particles and can be relit
-with a fire charge; breaking them drops their original torch item.
-Lanterns remain lit because vanilla lanterns have no unlit state.
+lit campfires within five blocks. With the separate `unlitTorches` setting
+enabled, it extinguishes ordinary, soul, copper, and *lit* redstone torches
+within five blocks as well. Unlit torches give off no light, flame particles,
+or redstone power. They use distinct unlit models and textures and drop
+matching unlit torch items on breaking. Each item places on floors and walls;
+fire charges relight them into their original torch variants. Disabling
+`unlitTorches` prevents gusts from creating more but preserves any already
+placed or collected unlit torches. There is no crafting recipe or creative-tab
+entry for the items. Lanterns remain lit because vanilla lanterns have no
+unlit state.
+
+An adult Hoglin running at least 0.18 blocks per tick (or marked sprinting)
+that lands a successful melee hit launches its target upward about three blocks
+and slightly away. A player flung into a wall or ceiling during the next
+second takes an extra 2 HP of blunt collision damage. Landing on the ground
+does not trigger this extra damage. Ordinary Hoglin hits are unaffected.

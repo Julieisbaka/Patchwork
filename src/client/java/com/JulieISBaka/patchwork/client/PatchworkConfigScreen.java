@@ -19,7 +19,7 @@ public class PatchworkConfigScreen extends OptionsSubScreen {
 		"witherDifficultyHealth", "witherBirthExplosion", "chainmailRecipes", "wolfBanners",
 		"ownerSweepProtection", "shulkerDyeing", "throwableSlimeballs", "callHornRecall",
 		"cauldronCleaning", "beesDefendFlowers", "creeperChainReactions", "endermanDefense", "spiderWebs",
-		"throwableFireCharges", "slimeSplitClouds", "breezeShockwave"
+		"throwableFireCharges", "slimeSplitClouds", "breezeShockwave", "unlitTorches", "hoglinCharge"
 	};
 	private final boolean[] enabled;
 	private String radiusText;
@@ -33,7 +33,8 @@ public class PatchworkConfigScreen extends OptionsSubScreen {
 			loaded.wolfBanners(), loaded.ownerSweepProtection(), loaded.shulkerDyeing(),
 			loaded.throwableSlimeballs(), loaded.callHornRecall(), loaded.cauldronCleaning(),
 			loaded.beesDefendFlowers(), loaded.creeperChainReactions(), loaded.endermanDefense(), loaded.spiderWebs(),
-			loaded.throwableFireCharges(), loaded.slimeSplitClouds(), loaded.breezeShockwave()
+			loaded.throwableFireCharges(), loaded.slimeSplitClouds(), loaded.breezeShockwave(),
+			loaded.unlitTorches(), loaded.hoglinCharge()
 		};
 		this.radiusText = Integer.toString(loaded.callHornRecallRadius());
 	}
@@ -106,7 +107,7 @@ public class PatchworkConfigScreen extends OptionsSubScreen {
 				this.enabled[0], this.enabled[1], this.enabled[2], this.enabled[3],
 				this.enabled[4], this.enabled[5], this.enabled[6], this.enabled[7], this.enabled[8],
 				this.enabled[9], this.enabled[10], this.enabled[11], this.enabled[12],
-				this.enabled[13], this.enabled[14], this.enabled[15],
+				this.enabled[13], this.enabled[14], this.enabled[15], this.enabled[16], this.enabled[17],
 				Integer.parseInt(this.radiusText)
 			));
 		} catch (IllegalStateException e) {

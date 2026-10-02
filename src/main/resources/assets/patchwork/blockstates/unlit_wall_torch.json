@@ -1,1 +1,1 @@
-{"variants":{"facing=east":{"model":"minecraft:block/wall_torch"},"facing=north":{"model":"minecraft:block/wall_torch","y":270},"facing=south":{"model":"minecraft:block/wall_torch","y":90},"facing=west":{"model":"minecraft:block/wall_torch","y":180}}}
+{"variants":{"facing=east":{"model":"patchwork:block/unlit_wall_torch"},"facing=north":{"model":"patchwork:block/unlit_wall_torch","y":270},"facing=south":{"model":"patchwork:block/unlit_wall_torch","y":90},"facing=west":{"model":"patchwork:block/unlit_wall_torch","y":180}}}

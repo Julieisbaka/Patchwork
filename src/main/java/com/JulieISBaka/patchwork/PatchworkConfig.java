@@ -14,7 +14,7 @@ public final class PatchworkConfig {
 	private static final int MAX_RECALL_RADIUS = 256;
 	private static final String RECALL_RADIUS_KEY = "callHornRecallRadius";
 	private static volatile Settings settings = new Settings(true, true, true, true, true, true, true, true, true,
-		true, false, true, true, true, true, true, DEFAULT_RECALL_RADIUS);
+		true, false, true, true, true, true, true, true, true, DEFAULT_RECALL_RADIUS);
 
 	public record Settings(
 		boolean witherDifficultyHealth,
@@ -33,6 +33,8 @@ public final class PatchworkConfig {
 		boolean throwableFireCharges,
 		boolean slimeSplitClouds,
 		boolean breezeShockwave,
+		boolean unlitTorches,
+		boolean hoglinCharge,
 		int callHornRecallRadius
 	) {
 	}
@@ -98,6 +100,8 @@ public final class PatchworkConfig {
 		boolean throwableFireCharges = enabled(properties, "throwableFireCharges", path);
 		boolean slimeSplitClouds = enabled(properties, "slimeSplitClouds", path);
 		boolean breezeShockwave = enabled(properties, "breezeShockwave", path);
+		boolean unlitTorches = enabled(properties, "unlitTorches", path);
+		boolean hoglinCharge = enabled(properties, "hoglinCharge", path);
 
 		if (properties.size() != originalSize || Files.notExists(path)) {
 			try (Writer writer = Files.newBufferedWriter(path)) {
@@ -109,7 +113,7 @@ public final class PatchworkConfig {
 		Settings loaded = new Settings(witherDifficultyHealth, witherBirthExplosion, chainmailRecipes, wolfBanners,
 			ownerSweepProtection, shulkerDyeing, throwableSlimeballs, callHornRecall, cauldronCleaning,
 			beesDefendFlowers, creeperChainReactions, endermanDefense, spiderWebs, throwableFireCharges,
-			slimeSplitClouds, breezeShockwave, radius);
+			slimeSplitClouds, breezeShockwave, unlitTorches, hoglinCharge, radius);
 		Patchwork.LOGGER.info("Patchwork config loaded from {}", path);
 		return loaded;
 	}
@@ -141,6 +145,8 @@ public final class PatchworkConfig {
 			properties.setProperty("throwableFireCharges", Boolean.toString(updated.throwableFireCharges()));
 			properties.setProperty("slimeSplitClouds", Boolean.toString(updated.slimeSplitClouds()));
 			properties.setProperty("breezeShockwave", Boolean.toString(updated.breezeShockwave()));
+			properties.setProperty("unlitTorches", Boolean.toString(updated.unlitTorches()));
+			properties.setProperty("hoglinCharge", Boolean.toString(updated.hoglinCharge()));
 			properties.setProperty(RECALL_RADIUS_KEY, Integer.toString(radius));
 			try (Writer writer = Files.newBufferedWriter(path)) {
 				properties.store(writer, "Patchwork features: true/false; callHornRecallRadius: 16-256 blocks. Restart to apply.");
