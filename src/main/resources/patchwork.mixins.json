@@ -8,6 +8,7 @@
 		"PlayerSweepMixin",
 		"ShulkerVariantAccessor",
 		"SlimeballSnowballMixin",
+		"WaterCauldronCleaningMixin",
 		"WitherBossMixin",
 		"WolfBannerMixin"
 	],

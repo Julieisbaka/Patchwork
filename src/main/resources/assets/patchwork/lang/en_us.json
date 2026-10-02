@@ -28,6 +28,9 @@
   "patchwork.config.callHornRecall": "Call horn pet recall",
   "patchwork.config.callHornRecall.summary": "Recall your seated pets with the Call horn.",
   "patchwork.config.callHornRecall.description": "Using the Call goat horn recalls your nearby sitting tamed pets to safe spots near you; other goat horns are unchanged. Controlled by the server.",
+  "patchwork.config.cauldronCleaning": "Wash dyed blocks",
+  "patchwork.config.cauldronCleaning.summary": "Clean colored wool, terracotta, and glass.",
+  "patchwork.config.cauldronCleaning.description": "Right-click a water cauldron with dyed wool, terracotta, or stained glass to return one block to white wool, plain terracotta, or plain glass, using one water level. Vanilla shulker-box washing remains available even when this is off.",
   "patchwork.config.callHornRecallRadius": "Call horn recall radius (blocks)",
   "patchwork.config.callHornRecallRadius.summary": "Allowed range: 16-256. Default: 32.",
   "patchwork.config.callHornRecallRadius.description": "Maximum distance in blocks from which the Call goat horn recalls your sitting tamed pets. Enter an integer from 16 to 256; the server controls this in multiplayer."

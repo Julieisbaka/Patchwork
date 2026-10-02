@@ -25,6 +25,7 @@ equipping or removing banners but does not delete banners already on wolves.
 | `shulkerDyeing` | Recoloring shulkers with dye |
 | `throwableSlimeballs` | Slimeball throwing, hit effects, and cooldown |
 | `callHornRecall` | Call goat horn pet recall |
+| `cauldronCleaning` | Wash dyed wool, terracotta, and stained glass in water cauldrons |
 | `callHornRecallRadius` | Recall radius in blocks, 16–256 (default: 32) |
 
 Existing config files receive the new switches automatically; invalid values
@@ -96,3 +97,15 @@ multiplayer; clients do not need to configure it.
 
 Recalled pets stand up so they can follow you. Pets that cannot find a safe
 landing spot remain seated; other goat horn variants are unchanged.
+
+## Washing dyed blocks
+
+Right-click a water cauldron while holding dyed wool, terracotta, or stained
+glass to clean one block into white wool, plain terracotta, or plain glass.
+Each wash consumes one water level. A held stack is handled one block at a
+time; the cleaned item goes into your hand if the stack runs out, or into
+your inventory (and drops if it is full). Item components are preserved.
+Minecraft already cleans colored shulker boxes into undyed shulker boxes
+this way, including their contents, so Patchwork leaves that vanilla
+interaction unchanged. Disabling `cauldronCleaning` turns off only the
+three new block types.

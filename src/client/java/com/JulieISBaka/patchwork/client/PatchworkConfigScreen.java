@@ -17,7 +17,8 @@ import net.minecraft.network.chat.Component;
 public class PatchworkConfigScreen extends OptionsSubScreen {
 	private static final String[] KEYS = {
 		"witherDifficultyHealth", "witherBirthExplosion", "chainmailRecipes", "wolfBanners",
-		"ownerSweepProtection", "shulkerDyeing", "throwableSlimeballs", "callHornRecall"
+		"ownerSweepProtection", "shulkerDyeing", "throwableSlimeballs", "callHornRecall",
+		"cauldronCleaning"
 	};
 	private final boolean[] enabled;
 	private String radiusText;
@@ -29,7 +30,7 @@ public class PatchworkConfigScreen extends OptionsSubScreen {
 		this.enabled = new boolean[] {
 			loaded.witherDifficultyHealth(), loaded.witherBirthExplosion(), loaded.chainmailRecipes(),
 			loaded.wolfBanners(), loaded.ownerSweepProtection(), loaded.shulkerDyeing(),
-			loaded.throwableSlimeballs(), loaded.callHornRecall()
+			loaded.throwableSlimeballs(), loaded.callHornRecall(), loaded.cauldronCleaning()
 		};
 		this.radiusText = Integer.toString(loaded.callHornRecallRadius());
 	}
@@ -100,7 +101,7 @@ public class PatchworkConfigScreen extends OptionsSubScreen {
 		try {
 			PatchworkConfig.save(new PatchworkConfig.Settings(
 				this.enabled[0], this.enabled[1], this.enabled[2], this.enabled[3],
-				this.enabled[4], this.enabled[5], this.enabled[6], this.enabled[7],
+				this.enabled[4], this.enabled[5], this.enabled[6], this.enabled[7], this.enabled[8],
 				Integer.parseInt(this.radiusText)
 			));
 		} catch (IllegalStateException e) {

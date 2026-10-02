@@ -13,7 +13,7 @@ public final class PatchworkConfig {
 	private static final int MIN_RECALL_RADIUS = 16;
 	private static final int MAX_RECALL_RADIUS = 256;
 	private static final String RECALL_RADIUS_KEY = "callHornRecallRadius";
-	private static volatile Settings settings = new Settings(true, true, true, true, true, true, true, true, DEFAULT_RECALL_RADIUS);
+	private static volatile Settings settings = new Settings(true, true, true, true, true, true, true, true, true, DEFAULT_RECALL_RADIUS);
 
 	public record Settings(
 		boolean witherDifficultyHealth,
@@ -24,6 +24,7 @@ public final class PatchworkConfig {
 		boolean shulkerDyeing,
 		boolean throwableSlimeballs,
 		boolean callHornRecall,
+		boolean cauldronCleaning,
 		int callHornRecallRadius
 	) {
 	}
@@ -81,6 +82,7 @@ public final class PatchworkConfig {
 		boolean shulkerDyeing = enabled(properties, "shulkerDyeing", path);
 		boolean throwableSlimeballs = enabled(properties, "throwableSlimeballs", path);
 		boolean callHornRecall = enabled(properties, "callHornRecall", path);
+		boolean cauldronCleaning = enabled(properties, "cauldronCleaning", path);
 
 		if (properties.size() != originalSize || Files.notExists(path)) {
 			try (Writer writer = Files.newBufferedWriter(path)) {
@@ -90,7 +92,7 @@ public final class PatchworkConfig {
 			}
 		}
 		Settings loaded = new Settings(witherDifficultyHealth, witherBirthExplosion, chainmailRecipes, wolfBanners,
-			ownerSweepProtection, shulkerDyeing, throwableSlimeballs, callHornRecall, radius);
+			ownerSweepProtection, shulkerDyeing, throwableSlimeballs, callHornRecall, cauldronCleaning, radius);
 		Patchwork.LOGGER.info("Patchwork config loaded from {}", path);
 		return loaded;
 	}
@@ -114,6 +116,7 @@ public final class PatchworkConfig {
 			properties.setProperty("shulkerDyeing", Boolean.toString(updated.shulkerDyeing()));
 			properties.setProperty("throwableSlimeballs", Boolean.toString(updated.throwableSlimeballs()));
 			properties.setProperty("callHornRecall", Boolean.toString(updated.callHornRecall()));
+			properties.setProperty("cauldronCleaning", Boolean.toString(updated.cauldronCleaning()));
 			properties.setProperty(RECALL_RADIUS_KEY, Integer.toString(radius));
 			try (Writer writer = Files.newBufferedWriter(path)) {
 				properties.store(writer, "Patchwork features: true/false; callHornRecallRadius: 16-256 blocks. Restart to apply.");
