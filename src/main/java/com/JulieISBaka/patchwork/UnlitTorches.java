@@ -139,7 +139,7 @@ public final class UnlitTorches {
 		@Override
 		protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
 			Player player, InteractionHand hand, BlockHitResult hit) {
-			return relight(stack, level, pos, lit.defaultBlockState().setValue(FACING, state.getValue(FACING)));
+			return relight(stack, level, pos, player, lit.defaultBlockState().setValue(FACING, state.getValue(FACING)));
 		}
 
 		@Override

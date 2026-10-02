@@ -41,7 +41,7 @@ public class BreezeShockwaveMixin {
 		Vec3 center = breeze.position();
 		level.sendParticles(ParticleTypes.GUST_EMITTER_LARGE, center.x, center.y + 0.5, center.z,
 			1, 0.0, 0.0, 0.0, 0.0);
-		level.playSound(null, breeze.blockPosition(), SoundEvents.BREEZE_WIND_CHARGE_BURST, SoundSource.HOSTILE, 1.0F, 1.0F);
+		level.playSound(null, breeze.blockPosition(), SoundEvents.BREEZE_WIND_CHARGE_BURST.value(), SoundSource.HOSTILE, 1.0F, 1.0F);
 
 		for (Entity entity : level.getEntitiesOfClass(Entity.class, breeze.getBoundingBox().inflate(5.0))) {
 			Vec3 direction = entity.position().subtract(center);

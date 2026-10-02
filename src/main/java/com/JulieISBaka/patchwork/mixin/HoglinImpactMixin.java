@@ -32,7 +32,7 @@ public class HoglinImpactMixin implements HoglinLaunchTarget {
 			return;
 		}
 		ServerPlayer player = (ServerPlayer)(Object)this;
-		if (!PatchworkConfig.settings().hoglinCharge() || !player.isAlive() || player.isOnGround()) {
+		if (!PatchworkConfig.settings().hoglinCharge() || !player.isAlive() || player.onGround()) {
 			this.patchwork$impactTicks = 0;
 		} else if (player.horizontalCollision || (player.verticalCollision && !player.verticalCollisionBelow)) {
 			this.patchwork$impactTicks = 0;
