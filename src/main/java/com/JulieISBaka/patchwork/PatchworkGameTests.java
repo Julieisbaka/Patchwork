@@ -125,6 +125,12 @@ public class PatchworkGameTests {
 		test.useBlock(CENTER, player);
 		test.assertTrue(test.getBlockState(CENTER).getValue(LayeredCauldronBlock.LEVEL) == 2,
 			"Matching potion did not refill exactly one level");
+		player.setItemInHand(InteractionHand.MAIN_HAND, PotionContents.createItemStack(Items.POTION, Potions.HEALING));
+		test.useBlock(CENTER, player);
+		test.assertTrue(test.getBlockState(CENTER).getValue(LayeredCauldronBlock.LEVEL) == 2
+			&& ((PotionCauldronEntity)test.getLevel().getBlockEntity(test.absolutePos(CENTER)))
+				.potion().equals(potion.get(DataComponents.POTION_CONTENTS)),
+			"Different potion contents were mixed");
 		player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
 		player.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.ARROW, 8));
 		test.useBlock(CENTER, player);
@@ -146,10 +152,14 @@ public class PatchworkGameTests {
 			.setPotion(PotionContents.createItemStack(Items.POTION, Potions.HEALING)
 				.get(DataComponents.POTION_CONTENTS));
 		Vec3 center = Vec3.atBottomCenterOf(test.absolutePos(CENTER)).add(0, 0.5, 0);
+		ItemEntity insufficient = new ItemEntity(test.getLevel(), center.x, center.y, center.z,
+			new ItemStack(Items.ARROW, 7));
+		test.getLevel().addFreshEntity(insufficient);
 		ItemEntity arrows = new ItemEntity(test.getLevel(), center.x, center.y, center.z,
 			new ItemStack(Items.ARROW, 9));
 		test.getLevel().addFreshEntity(arrows);
 		test.runAfterDelay(5, () -> {
+			test.assertTrue(insufficient.getItem().getCount() == 7, "Fewer than eight arrows were converted");
 			test.assertTrue(arrows.getItem().getCount() == 1, "Dropped stack did not consume exactly eight arrows");
 			test.assertTrue(test.getBlockState(CENTER).getValue(LayeredCauldronBlock.LEVEL) == 1,
 				"Dropped arrows did not use one potion level");

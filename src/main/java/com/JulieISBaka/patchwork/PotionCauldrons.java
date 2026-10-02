@@ -7,6 +7,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
@@ -52,12 +53,15 @@ public final class PotionCauldrons {
 	public static InteractionResult pourWater(BlockState state, Level level, BlockPos pos, Player player,
 		InteractionHand hand, ItemStack bottle) {
 		PotionContents contents = bottle.get(DataComponents.POTION_CONTENTS);
-		if (contents == null) {
+		if (contents == null || contents.equals(PotionContents.EMPTY)) {
 			return InteractionResult.PASS;
 		}
 		if (!level.isClientSide()) {
 			level.setBlockAndUpdate(pos, BLOCK.defaultBlockState());
 			PotionCauldronEntity cauldron = entity(level, pos);
+			if (cauldron.potion().equals(PotionContents.EMPTY)) {
+				return false;
+			}
 			cauldron.setPotion(contents);
 			player.setItemInHand(hand, ItemUtils.createFilledResult(bottle, player, new ItemStack(Items.GLASS_BOTTLE)));
 			player.awardStat(Stats.USE_CAULDRON);
@@ -68,7 +72,7 @@ public final class PotionCauldrons {
 		return InteractionResult.SUCCESS;
 	}
 
-	public static boolean dip(Level level, BlockPos pos, ItemStack arrows, Player player, InteractionHand hand) {
+	public static boolean dip(ServerLevel level, BlockPos pos, ItemStack arrows, Player player, InteractionHand hand) {
 		if (arrows.getCount() < 8 || !arrows.is(Items.ARROW)) {
 			return false;
 		}
@@ -128,14 +132,14 @@ public final class PotionCauldrons {
 				if (stack.getCount() < 8) {
 					return InteractionResult.TRY_WITH_EMPTY_HAND;
 				}
-				if (!level.isClientSide()) {
-					dip(level, pos, stack, player, hand);
+				if (level instanceof ServerLevel serverLevel) {
+					dip(serverLevel, pos, stack, player, hand);
 				}
 				return InteractionResult.SUCCESS;
 			}
 			if (stack.is(Items.POTION)) {
 				PotionContents contents = stack.get(DataComponents.POTION_CONTENTS);
-				if (contents == null || state.getValue(LEVEL) == 3
+				if (contents == null || contents.equals(PotionContents.EMPTY) || state.getValue(LEVEL) == 3
 					|| !contents.equals(entity(level, pos).potion())) {
 					return InteractionResult.TRY_WITH_EMPTY_HAND;
 				}
