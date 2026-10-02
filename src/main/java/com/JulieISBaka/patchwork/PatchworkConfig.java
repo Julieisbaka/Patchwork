@@ -14,7 +14,7 @@ public final class PatchworkConfig {
 	private static final int MAX_RECALL_RADIUS = 256;
 	private static final String RECALL_RADIUS_KEY = "callHornRecallRadius";
 	private static volatile Settings settings = new Settings(true, true, true, true, true, true, true, true, true,
-		true, false, true, true, true, true, true, true, true, true, true, DEFAULT_RECALL_RADIUS);
+		true, false, true, true, true, true, true, true, true, true, true, true, DEFAULT_RECALL_RADIUS);
 
 	public record Settings(
 		boolean witherDifficultyHealth,
@@ -33,10 +33,11 @@ public final class PatchworkConfig {
 		boolean throwableFireCharges,
 		boolean slimeSplitClouds,
 		boolean breezeShockwave,
-		boolean unlitTorches,
+		boolean breezeTorchExtinguishing,
 		boolean hoglinCharge,
 		boolean skeletonCover,
 		boolean potionCauldrons,
+		boolean pumpkinLanterns,
 		int callHornRecallRadius
 	) {
 	}
@@ -86,6 +87,11 @@ public final class PatchworkConfig {
 			throw new IllegalArgumentException(RECALL_RADIUS_KEY + " must be from 16 to 256 in " + path + ": " + radius);
 		}
 		int originalSize = properties.size();
+		boolean migratedTorches = properties.containsKey("unlitTorches");
+		if (migratedTorches) {
+			properties.putIfAbsent("breezeTorchExtinguishing", properties.getProperty("unlitTorches"));
+			properties.remove("unlitTorches");
+		}
 		boolean witherDifficultyHealth = enabled(properties, "witherDifficultyHealth", path);
 		boolean witherBirthExplosion = enabled(properties, "witherBirthExplosion", path);
 		boolean chainmailRecipes = enabled(properties, "chainmailRecipes", path);
@@ -102,12 +108,13 @@ public final class PatchworkConfig {
 		boolean throwableFireCharges = enabled(properties, "throwableFireCharges", path);
 		boolean slimeSplitClouds = enabled(properties, "slimeSplitClouds", path);
 		boolean breezeShockwave = enabled(properties, "breezeShockwave", path);
-		boolean unlitTorches = enabled(properties, "unlitTorches", path);
+		boolean breezeTorchExtinguishing = enabled(properties, "breezeTorchExtinguishing", path);
 		boolean hoglinCharge = enabled(properties, "hoglinCharge", path);
 		boolean skeletonCover = enabled(properties, "skeletonCover", path);
 		boolean potionCauldrons = enabled(properties, "potionCauldrons", path);
+		boolean pumpkinLanterns = enabled(properties, "pumpkinLanterns", path);
 
-		if (properties.size() != originalSize || Files.notExists(path)) {
+		if (migratedTorches || properties.size() != originalSize || Files.notExists(path)) {
 			try (Writer writer = Files.newBufferedWriter(path)) {
 				properties.store(writer, "Patchwork features: true/false; callHornRecallRadius: 16-256 blocks. Restart to apply.");
 			} catch (IOException e) {
@@ -117,7 +124,8 @@ public final class PatchworkConfig {
 		Settings loaded = new Settings(witherDifficultyHealth, witherBirthExplosion, chainmailRecipes, wolfBanners,
 			ownerSweepProtection, shulkerDyeing, throwableSlimeballs, callHornRecall, cauldronCleaning,
 			beesDefendFlowers, creeperChainReactions, endermanDefense, spiderWebs, throwableFireCharges,
-			slimeSplitClouds, breezeShockwave, unlitTorches, hoglinCharge, skeletonCover, potionCauldrons, radius);
+			slimeSplitClouds, breezeShockwave, breezeTorchExtinguishing, hoglinCharge, skeletonCover,
+			potionCauldrons, pumpkinLanterns, radius);
 		Patchwork.LOGGER.info("Patchwork config loaded from {}", path);
 		return loaded;
 	}
@@ -149,10 +157,12 @@ public final class PatchworkConfig {
 			properties.setProperty("throwableFireCharges", Boolean.toString(updated.throwableFireCharges()));
 			properties.setProperty("slimeSplitClouds", Boolean.toString(updated.slimeSplitClouds()));
 			properties.setProperty("breezeShockwave", Boolean.toString(updated.breezeShockwave()));
-			properties.setProperty("unlitTorches", Boolean.toString(updated.unlitTorches()));
+			properties.remove("unlitTorches");
+			properties.setProperty("breezeTorchExtinguishing", Boolean.toString(updated.breezeTorchExtinguishing()));
 			properties.setProperty("hoglinCharge", Boolean.toString(updated.hoglinCharge()));
 			properties.setProperty("skeletonCover", Boolean.toString(updated.skeletonCover()));
 			properties.setProperty("potionCauldrons", Boolean.toString(updated.potionCauldrons()));
+			properties.setProperty("pumpkinLanterns", Boolean.toString(updated.pumpkinLanterns()));
 			properties.setProperty(RECALL_RADIUS_KEY, Integer.toString(radius));
 			try (Writer writer = Files.newBufferedWriter(path)) {
 				properties.store(writer, "Patchwork features: true/false; callHornRecallRadius: 16-256 blocks. Restart to apply.");

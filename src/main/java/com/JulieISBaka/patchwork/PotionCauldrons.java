@@ -59,9 +59,6 @@ public final class PotionCauldrons {
 		if (!level.isClientSide()) {
 			level.setBlockAndUpdate(pos, BLOCK.defaultBlockState());
 			PotionCauldronEntity cauldron = entity(level, pos);
-			if (cauldron.potion().equals(PotionContents.EMPTY)) {
-				return false;
-			}
 			cauldron.setPotion(contents);
 			player.setItemInHand(hand, ItemUtils.createFilledResult(bottle, player, new ItemStack(Items.GLASS_BOTTLE)));
 			player.awardStat(Stats.USE_CAULDRON);
@@ -77,6 +74,9 @@ public final class PotionCauldrons {
 			return false;
 		}
 		PotionCauldronEntity cauldron = entity(level, pos);
+		if (cauldron.potion().equals(PotionContents.EMPTY)) {
+			return false;
+		}
 		ItemStack tipped = new ItemStack(Items.TIPPED_ARROW, 8);
 		tipped.set(DataComponents.POTION_CONTENTS, cauldron.potion());
 		arrows.shrink(8);

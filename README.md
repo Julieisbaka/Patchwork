@@ -34,16 +34,20 @@ equipping or removing banners but does not delete banners already on wolves.
 | `spiderWebs` | Spiders spin cobwebs while chasing prey |
 | `slimeSplitClouds` | Five-second slowing particle cloud when larger Slimes split |
 | `breezeShockwave` | Breeze melee shockwave and extinguished torches/campfires |
-| `unlitTorches` | Breeze gusts create recoverable unlit torch items (requires shockwave) |
+| `breezeTorchExtinguishing` | Breeze gusts extinguish torches (requires shockwave) |
 | `hoglinCharge` | Charging Hoglins launch victims, with extra wall/ceiling impact damage |
 | `skeletonCover` | Nearby bow Skeletons take corner cover while reloading |
 | `potionCauldrons` | Pour potions into water cauldrons and tip arrows |
+| `pumpkinLanterns` | Light placed carved pumpkins using torches |
 | `callHornRecallRadius` | Recall radius in blocks, 16–256 (default: 32) |
 
 Existing config files receive the new switches automatically; invalid values
 produce a startup error instead of silently changing behavior. Disabling
 `witherDifficultyHealth` restores vanilla maximum health for newly spawned
 Withers, but does not reset health already saved on existing Withers.
+The old `unlitTorches` switch is migrated to `breezeTorchExtinguishing` without
+changing its value. This switch controls Breeze behavior, not the availability
+of unlit torch items.
 
 ## Game tests
 
@@ -61,7 +65,9 @@ health, the Breeze extinguishing a torch and campfire, a charging Hoglin
 launch, slimeballs healing/speeding a Slime and damaging/slowing a non-Slime,
 and a thrown fire charge igniting the top of a solid block after a side impact.
 They also check potion transfer replacing water with one level, matching-potion
-refills, offhand arrow dipping, and dropped-arrow dipping. Tests requiring a
+refills, offhand arrow dipping, dropped-arrow dipping, and lighting both kinds
+of carved pumpkin with the correct facing, torch consumption, and soul variant
+drop. Tests requiring a
 switch fail with an instruction to enable it rather than silently passing
 without exercising the feature. `breezeExtinguishesLights` also requires
 `mobGriefing=true`.
@@ -220,18 +226,29 @@ ground are skipped.
 When a Breeze survives a melee hit, it immediately releases a gust that
 pushes nearby entities away by approximately three blocks. It cannot do so
 again for 10 seconds. If `mobGriefing` is enabled, the gust also extinguishes
-lit campfires within five blocks. With the separate `unlitTorches` setting
+lit campfires within five blocks. With the separate `breezeTorchExtinguishing` setting
 enabled, it extinguishes ordinary, soul, copper, and *lit* redstone torches
 within five blocks as well. Unlit torches give off no light, flame particles,
 or redstone power. They use distinct unlit models and textures and drop
 matching unlit torch items on breaking. Each item places on floors and walls;
 fire charges relight them into their original torch variants. Disabling
-`unlitTorches` prevents gusts from creating more and hides the items from
-the creative inventory, but preserves any already placed or collected unlit
-torches. With the setting enabled, ordinary, soul, and copper unlit torches
+`breezeTorchExtinguishing` prevents gusts from creating more but does not
+remove already placed or collected unlit torches. Regardless of this setting,
+ordinary, soul, and copper unlit torches
 appear beside their lit counterparts in Functional Blocks; unlit redstone
 torches also appear in Redstone Blocks. There is no crafting recipe for the items.
 Lanterns remain lit because vanilla lanterns have no unlit state.
+
+## Pumpkin lanterns
+
+Right-click a placed carved pumpkin with a torch to turn it into a vanilla
+Jack o'Lantern, or with a soul torch to turn it into a Soul Jack o'Lantern
+with blue flames and light level 10. The pumpkin keeps its facing and one
+torch is consumed (except in creative mode). Breaking the soul variant drops
+its own item, which also appears next to the vanilla Jack o'Lantern in the
+Functional Blocks creative tab and can be placed directly. The
+`pumpkinLanterns` setting controls only the lighting interaction; it does not
+hide or delete existing items or blocks.
 
 An adult Hoglin running at least 0.18 blocks per tick (or marked sprinting)
 that lands a successful melee hit launches its target upward about three blocks

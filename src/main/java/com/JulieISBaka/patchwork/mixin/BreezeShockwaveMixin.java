@@ -63,7 +63,7 @@ public class BreezeShockwaveMixin {
 				continue;
 			}
 			BlockState state = level.getBlockState(pos);
-			BlockState unlit = PatchworkConfig.settings().unlitTorches() ? UnlitTorches.extinguish(state) : null;
+			BlockState unlit = PatchworkConfig.settings().breezeTorchExtinguishing() ? UnlitTorches.extinguish(state) : null;
 			if (unlit != null) {
 				level.setBlockAndUpdate(pos, unlit);
 			} else if (state.getBlock() instanceof CampfireBlock && state.getValue(CampfireBlock.LIT)) {

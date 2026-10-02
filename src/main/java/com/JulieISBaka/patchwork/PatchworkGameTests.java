@@ -27,6 +27,7 @@ import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.BaseFireBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CampfireBlock;
+import net.minecraft.world.level.block.CarvedPumpkinBlock;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.minecraft.world.level.block.RedstoneTorchBlock;
 import net.minecraft.world.level.block.WallTorchBlock;
@@ -41,8 +42,26 @@ public class PatchworkGameTests {
 	}
 
 	@GameTest
+	public void lightingCarvedPumpkins(GameTestHelper test) {
+		require(test, PatchworkConfig.settings().pumpkinLanterns(), "pumpkinLanterns");
+		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		for (var torch : new net.minecraft.world.item.Item[] {Items.TORCH, Items.SOUL_TORCH}) {
+			test.setBlock(CENTER, Blocks.CARVED_PUMPKIN.defaultBlockState()
+				.setValue(CarvedPumpkinBlock.FACING, Direction.WEST));
+			player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(torch, 2));
+			test.useBlock(CENTER, player);
+			test.assertBlockPresent(torch == Items.TORCH ? Blocks.JACK_O_LANTERN : PumpkinLanterns.SOUL_BLOCK, CENTER);
+			test.assertTrue(test.getBlockState(CENTER).getValue(CarvedPumpkinBlock.FACING) == Direction.WEST,
+				"Lighting changed the carved pumpkin facing");
+			test.assertTrue(player.getMainHandItem().getCount() == 1, "Lighting did not consume exactly one torch");
+		}
+		test.getLevel().destroyBlock(test.absolutePos(CENTER), true, null, 512);
+		test.assertItemEntityPresent(PumpkinLanterns.SOUL_ITEM, CENTER, 2);
+		test.succeed();
+	}
+
+	@GameTest
 	public void unlitTorchVariants(GameTestHelper test) {
-		require(test, PatchworkConfig.settings().unlitTorches(), "unlitTorches");
 		test.setBlock(CENTER.below(), Blocks.STONE);
 		test.setBlock(CENTER, Blocks.TORCH);
 		test.assertBlockState(CENTER, state -> UnlitTorches.extinguish(state).is(UnlitTorches.TORCH),
@@ -63,7 +82,6 @@ public class PatchworkGameTests {
 
 	@GameTest
 	public void unlitTorchesDropMatchingItems(GameTestHelper test) {
-		require(test, PatchworkConfig.settings().unlitTorches(), "unlitTorches");
 		test.setBlock(CENTER.below(), Blocks.STONE);
 		test.setBlock(CENTER, UnlitTorches.COPPER_TORCH);
 		test.getLevel().destroyBlock(test.absolutePos(CENTER), true, null, 512);
@@ -173,8 +191,8 @@ public class PatchworkGameTests {
 		require(test, PatchworkConfig.settings().shulkerDyeing(), "shulkerDyeing");
 		Shulker shulker = test.spawn(EntityTypes.SHULKER, CENTER);
 		Player player = test.makeMockPlayer(GameType.CREATIVE);
-		ItemStack dye = new ItemStack(Items.RED_DYE);
-		Items.RED_DYE.interactLivingEntity(dye, player, shulker, InteractionHand.MAIN_HAND);
+		ItemStack dye = new ItemStack(Items.DYE.red());
+		Items.DYE.red().interactLivingEntity(dye, player, shulker, InteractionHand.MAIN_HAND);
 		test.assertTrue(shulker.getColor() == DyeColor.RED, "Dye did not recolor the shulker");
 		test.succeed();
 	}
@@ -195,7 +213,7 @@ public class PatchworkGameTests {
 	@GameTest(maxTicks = 30)
 	public void breezeExtinguishesLights(GameTestHelper test) {
 		require(test, PatchworkConfig.settings().breezeShockwave(), "breezeShockwave");
-		require(test, PatchworkConfig.settings().unlitTorches(), "unlitTorches");
+		require(test, PatchworkConfig.settings().breezeTorchExtinguishing(), "breezeTorchExtinguishing");
 		test.assertTrue(test.getLevel().getGameRules().get(GameRules.MOB_GRIEFING),
 			"Enable mobGriefing before running the Breeze extinguishing test");
 		test.setBlock(CENTER.below(), Blocks.STONE);

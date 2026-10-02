@@ -57,18 +57,16 @@ public class Patchwork implements ModInitializer {
 		PatchworkConfig.load();
 		UnlitTorches.register();
 		PotionCauldrons.register();
+		PumpkinLanterns.register();
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register(output -> {
-			if (PatchworkConfig.settings().unlitTorches()) {
-				output.insertAfter(Items.TORCH, UnlitTorches.TORCH_ITEM);
-				output.insertAfter(Items.SOUL_TORCH, UnlitTorches.SOUL_TORCH_ITEM);
-				output.insertAfter(Items.COPPER_TORCH, UnlitTorches.COPPER_TORCH_ITEM);
-				output.insertAfter(Items.REDSTONE_TORCH, UnlitTorches.REDSTONE_TORCH_ITEM);
-			}
+			output.insertAfter(Items.TORCH, UnlitTorches.TORCH_ITEM);
+			output.insertAfter(Items.SOUL_TORCH, UnlitTorches.SOUL_TORCH_ITEM);
+			output.insertAfter(Items.COPPER_TORCH, UnlitTorches.COPPER_TORCH_ITEM);
+			output.insertAfter(Items.REDSTONE_TORCH, UnlitTorches.REDSTONE_TORCH_ITEM);
+			output.insertAfter(Items.JACK_O_LANTERN, PumpkinLanterns.SOUL_ITEM);
 		});
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.REDSTONE_BLOCKS).register(output -> {
-			if (PatchworkConfig.settings().unlitTorches()) {
-				output.insertAfter(Items.REDSTONE_TORCH, UnlitTorches.REDSTONE_TORCH_ITEM);
-			}
+			output.insertAfter(Items.REDSTONE_TORCH, UnlitTorches.REDSTONE_TORCH_ITEM);
 		});
 		SlimeSplitClouds.register();
 		ResourceConditions.register(CHAINMAIL_CONDITION);
