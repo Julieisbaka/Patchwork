@@ -13,7 +13,8 @@ public final class PatchworkConfig {
 	private static final int MIN_RECALL_RADIUS = 16;
 	private static final int MAX_RECALL_RADIUS = 256;
 	private static final String RECALL_RADIUS_KEY = "callHornRecallRadius";
-	private static volatile Settings settings = new Settings(true, true, true, true, true, true, true, true, true, DEFAULT_RECALL_RADIUS);
+	private static volatile Settings settings = new Settings(true, true, true, true, true, true, true, true, true,
+		true, false, true, true, DEFAULT_RECALL_RADIUS);
 
 	public record Settings(
 		boolean witherDifficultyHealth,
@@ -25,6 +26,10 @@ public final class PatchworkConfig {
 		boolean throwableSlimeballs,
 		boolean callHornRecall,
 		boolean cauldronCleaning,
+		boolean beesDefendFlowers,
+		boolean creeperChainReactions,
+		boolean endermanDefense,
+		boolean spiderWebs,
 		int callHornRecallRadius
 	) {
 	}
@@ -83,6 +88,10 @@ public final class PatchworkConfig {
 		boolean throwableSlimeballs = enabled(properties, "throwableSlimeballs", path);
 		boolean callHornRecall = enabled(properties, "callHornRecall", path);
 		boolean cauldronCleaning = enabled(properties, "cauldronCleaning", path);
+		boolean beesDefendFlowers = enabled(properties, "beesDefendFlowers", true, path);
+		boolean creeperChainReactions = enabled(properties, "creeperChainReactions", false, path);
+		boolean endermanDefense = enabled(properties, "endermanDefense", true, path);
+		boolean spiderWebs = enabled(properties, "spiderWebs", true, path);
 
 		if (properties.size() != originalSize || Files.notExists(path)) {
 			try (Writer writer = Files.newBufferedWriter(path)) {
@@ -92,7 +101,8 @@ public final class PatchworkConfig {
 			}
 		}
 		Settings loaded = new Settings(witherDifficultyHealth, witherBirthExplosion, chainmailRecipes, wolfBanners,
-			ownerSweepProtection, shulkerDyeing, throwableSlimeballs, callHornRecall, cauldronCleaning, radius);
+			ownerSweepProtection, shulkerDyeing, throwableSlimeballs, callHornRecall, cauldronCleaning,
+			beesDefendFlowers, creeperChainReactions, endermanDefense, spiderWebs, radius);
 		Patchwork.LOGGER.info("Patchwork config loaded from {}", path);
 		return loaded;
 	}
@@ -117,6 +127,10 @@ public final class PatchworkConfig {
 			properties.setProperty("throwableSlimeballs", Boolean.toString(updated.throwableSlimeballs()));
 			properties.setProperty("callHornRecall", Boolean.toString(updated.callHornRecall()));
 			properties.setProperty("cauldronCleaning", Boolean.toString(updated.cauldronCleaning()));
+			properties.setProperty("beesDefendFlowers", Boolean.toString(updated.beesDefendFlowers()));
+			properties.setProperty("creeperChainReactions", Boolean.toString(updated.creeperChainReactions()));
+			properties.setProperty("endermanDefense", Boolean.toString(updated.endermanDefense()));
+			properties.setProperty("spiderWebs", Boolean.toString(updated.spiderWebs()));
 			properties.setProperty(RECALL_RADIUS_KEY, Integer.toString(radius));
 			try (Writer writer = Files.newBufferedWriter(path)) {
 				properties.store(writer, "Patchwork features: true/false; callHornRecallRadius: 16-256 blocks. Restart to apply.");
@@ -127,10 +141,14 @@ public final class PatchworkConfig {
 	}
 
 	private static boolean enabled(Properties properties, String key, Path path) {
+		return enabled(properties, key, true, path);
+	}
+
+	private static boolean enabled(Properties properties, String key, boolean defaultValue, Path path) {
 		String value = properties.getProperty(key);
 		if (value == null) {
-			properties.setProperty(key, "true");
-			return true;
+			properties.setProperty(key, Boolean.toString(defaultValue));
+			return defaultValue;
 		}
 		if (value.trim().equalsIgnoreCase("true")) {
 			return true;

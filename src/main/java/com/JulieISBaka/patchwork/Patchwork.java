@@ -2,20 +2,24 @@ package com.JulieISBaka.patchwork;
 
 import com.mojang.serialization.MapCodec;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.resource.conditions.v1.ResourceCondition;
 import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditionType;
 import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.resources.Identifier;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.throwableitemprojectile.Snowball;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +46,21 @@ public class Patchwork implements ModInitializer {
 	public void onInitialize() {
 		PatchworkConfig.load();
 		ResourceConditions.register(CHAINMAIL_CONDITION);
+		PlayerBlockBreakEvents.AFTER.register((level, player, pos, state, blockEntity) -> {
+			if (!PatchworkConfig.settings().beesDefendFlowers() || !(level instanceof ServerLevel serverLevel)
+				|| !state.is(BlockTags.FLOWERS)) {
+				return;
+			}
+			for (BlockPos nearby : BlockPos.betweenClosed(pos.offset(-4, -4, -4), pos.offset(4, 4, 4))) {
+				if (nearby.distSqr(pos) > 16.0 || !serverLevel.getBlockState(nearby).is(BlockTags.BEEHIVES)
+					|| !(serverLevel.getBlockEntity(nearby) instanceof BeehiveBlockEntity hive)
+					|| hive.isEmpty() || hive.isSedated()) {
+					continue;
+				}
+				hive.emptyAllLivingFromHive(player, serverLevel.getBlockState(nearby),
+					BeehiveBlockEntity.BeeReleaseStatus.EMERGENCY);
+			}
+		});
 		UseItemCallback.EVENT.register((player, level, hand) -> {
 			ItemStack stack = player.getItemInHand(hand);
 			if (!PatchworkConfig.settings().throwableSlimeballs() || !stack.is(Items.SLIME_BALL)) {

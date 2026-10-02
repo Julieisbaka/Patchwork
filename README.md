@@ -4,7 +4,8 @@
 
 Patchwork creates `config/patchwork.properties` on startup (`run/config/` in
 the development environment). Set any feature switch to `false` to disable
-it; every switch defaults to `true`. With Mod Menu 21.0.0 installed on the
+it; every switch defaults to `true` except `creeperChainReactions`, which is
+`false` by default. With Mod Menu 21.0.0 installed on the
 client, open Patchwork's Config button to edit the switches and recall radius
 in a scrolling settings screen. Hover over each option for a detailed
 description. Save writes the local config file; Cancel discards your edits.
@@ -26,6 +27,10 @@ equipping or removing banners but does not delete banners already on wolves.
 | `throwableSlimeballs` | Slimeball throwing, hit effects, and cooldown |
 | `callHornRecall` | Call goat horn pet recall |
 | `cauldronCleaning` | Wash dyed wool, terracotta, and stained glass in water cauldrons |
+| `beesDefendFlowers` | Bees defend flowers near occupied hives |
+| `creeperChainReactions` | Creeper blast chain reactions (off by default) |
+| `endermanDefense` | Endermen place carried blocks defensively |
+| `spiderWebs` | Spiders spin cobwebs while chasing prey |
 | `callHornRecallRadius` | Recall radius in blocks, 16–256 (default: 32) |
 
 Existing config files receive the new switches automatically; invalid values
@@ -103,3 +108,22 @@ Minecraft already cleans colored shulker boxes into undyed shulker boxes
 this way, including their contents, so Patchwork leaves that vanilla
 interaction unchanged. Disabling `cauldronCleaning` turns off only the
 three new block types.
+
+## Mob behavior
+
+Breaking a flower within four blocks of an occupied beehive or bee nest
+releases its bees, which attack if close enough. Smoke from a campfire keeps
+them calm.
+
+When `creeperChainReactions` is enabled, a Creeper that survives damage from
+another Creeper's explosion ignites its full fuse. This is **off by default**
+because multiple explosions may destroy more terrain.
+
+An Enderman carrying a block has a one-in-three chance to place it between
+itself and a living attacker after being hurt, if there is empty space,
+solid support, no obstructing entities, and the block can survive there.
+It respects the `mobGriefing` game rule.
+
+Spiders chasing living targets two to eight blocks away have a one-in-four
+chance every five seconds to place a cobweb at the target's feet when the
+space is empty and has solid support. This also respects `mobGriefing`.
