@@ -45,7 +45,7 @@
   "patchwork.config.spiderWebs.description": "While chasing living prey 2-8 blocks away, spiders check every five seconds for a one-in-four chance to place a cobweb at the prey's feet, if space permits and mobGriefing is enabled.",
   "patchwork.config.throwableFireCharges": "Throwable fire charges",
   "patchwork.config.throwableFireCharges.summary": "Launch a slow fireball with a 1.5-second cooldown.",
-  "patchwork.config.throwableFireCharges.description": "Use a fire charge in the air to launch a slow Ghast-style fireball. It deals 2 HP direct damage, ignites an open space on block impact, and never explodes. Consumes one charge except in creative mode and applies a 30-tick cooldown. Using fire charges on blocks retains vanilla behavior.",
+  "patchwork.config.throwableFireCharges.description": "Launch a slow Ghast-style fireball only when no block is in your sights within 5 blocks. It deals 2 HP direct damage, ignites an open space on block impact, and never explodes. Consumes one charge except in creative mode and applies a 30-tick cooldown. Using fire charges on blocks retains vanilla behavior.",
   "patchwork.config.callHornRecallRadius": "Call horn recall radius (blocks)",
   "patchwork.config.callHornRecallRadius.summary": "Allowed range: 16-256. Default: 32.",
   "patchwork.config.callHornRecallRadius.description": "Maximum distance in blocks from which the Call goat horn recalls your sitting tamed pets. Enter an integer from 16 to 256; the server controls this in multiplayer."

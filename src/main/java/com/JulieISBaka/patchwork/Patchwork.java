@@ -20,7 +20,10 @@ import net.minecraft.world.entity.projectile.hurtingprojectile.LargeFireball;
 import net.minecraft.world.entity.projectile.throwableitemprojectile.Snowball;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +32,7 @@ public class Patchwork implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 	private static final int SLIMEBALL_COOLDOWN_TICKS = 20;
 	private static final int FIRE_CHARGE_COOLDOWN_TICKS = 30;
+	private static final double FIRE_CHARGE_CLEARANCE_BLOCKS = 5.0;
 	public static final String THROWN_FIRE_CHARGE_TAG = "patchwork:thrown_fire_charge";
 	private static final ResourceConditionType<ChainmailCondition> CHAINMAIL_CONDITION =
 		ResourceConditionType.create(id("chainmail_recipes"), MapCodec.unit(new ChainmailCondition()));
@@ -90,6 +94,12 @@ public class Patchwork implements ModInitializer {
 				return InteractionResult.PASS;
 			}
 			if (player.getCooldowns().isOnCooldown(stack)) {
+				return InteractionResult.CONSUME;
+			}
+
+			Vec3 eye = player.getEyePosition();
+			if (level.clip(new ClipContext(eye, eye.add(player.getLookAngle().scale(FIRE_CHARGE_CLEARANCE_BLOCKS)),
+				ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player)).getType() != HitResult.Type.MISS) {
 				return InteractionResult.CONSUME;
 			}
 
