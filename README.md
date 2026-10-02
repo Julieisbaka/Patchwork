@@ -32,6 +32,7 @@ equipping or removing banners but does not delete banners already on wolves.
 | `creeperChainReactions` | Creeper blast chain reactions (off by default) |
 | `endermanDefense` | Endermen place carried blocks defensively |
 | `spiderWebs` | Spiders spin cobwebs while chasing prey |
+| `slimeSplitClouds` | Five-second slowing particle cloud when larger Slimes split |
 | `callHornRecallRadius` | Recall radius in blocks, 16–256 (default: 32) |
 
 Existing config files receive the new switches automatically; invalid values
@@ -141,3 +142,9 @@ It respects the `mobGriefing` game rule.
 Spiders chasing living targets two to eight blocks away have a one-in-four
 chance every five seconds to place a cobweb at the target's feet when the
 space is empty and has solid support. This also respects `mobGriefing`.
+
+When a medium or large Slime dies and splits, it leaves a 3x3 patch of slime
+particles on solid ground for five seconds. Players standing in the cloud
+receive Slowness II while inside it, fading shortly after they leave. The
+cloud does not create or replace any blocks; gaps and uneven or unsupported
+ground are skipped.

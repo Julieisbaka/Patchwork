@@ -46,6 +46,9 @@
   "patchwork.config.throwableFireCharges": "Throwable fire charges",
   "patchwork.config.throwableFireCharges.summary": "Launch a slow fireball with a 1.5-second cooldown.",
   "patchwork.config.throwableFireCharges.description": "Launch a slow Ghast-style fireball only when no block is in your sights within 5 blocks. It deals 2 HP direct damage, ignites an open space on block impact, and never explodes. Consumes one charge except in creative mode and applies a 30-tick cooldown. Using fire charges on blocks retains vanilla behavior.",
+  "patchwork.config.slimeSplitClouds": "Slime split clouds",
+  "patchwork.config.slimeSplitClouds.summary": "Large and medium Slimes leave a brief slowing cloud.",
+  "patchwork.config.slimeSplitClouds.description": "When a medium or large Slime dies and splits, it leaves a 3x3 patch of slime particles on solid ground for five seconds. Players who step into the cloud receive Slowness II. The cloud does not place or replace blocks.",
   "patchwork.config.callHornRecallRadius": "Call horn recall radius (blocks)",
   "patchwork.config.callHornRecallRadius.summary": "Allowed range: 16-256. Default: 32.",
   "patchwork.config.callHornRecallRadius.description": "Maximum distance in blocks from which the Call goat horn recalls your sitting tamed pets. Enter an integer from 16 to 256; the server controls this in multiplayer."

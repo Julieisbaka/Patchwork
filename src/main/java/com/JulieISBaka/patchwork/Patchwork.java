@@ -52,6 +52,7 @@ public class Patchwork implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		PatchworkConfig.load();
+		SlimeSplitClouds.register();
 		ResourceConditions.register(CHAINMAIL_CONDITION);
 		PlayerBlockBreakEvents.AFTER.register((level, player, pos, state, blockEntity) -> {
 			if (!PatchworkConfig.settings().beesDefendFlowers() || !(level instanceof ServerLevel serverLevel)
