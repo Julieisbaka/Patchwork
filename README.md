@@ -33,6 +33,7 @@ equipping or removing banners but does not delete banners already on wolves.
 | `endermanDefense` | Endermen place carried blocks defensively |
 | `spiderWebs` | Spiders spin cobwebs while chasing prey |
 | `slimeSplitClouds` | Five-second slowing particle cloud when larger Slimes split |
+| `breezeShockwave` | Breeze melee shockwave and extinguished torches/campfires |
 | `callHornRecallRadius` | Recall radius in blocks, 16–256 (default: 32) |
 
 Existing config files receive the new switches automatically; invalid values
@@ -143,8 +144,17 @@ Spiders chasing living targets two to eight blocks away have a one-in-four
 chance every five seconds to place a cobweb at the target's feet when the
 space is empty and has solid support. This also respects `mobGriefing`.
 
-When a medium or large Slime dies and splits, it leaves a 3x3 patch of slime
-particles on solid ground for five seconds. Players standing in the cloud
+When a medium or large Slime dies and splits, it leaves a 3x3 patch of
+green slime dust and slime particles on solid ground for five seconds.
+Players standing in the cloud
 receive Slowness II while inside it, fading shortly after they leave. The
 cloud does not create or replace any blocks; gaps and uneven or unsupported
 ground are skipped.
+
+When a Breeze survives a melee hit, it immediately releases a gust that
+pushes nearby entities away by approximately three blocks. It cannot do so
+again for 10 seconds. If `mobGriefing` is enabled, the gust also extinguishes
+lit campfires and ordinary, soul, and copper torches within five blocks.
+Extinguished torches give off no light or flame particles and can be relit
+with a fire charge; breaking them drops their original torch item.
+Lanterns remain lit because vanilla lanterns have no unlit state.

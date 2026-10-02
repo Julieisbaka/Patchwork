@@ -8,6 +8,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -21,6 +22,7 @@ import net.minecraft.world.phys.Vec3;
 
 public final class SlimeSplitClouds {
 	private static final int LIFETIME_TICKS = 100;
+	private static final DustParticleOptions SLIME_DUST = new DustParticleOptions(0x66C536, 1.2F);
 	private static final Map<ServerLevel, List<Cloud>> CLOUDS = new HashMap<>();
 
 	private SlimeSplitClouds() {
@@ -74,6 +76,8 @@ public final class SlimeSplitClouds {
 			for (BlockPos tile : cloud.tiles()) {
 				level.sendParticles(ParticleTypes.ITEM_SLIME, tile.getX() + 0.5, tile.getY() + 0.08,
 					tile.getZ() + 0.5, 2, 0.4, 0.02, 0.4, 0.01);
+				level.sendParticles(SLIME_DUST, tile.getX() + 0.5, tile.getY() + 0.12,
+					tile.getZ() + 0.5, 3, 0.42, 0.03, 0.42, 0.005);
 			}
 			for (ServerPlayer player : level.players()) {
 				if (!player.isSpectator() && cloud.tiles().stream().anyMatch(tile ->

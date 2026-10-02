@@ -52,6 +52,7 @@ public class Patchwork implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		PatchworkConfig.load();
+		UnlitTorches.register();
 		SlimeSplitClouds.register();
 		ResourceConditions.register(CHAINMAIL_CONDITION);
 		PlayerBlockBreakEvents.AFTER.register((level, player, pos, state, blockEntity) -> {
