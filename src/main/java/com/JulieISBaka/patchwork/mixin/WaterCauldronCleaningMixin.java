@@ -2,6 +2,8 @@ package com.JulieISBaka.patchwork.mixin;
 
 import com.JulieISBaka.patchwork.CauldronCleaningItems;
 import com.JulieISBaka.patchwork.PatchworkConfig;
+import com.JulieISBaka.patchwork.PotionCauldrons;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.cauldron.CauldronInteraction;
 import net.minecraft.core.cauldron.CauldronInteractions;
 import net.minecraft.stats.Stats;
@@ -9,6 +11,9 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,6 +25,13 @@ public class WaterCauldronCleaningMixin {
 	@Inject(method = "get", at = @At("HEAD"), cancellable = true)
 	private void patchwork$cleanDyedBlocks(ItemStack stack, CallbackInfoReturnable<CauldronInteraction> cir) {
 		if ((Object)this != CauldronInteractions.WATER) {
+			return;
+		}
+		if (PatchworkConfig.settings().potionCauldrons() && stack.is(Items.POTION)) {
+			PotionContents contents = stack.get(DataComponents.POTION_CONTENTS);
+			if (contents != null && !contents.is(Potions.WATER)) {
+				cir.setReturnValue(PotionCauldrons::pourWater);
+			}
 			return;
 		}
 		Item cleanItem = CauldronCleaningItems.get(stack.getItem());

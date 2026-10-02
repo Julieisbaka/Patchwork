@@ -36,6 +36,8 @@ equipping or removing banners but does not delete banners already on wolves.
 | `breezeShockwave` | Breeze melee shockwave and extinguished torches/campfires |
 | `unlitTorches` | Breeze gusts create recoverable unlit torch items (requires shockwave) |
 | `hoglinCharge` | Charging Hoglins launch victims, with extra wall/ceiling impact damage |
+| `skeletonCover` | Nearby bow Skeletons take corner cover while reloading |
+| `potionCauldrons` | Pour potions into water cauldrons and tip arrows |
 | `callHornRecallRadius` | Recall radius in blocks, 16–256 (default: 32) |
 
 Existing config files receive the new switches automatically; invalid values
@@ -52,13 +54,14 @@ completion after `/test run patchwork:` lists the other Patchwork tests.
 structures. The tests use Fabric's built-in GameTest API and its empty
 structure. They run in-game, not through the Gradle unit-test task.
 
-The eleven automated tests cover four unlit torch conversions and wall facing,
+The automated tests cover four unlit torch conversions and wall facing,
 an unlit item drop, fire-charge relighting, washing wool/terracotta/glass
 using one cauldron level each, shulker dyeing, difficulty-based Wither
 health, the Breeze extinguishing a torch and campfire, a charging Hoglin
 launch, slimeballs healing/speeding a Slime and damaging/slowing a non-Slime,
-and a thrown fire charge
-igniting the top of a solid block after a side impact. Tests requiring a
+and a thrown fire charge igniting the top of a solid block after a side impact.
+They also check potion transfer replacing water with one level, matching-potion
+refills, offhand arrow dipping, and dropped-arrow dipping. Tests requiring a
 switch fail with an instruction to enable it rather than silently passing
 without exercising the feature. `breezeExtinguishesLights` also requires
 `mobGriefing=true`.
@@ -76,8 +79,30 @@ cloud's Slowness II and five-second expiry; test the Breeze's knockback
 and ten-second cooldown; and collide with a wall/ceiling after a Hoglin
 launch to check its 2 HP impact. Check all four unlit items in Creative and
 verify unlit redstone torches supply no signal. Mod Menu switches and client banner
-rendering also require a client. These behaviors are not claimed as covered
+rendering also require a client. Test Skeletons seeking a reachable wall
+corner and returning to their firing position against a close player, and
+verify unlike potions cannot mix and potion contents survive a save/reload.
+These behaviors are not claimed as covered
 by the automated tests.
+
+## Skeletons and potion cauldrons
+
+When a bow-wielding Skeleton has fired and a player is within six blocks, it
+looks for a reachable adjacent corner with a solid obstruction between it and
+the player. It retreats there while reloading, then returns to its former
+position to draw and fire. Without suitable cover it uses vanilla movement.
+
+Use a drinkable non-water potion on a water cauldron to replace the water
+with one level of that potion, regardless of the original water level. Up to
+two matching potions refill it to three levels; different contents do not mix.
+Right-click the potion cauldron with at least eight ordinary arrows in either
+hand, or drop a stack of at least eight inside it, to convert exactly eight
+into tipped arrows carrying the potion's contents. Each conversion consumes
+one level. Smaller stacks and already tipped arrows are unaffected. Potion
+cauldrons have a fixed purple surface (not a color preview of the potion);
+breaking one drops a normal empty cauldron. Disabling `potionCauldrons`
+prevents new transfers/refills and dipping but does not remove existing
+potion cauldrons from saved worlds.
 
 ## Wither
 

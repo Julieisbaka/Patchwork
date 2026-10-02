@@ -3,11 +3,13 @@ package com.JulieISBaka.patchwork;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.cauldron.CauldronInteractions;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.monster.cubemob.Slime;
 import net.minecraft.world.entity.monster.Shulker;
@@ -19,6 +21,8 @@ import net.minecraft.world.entity.projectile.throwableitemprojectile.Snowball;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.BaseFireBlock;
 import net.minecraft.world.level.block.Blocks;
@@ -100,6 +104,58 @@ public class PatchworkGameTests {
 				"Washing " + dyed[i] + " did not use exactly one water level");
 		}
 		test.succeed();
+	}
+
+	@GameTest
+	public void potionPourRefillAndDipOffhand(GameTestHelper test) {
+		require(test, PatchworkConfig.settings().potionCauldrons(), "potionCauldrons");
+		test.setBlock(CENTER, Blocks.WATER_CAULDRON.defaultBlockState().setValue(LayeredCauldronBlock.LEVEL, 3));
+		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		ItemStack potion = PotionContents.createItemStack(Items.POTION, Potions.SWIFTNESS);
+		player.setItemInHand(InteractionHand.MAIN_HAND, potion);
+		CauldronInteractions.WATER.get(potion).interact(test.getBlockState(CENTER),
+			test.getLevel(), test.absolutePos(CENTER), player, InteractionHand.MAIN_HAND, potion);
+		test.assertBlockPresent(PotionCauldrons.BLOCK, CENTER);
+		test.assertTrue(test.getBlockState(CENTER).getValue(LayeredCauldronBlock.LEVEL) == 1,
+			"Potion did not replace water with one level");
+		test.assertTrue(((PotionCauldronEntity)test.getLevel().getBlockEntity(test.absolutePos(CENTER)))
+			.potion().equals(potion.get(DataComponents.POTION_CONTENTS)), "Potion contents were not retained");
+		test.assertTrue(player.getMainHandItem().is(Items.GLASS_BOTTLE), "Pouring did not return a glass bottle");
+		player.setItemInHand(InteractionHand.MAIN_HAND, PotionContents.createItemStack(Items.POTION, Potions.SWIFTNESS));
+		test.useBlock(CENTER, player);
+		test.assertTrue(test.getBlockState(CENTER).getValue(LayeredCauldronBlock.LEVEL) == 2,
+			"Matching potion did not refill exactly one level");
+		player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+		player.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.ARROW, 8));
+		test.useBlock(CENTER, player);
+		test.assertTrue(player.getOffhandItem().is(Items.TIPPED_ARROW)
+			&& player.getOffhandItem().getCount() == 8
+			&& player.getOffhandItem().get(DataComponents.POTION_CONTENTS).equals(
+				((PotionCauldronEntity)test.getLevel().getBlockEntity(test.absolutePos(CENTER))).potion()),
+			"Offhand dipping did not return eight matching tipped arrows");
+		test.assertTrue(test.getBlockState(CENTER).getValue(LayeredCauldronBlock.LEVEL) == 1,
+			"Offhand dipping did not use one potion level");
+		test.succeed();
+	}
+
+	@GameTest(maxTicks = 30)
+	public void droppedArrowsUseOnePotionLevel(GameTestHelper test) {
+		require(test, PatchworkConfig.settings().potionCauldrons(), "potionCauldrons");
+		test.setBlock(CENTER, PotionCauldrons.BLOCK.defaultBlockState().setValue(LayeredCauldronBlock.LEVEL, 2));
+		((PotionCauldronEntity)test.getLevel().getBlockEntity(test.absolutePos(CENTER)))
+			.setPotion(PotionContents.createItemStack(Items.POTION, Potions.HEALING)
+				.get(DataComponents.POTION_CONTENTS));
+		Vec3 center = Vec3.atBottomCenterOf(test.absolutePos(CENTER)).add(0, 0.5, 0);
+		ItemEntity arrows = new ItemEntity(test.getLevel(), center.x, center.y, center.z,
+			new ItemStack(Items.ARROW, 9));
+		test.getLevel().addFreshEntity(arrows);
+		test.runAfterDelay(5, () -> {
+			test.assertTrue(arrows.getItem().getCount() == 1, "Dropped stack did not consume exactly eight arrows");
+			test.assertTrue(test.getBlockState(CENTER).getValue(LayeredCauldronBlock.LEVEL) == 1,
+				"Dropped arrows did not use one potion level");
+			test.assertItemEntityPresent(Items.TIPPED_ARROW, CENTER, 2);
+			test.succeed();
+		});
 	}
 
 	@GameTest
