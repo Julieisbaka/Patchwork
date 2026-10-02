@@ -2,6 +2,7 @@ package com.JulieISBaka.patchwork;
 
 import com.mojang.serialization.MapCodec;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.resource.conditions.v1.ResourceCondition;
 import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditionType;
@@ -15,6 +16,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.hurtingprojectile.LargeFireball;
 import net.minecraft.world.entity.projectile.throwableitemprojectile.Snowball;
@@ -53,6 +55,19 @@ public class Patchwork implements ModInitializer {
 	public void onInitialize() {
 		PatchworkConfig.load();
 		UnlitTorches.register();
+		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register(output -> {
+			if (PatchworkConfig.settings().unlitTorches()) {
+				output.insertAfter(Items.TORCH, UnlitTorches.TORCH_ITEM);
+				output.insertAfter(Items.SOUL_TORCH, UnlitTorches.SOUL_TORCH_ITEM);
+				output.insertAfter(Items.COPPER_TORCH, UnlitTorches.COPPER_TORCH_ITEM);
+				output.insertAfter(Items.REDSTONE_TORCH, UnlitTorches.REDSTONE_TORCH_ITEM);
+			}
+		});
+		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.REDSTONE_BLOCKS).register(output -> {
+			if (PatchworkConfig.settings().unlitTorches()) {
+				output.insertAfter(Items.REDSTONE_TORCH, UnlitTorches.REDSTONE_TORCH_ITEM);
+			}
+		});
 		SlimeSplitClouds.register();
 		ResourceConditions.register(CHAINMAIL_CONDITION);
 		PlayerBlockBreakEvents.AFTER.register((level, player, pos, state, blockEntity) -> {

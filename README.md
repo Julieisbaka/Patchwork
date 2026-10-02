@@ -162,10 +162,12 @@ within five blocks as well. Unlit torches give off no light, flame particles,
 or redstone power. They use distinct unlit models and textures and drop
 matching unlit torch items on breaking. Each item places on floors and walls;
 fire charges relight them into their original torch variants. Disabling
-`unlitTorches` prevents gusts from creating more but preserves any already
-placed or collected unlit torches. There is no crafting recipe or creative-tab
-entry for the items. Lanterns remain lit because vanilla lanterns have no
-unlit state.
+`unlitTorches` prevents gusts from creating more and hides the items from
+the creative inventory, but preserves any already placed or collected unlit
+torches. With the setting enabled, ordinary, soul, and copper unlit torches
+appear beside their lit counterparts in Functional Blocks; unlit redstone
+torches also appear in Redstone Blocks. There is no crafting recipe for the items.
+Lanterns remain lit because vanilla lanterns have no unlit state.
 
 An adult Hoglin running at least 0.18 blocks per tick (or marked sprinting)
 that lands a successful melee hit launches its target upward about three blocks
