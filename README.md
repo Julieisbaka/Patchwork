@@ -43,6 +43,42 @@ produce a startup error instead of silently changing behavior. Disabling
 `witherDifficultyHealth` restores vanilla maximum health for newly spawned
 Withers, but does not reset health already saved on existing Withers.
 
+## Game tests
+
+With cheats enabled (or as an operator), use `/test run
+patchwork:patchwork_game_tests_unlit_torch_variants` to run one test. Tab
+completion after `/test run patchwork:` lists the other Patchwork tests.
+`/test runfailed` reruns failures; `/test runthese` reruns nearby test
+structures. The tests use Fabric's built-in GameTest API and its empty
+structure. They run in-game, not through the Gradle unit-test task.
+
+The eleven automated tests cover four unlit torch conversions and wall facing,
+an unlit item drop, fire-charge relighting, washing wool/terracotta/glass
+using one cauldron level each, shulker dyeing, difficulty-based Wither
+health, the Breeze extinguishing a torch and campfire, a charging Hoglin
+launch, slimeballs healing/speeding a Slime and damaging/slowing a non-Slime,
+and a thrown fire charge
+igniting the top of a solid block after a side impact. Tests requiring a
+switch fail with an instruction to enable it rather than silently passing
+without exercising the feature. `breezeExtinguishesLights` also requires
+`mobGriefing=true`.
+
+The remaining interactions need manual in-game checks: craft and unlock all
+four chainmail recipes; compare Wither birth-explosion damage at each
+difficulty; equip/remove a wolf banner and verify a stranger
+cannot do so; confirm owned cats and wolves ignore indirect sword sweeps;
+throw slimeballs and check the hotbar cooldown;
+verify the fire-charge launch clearance, 2 HP hit, cooldown, and no
+explosion; recall seated pets with the Call horn at the configured radius;
+check bees at an occupied unsmoked hive, Enderman carried-block defense,
+Spider webs, and the optional Creeper chain reaction; verify the Slime
+cloud's Slowness II and five-second expiry; test the Breeze's knockback
+and ten-second cooldown; and collide with a wall/ceiling after a Hoglin
+launch to check its 2 HP impact. Check all four unlit items in Creative and
+verify unlit redstone torches supply no signal. Mod Menu switches and client banner
+rendering also require a client. These behaviors are not claimed as covered
+by the automated tests.
+
 ## Wither
 
 The Wither's maximum health depends on world difficulty: Easy has 300 HP,

@@ -12,6 +12,9 @@
 		"main": [
 			"com.JulieISBaka.patchwork.Patchwork"
 		],
+		"fabric-gametest": [
+			"com.JulieISBaka.patchwork.PatchworkGameTests"
+		],
 		"client": [
 			"com.JulieISBaka.patchwork.client.PatchworkClient"
 		],
