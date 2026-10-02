@@ -14,7 +14,7 @@ public final class PatchworkConfig {
 	private static final int MAX_RECALL_RADIUS = 256;
 	private static final String RECALL_RADIUS_KEY = "callHornRecallRadius";
 	private static volatile Settings settings = new Settings(true, true, true, true, true, true, true, true, true,
-		true, false, true, true, DEFAULT_RECALL_RADIUS);
+		true, false, true, true, true, DEFAULT_RECALL_RADIUS);
 
 	public record Settings(
 		boolean witherDifficultyHealth,
@@ -30,6 +30,7 @@ public final class PatchworkConfig {
 		boolean creeperChainReactions,
 		boolean endermanDefense,
 		boolean spiderWebs,
+		boolean throwableFireCharges,
 		int callHornRecallRadius
 	) {
 	}
@@ -92,6 +93,7 @@ public final class PatchworkConfig {
 		boolean creeperChainReactions = enabled(properties, "creeperChainReactions", false, path);
 		boolean endermanDefense = enabled(properties, "endermanDefense", true, path);
 		boolean spiderWebs = enabled(properties, "spiderWebs", true, path);
+		boolean throwableFireCharges = enabled(properties, "throwableFireCharges", path);
 
 		if (properties.size() != originalSize || Files.notExists(path)) {
 			try (Writer writer = Files.newBufferedWriter(path)) {
@@ -102,7 +104,7 @@ public final class PatchworkConfig {
 		}
 		Settings loaded = new Settings(witherDifficultyHealth, witherBirthExplosion, chainmailRecipes, wolfBanners,
 			ownerSweepProtection, shulkerDyeing, throwableSlimeballs, callHornRecall, cauldronCleaning,
-			beesDefendFlowers, creeperChainReactions, endermanDefense, spiderWebs, radius);
+			beesDefendFlowers, creeperChainReactions, endermanDefense, spiderWebs, throwableFireCharges, radius);
 		Patchwork.LOGGER.info("Patchwork config loaded from {}", path);
 		return loaded;
 	}
@@ -131,6 +133,7 @@ public final class PatchworkConfig {
 			properties.setProperty("creeperChainReactions", Boolean.toString(updated.creeperChainReactions()));
 			properties.setProperty("endermanDefense", Boolean.toString(updated.endermanDefense()));
 			properties.setProperty("spiderWebs", Boolean.toString(updated.spiderWebs()));
+			properties.setProperty("throwableFireCharges", Boolean.toString(updated.throwableFireCharges()));
 			properties.setProperty(RECALL_RADIUS_KEY, Integer.toString(radius));
 			try (Writer writer = Files.newBufferedWriter(path)) {
 				properties.store(writer, "Patchwork features: true/false; callHornRecallRadius: 16-256 blocks. Restart to apply.");

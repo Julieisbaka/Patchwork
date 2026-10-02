@@ -16,6 +16,7 @@ import net.minecraft.stats.Stats;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.entity.projectile.hurtingprojectile.LargeFireball;
 import net.minecraft.world.entity.projectile.throwableitemprojectile.Snowball;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -27,6 +28,8 @@ public class Patchwork implements ModInitializer {
 	public static final String MOD_ID = "patchwork";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 	private static final int SLIMEBALL_COOLDOWN_TICKS = 20;
+	private static final int FIRE_CHARGE_COOLDOWN_TICKS = 30;
+	public static final String THROWN_FIRE_CHARGE_TAG = "patchwork:thrown_fire_charge";
 	private static final ResourceConditionType<ChainmailCondition> CHAINMAIL_CONDITION =
 		ResourceConditionType.create(id("chainmail_recipes"), MapCodec.unit(new ChainmailCondition()));
 
@@ -78,6 +81,30 @@ public class Patchwork implements ModInitializer {
 
 			player.awardStat(Stats.ITEM_USED.get(Items.SLIME_BALL));
 			player.getCooldowns().addCooldown(stack, SLIMEBALL_COOLDOWN_TICKS);
+			stack.consume(1, player);
+			return InteractionResult.SUCCESS;
+		});
+		UseItemCallback.EVENT.register((player, level, hand) -> {
+			ItemStack stack = player.getItemInHand(hand);
+			if (!PatchworkConfig.settings().throwableFireCharges() || !stack.is(Items.FIRE_CHARGE)) {
+				return InteractionResult.PASS;
+			}
+			if (player.getCooldowns().isOnCooldown(stack)) {
+				return InteractionResult.CONSUME;
+			}
+
+			if (level instanceof ServerLevel serverLevel) {
+				LargeFireball fireball = new LargeFireball(serverLevel, player, player.getLookAngle(), 0);
+				fireball.accelerationPower = 0.02;
+				fireball.setPos(player.getEyePosition().add(player.getLookAngle().scale(1.0)));
+				fireball.addTag(THROWN_FIRE_CHARGE_TAG);
+				fireball.setItem(stack);
+				serverLevel.addFreshEntity(fireball);
+				serverLevel.playSound(null, player.getX(), player.getY(), player.getZ(),
+					SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1.0F, 1.0F);
+			}
+			player.awardStat(Stats.ITEM_USED.get(Items.FIRE_CHARGE));
+			player.getCooldowns().addCooldown(stack, FIRE_CHARGE_COOLDOWN_TICKS);
 			stack.consume(1, player);
 			return InteractionResult.SUCCESS;
 		});

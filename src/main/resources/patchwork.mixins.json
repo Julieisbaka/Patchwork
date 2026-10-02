@@ -11,6 +11,7 @@
 		"ShulkerVariantAccessor",
 		"SlimeballSnowballMixin",
 		"SpiderWebMixin",
+		"ThrownFireChargeMixin",
 		"WaterCauldronCleaningMixin",
 		"WitherBossMixin",
 		"WolfBannerMixin"

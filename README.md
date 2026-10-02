@@ -25,6 +25,7 @@ equipping or removing banners but does not delete banners already on wolves.
 | `ownerSweepProtection` | Owned wolf/cat protection from indirect sword sweeps |
 | `shulkerDyeing` | Recoloring shulkers with dye |
 | `throwableSlimeballs` | Slimeball throwing, hit effects, and cooldown |
+| `throwableFireCharges` | Fire-charge throwing, impact fire, and cooldown |
 | `callHornRecall` | Call goat horn pet recall |
 | `cauldronCleaning` | Wash dyed wool, terracotta, and stained glass in water cauldrons |
 | `beesDefendFlowers` | Bees defend flowers near occupied hives |
@@ -91,6 +92,15 @@ and grants Speed I for 3 seconds without dealing damage. Each throw consumes
 one slimeball (except in creative mode) and starts a 1-second (20-tick)
 cooldown shown on the hotbar. Attempts during the cooldown do not throw or
 consume another slimeball. Ordinary snowballs are unchanged.
+
+## Throwable fire charges
+
+Use a fire charge in the air to launch a low-velocity Ghast-style fireball.
+It deals 2 HP of direct damage when it hits an entity; a block hit lights
+the open space on the impacted face on fire. The thrown fireball does not
+explode. Each throw consumes one fire charge (except in creative mode) and
+starts a 1.5-second (30-tick) hotbar cooldown. Using a fire charge directly
+on a block still follows vanilla fire-lighting behavior.
 
 ## Dye
 
