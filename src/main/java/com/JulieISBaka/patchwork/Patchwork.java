@@ -35,6 +35,7 @@ public class Patchwork implements ModInitializer {
 	private static final int SLIMEBALL_COOLDOWN_TICKS = 20;
 	private static final int FIRE_CHARGE_COOLDOWN_TICKS = 30;
 	private static final double FIRE_CHARGE_CLEARANCE_BLOCKS = 5.0;
+	private static final double FIRE_CHARGE_SPEED = 0.65;
 	public static final String THROWN_FIRE_CHARGE_TAG = "patchwork:thrown_fire_charge";
 	private static final ResourceConditionType<ChainmailCondition> CHAINMAIL_CONDITION =
 		ResourceConditionType.create(id("chainmail_recipes"), MapCodec.unit(new ChainmailCondition()));
@@ -122,8 +123,9 @@ public class Patchwork implements ModInitializer {
 
 			if (level instanceof ServerLevel serverLevel) {
 				LargeFireball fireball = new LargeFireball(serverLevel, player, player.getLookAngle(), 0);
-				fireball.accelerationPower = 0.02;
+				fireball.accelerationPower = 0.03;
 				fireball.setPos(player.getEyePosition().add(player.getLookAngle().scale(1.0)));
+				fireball.setDeltaMovement(player.getLookAngle().scale(FIRE_CHARGE_SPEED));
 				fireball.addTag(THROWN_FIRE_CHARGE_TAG);
 				fireball.setItem(stack);
 				serverLevel.addFreshEntity(fireball);

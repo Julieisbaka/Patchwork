@@ -2,13 +2,20 @@ package com.JulieISBaka.patchwork.mixin;
 
 import com.JulieISBaka.patchwork.Patchwork;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.hurtingprojectile.LargeFireball;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseFireBlock;
+import net.minecraft.world.level.block.CampfireBlock;
+import net.minecraft.world.level.block.CandleBlock;
+import net.minecraft.world.level.block.CandleCakeBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
@@ -34,10 +41,25 @@ public class ThrownFireChargeMixin {
 			return;
 		}
 		if (hit instanceof BlockHitResult blockHit) {
-			BlockPos pos = blockHit.getBlockPos().relative(blockHit.getDirection());
-			if (level.isEmptyBlock(pos)) {
-				level.setBlockAndUpdate(pos, BaseFireBlock.getState(level, pos));
+			BlockPos struck = blockHit.getBlockPos();
+			BlockState state = level.getBlockState(struck);
+			if (CampfireBlock.canLight(state) || CandleBlock.canLight(state) || CandleCakeBlock.canLight(state)) {
+				level.setBlockAndUpdate(struck, state.setValue(BlockStateProperties.LIT, true));
+				return;
+			}
+			Direction face = blockHit.getDirection();
+			BlockPos adjacent = struck.relative(face);
+			if (!patchwork$placeFire(level, adjacent, face) && face.getAxis().isHorizontal()) {
+				patchwork$placeFire(level, struck.above(), Direction.UP);
 			}
 		}
+	}
+
+	@Unique
+	private static boolean patchwork$placeFire(Level level, BlockPos pos, Direction face) {
+		if (!BaseFireBlock.canBePlacedAt(level, pos, face)) {
+			return false;
+		}
+		return level.setBlockAndUpdate(pos, BaseFireBlock.getState(level, pos));
 	}
 }

@@ -99,16 +99,19 @@ consume another slimeball. Ordinary snowballs are unchanged.
 
 ## Throwable fire charges
 
-Use a fire charge in the air to launch a low-velocity Ghast-style fireball,
-but only when no block is in your sights within five blocks. If a block is
-in the way, using the charge in the air does nothing: no charge is consumed
-and no cooldown begins. This prevents accidental launches while aiming at
-a block just outside normal placement range.
-It deals 2 HP of direct damage when it hits an entity; a block hit lights
-the open space on the impacted face on fire. The thrown fireball does not
-explode. Each throw consumes one fire charge (except in creative mode) and
-starts a 1.5-second (30-tick) hotbar cooldown. Using a fire charge directly
-on a block still follows vanilla fire-lighting behavior.
+Use a fire charge in the air to launch a Ghast-style fireball with a moderate
+initial speed, but only when no block is in your sights within five blocks.
+If a block is in the way, using the charge in the air does nothing: no charge
+is consumed and no cooldown begins. This prevents accidental launches while
+aiming at a block just outside normal placement range.
+It deals 2 HP of direct damage when it hits an entity. A block hit lights an
+unlit candle or campfire, or places fire on the impacted face if fire can
+survive there. On side hits against nonflammable blocks, it tries the top
+surface instead. Obstructed surfaces and surfaces that cannot support fire
+will not ignite. The thrown fireball does not explode. Each throw consumes
+one fire charge (except in creative mode) and starts a 1.5-second (30-tick)
+hotbar cooldown. Using a fire charge directly on a block still follows
+vanilla fire-lighting behavior.
 
 ## Dye
 
