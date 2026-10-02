@@ -68,6 +68,15 @@ public class Patchwork implements ModInitializer {
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.REDSTONE_BLOCKS).register(output -> {
 			output.insertAfter(Items.REDSTONE_TORCH, UnlitTorches.REDSTONE_TORCH_ITEM);
 		});
+		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.COMBAT).register(output -> {
+			if (PatchworkConfig.settings().throwableSlimeballs()) {
+				output.insertAfter(Items.WIND_CHARGE, Items.SLIME_BALL);
+			}
+			if (PatchworkConfig.settings().throwableFireCharges()) {
+				output.insertAfter(PatchworkConfig.settings().throwableSlimeballs() ? Items.SLIME_BALL : Items.WIND_CHARGE,
+					Items.FIRE_CHARGE);
+			}
+		});
 		SlimeSplitClouds.register();
 		ResourceConditions.register(CHAINMAIL_CONDITION);
 		PlayerBlockBreakEvents.AFTER.register((level, player, pos, state, blockEntity) -> {

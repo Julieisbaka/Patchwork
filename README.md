@@ -67,7 +67,7 @@ and a thrown fire charge igniting the top of a solid block after a side impact.
 They also check potion transfer replacing water with one level, matching-potion
 refills, offhand arrow dipping, dropped-arrow dipping, and lighting both kinds
 of carved pumpkin with the correct facing, torch consumption, and soul variant
-drop. Tests requiring a
+drop, plus Soul Jack o'Lantern Snow Golem construction. Tests requiring a
 switch fail with an instruction to enable it rather than silently passing
 without exercising the feature. `breezeExtinguishesLights` also requires
 `mobGriefing=true`.
@@ -84,8 +84,10 @@ Spider webs, and the optional Creeper chain reaction; verify the Slime
 cloud's Slowness II and five-second expiry; test the Breeze's knockback
 and ten-second cooldown; and collide with a wall/ceiling after a Hoglin
 launch to check its 2 HP impact. Check all four unlit items in Creative and
-verify unlit redstone torches supply no signal. Mod Menu switches and client banner
-rendering also require a client. Test Skeletons seeking a reachable wall
+verify unlit redstone torches supply no signal. Check throwable slimeballs and
+fire charges in the Combat creative tab when their respective features are
+enabled. Mod Menu switches and client banner
+rendering (including walking and sitting wolves) also require a client. Test Skeletons seeking a reachable wall
 corner and returning to their firing position against a close player, and
 verify unlike potions cannot mix and potion contents survive a save/reload.
 These behaviors are not claimed as covered
@@ -105,7 +107,7 @@ Right-click the potion cauldron with at least eight ordinary arrows in either
 hand, or drop a stack of at least eight inside it, to convert exactly eight
 into tipped arrows carrying the potion's contents. Each conversion consumes
 one level. Smaller stacks and already tipped arrows are unaffected. Potion
-cauldrons have a fixed purple surface (not a color preview of the potion);
+cauldrons have a textured purple liquid surface (not a color preview of the potion);
 breaking one drops a normal empty cauldron. Disabling `potionCauldrons`
 prevents new transfers/refills and dipping but does not remove existing
 potion cauldrons from saved worlds.
@@ -247,7 +249,8 @@ with blue flames and light level 10. The pumpkin keeps its facing and one
 torch is consumed (except in creative mode). Breaking the soul variant drops
 its own item, which also appears next to the vanilla Jack o'Lantern in the
 Functional Blocks creative tab and can be placed directly. The
-`pumpkinLanterns` setting controls only the lighting interaction; it does not
+Soul Jack o'Lanterns also work in Snow Golem, Iron Golem, and Copper Golem
+patterns. The `pumpkinLanterns` setting controls only the lighting interaction; it does not
 hide or delete existing items or blocks.
 
 An adult Hoglin running at least 0.18 blocks per tick (or marked sprinting)

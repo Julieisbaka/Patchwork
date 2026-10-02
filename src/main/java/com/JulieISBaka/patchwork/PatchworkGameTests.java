@@ -65,6 +65,16 @@ public class PatchworkGameTests {
 	}
 
 	@GameTest
+	public void soulJackOLanternCreatesSnowGolem(GameTestHelper test) {
+		test.setBlock(CENTER.below(), Blocks.STONE);
+		test.setBlock(CENTER, Blocks.SNOW_BLOCK);
+		test.setBlock(CENTER.above(), Blocks.SNOW_BLOCK);
+		test.setBlock(CENTER.above(2), PumpkinLanterns.SOUL_BLOCK);
+		test.assertEntityPresent(EntityTypes.SNOW_GOLEM);
+		test.succeed();
+	}
+
+	@GameTest
 	public void unlitTorchVariants(GameTestHelper test) {
 		test.setBlock(CENTER.below(), Blocks.STONE);
 		test.setBlock(CENTER, Blocks.TORCH);
