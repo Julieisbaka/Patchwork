@@ -1,8 +1,7 @@
 package com.JulieISBaka.patchwork.mixin;
 
+import com.JulieISBaka.patchwork.CauldronCleaningItems;
 import com.JulieISBaka.patchwork.PatchworkConfig;
-import java.util.HashMap;
-import java.util.Map;
 import net.minecraft.core.cauldron.CauldronInteraction;
 import net.minecraft.core.cauldron.CauldronInteractions;
 import net.minecraft.stats.Stats;
@@ -10,7 +9,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,14 +17,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(CauldronInteraction.Dispatcher.class)
 public class WaterCauldronCleaningMixin {
-	private static final Map<Item, Item> PATCHWORK_CLEANED_ITEMS = createCleanedItems();
-
 	@Inject(method = "get", at = @At("HEAD"), cancellable = true)
 	private void patchwork$cleanDyedBlocks(ItemStack stack, CallbackInfoReturnable<CauldronInteraction> cir) {
 		if ((Object)this != CauldronInteractions.WATER) {
 			return;
 		}
-		Item cleanItem = PATCHWORK_CLEANED_ITEMS.get(stack.getItem());
+		Item cleanItem = CauldronCleaningItems.get(stack.getItem());
 		if (cleanItem == null) {
 			return;
 		}
@@ -42,17 +38,5 @@ public class WaterCauldronCleaningMixin {
 			}
 			return InteractionResult.SUCCESS;
 		});
-	}
-
-	private static Map<Item, Item> createCleanedItems() {
-		Map<Item, Item> items = new HashMap<>();
-		Items.WOOL.forEach(wool -> {
-			if (wool != Items.WOOL.white()) {
-				items.put(wool, Items.WOOL.white());
-			}
-		});
-		Items.DYED_TERRACOTTA.forEach(terracotta -> items.put(terracotta, Items.TERRACOTTA));
-		Items.STAINED_GLASS.forEach(glass -> items.put(glass, Items.GLASS));
-		return Map.copyOf(items);
 	}
 }
