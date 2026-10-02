@@ -1,6 +1,7 @@
 package com.JulieISBaka.patchwork;
 
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
@@ -33,6 +34,7 @@ import net.minecraft.world.level.block.RedstoneTorchBlock;
 import net.minecraft.world.level.block.WallTorchBlock;
 import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.BlockHitResult;
 
 public class PatchworkGameTests {
 	private static final BlockPos CENTER = new BlockPos(3, 1, 3);
@@ -49,7 +51,9 @@ public class PatchworkGameTests {
 			test.setBlock(CENTER, Blocks.CARVED_PUMPKIN.defaultBlockState()
 				.setValue(CarvedPumpkinBlock.FACING, Direction.WEST));
 			player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(torch, 2));
-			test.useBlock(CENTER, player);
+			BlockPos pos = test.absolutePos(CENTER);
+			UseBlockCallback.EVENT.invoker().interact(player, test.getLevel(), InteractionHand.MAIN_HAND,
+				new BlockHitResult(Vec3.atCenterOf(pos), Direction.NORTH, pos, false));
 			test.assertBlockPresent(torch == Items.TORCH ? Blocks.JACK_O_LANTERN : PumpkinLanterns.SOUL_BLOCK, CENTER);
 			test.assertTrue(test.getBlockState(CENTER).getValue(CarvedPumpkinBlock.FACING) == Direction.WEST,
 				"Lighting changed the carved pumpkin facing");
@@ -151,7 +155,9 @@ public class PatchworkGameTests {
 			"Different potion contents were mixed");
 		player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
 		player.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.ARROW, 8));
-		test.useBlock(CENTER, player);
+		test.getBlockState(CENTER).useItemOn(player.getOffhandItem(), test.getLevel(), player,
+			InteractionHand.OFF_HAND, new BlockHitResult(Vec3.atCenterOf(test.absolutePos(CENTER)),
+				Direction.NORTH, test.absolutePos(CENTER), false));
 		test.assertTrue(player.getOffhandItem().is(Items.TIPPED_ARROW)
 			&& player.getOffhandItem().getCount() == 8
 			&& player.getOffhandItem().get(DataComponents.POTION_CONTENTS).equals(

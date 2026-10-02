@@ -33,6 +33,7 @@ public final class PumpkinLanterns {
 	}
 
 	public static void register() {
+		Item.BY_BLOCK.put(SOUL_BLOCK, SOUL_ITEM);
 		UseBlockCallback.EVENT.register((player, level, hand, hit) -> {
 			if (!PatchworkConfig.settings().pumpkinLanterns()) {
 				return InteractionResult.PASS;
