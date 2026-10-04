@@ -25,7 +25,7 @@
 - The Iron Golem superclass supplies movement and persistent defender
   behavior. Its melee and approach goals are replaced with `RangedAttackGoal`:
   a 16-block attack radius and a 40-tick firing interval. Direct melee attacks
-  do no damage. The former quarter-melee-damage mixin is removed.
+  do no damage.
 - Owner-defense and owner-assistance goals have priority over self-defense
   and ordinary hostile-mob targeting. They use the owner's most recent combat
   target and timestamp, following vanilla pet-target-goal conventions.
@@ -35,13 +35,12 @@
 - The final head placement or soul-torch lighting records the builder during
   synchronous construction, including nested placement cleanup. A spawn egg
   records its player user. Commands and dispensers create ownerless golems.
-- Gold claims an ownerless golem, even at full health, consuming one ingot.
+- Gold claims an ownerless soul golem, even at full health, consuming one ingot.
   Subsequent gold repairs restore up to 25 HP per ingot. Full-health owned
   golems consume none. Other players may repair but cannot steal ownership.
   Creative consumes no gold.
 - Owner references are persisted as `Owner`; the synced lantern flag is saved
-  as `HasSoulLantern`. Missing fields preserve compatibility with older worlds:
-  an old golem is ownerless and has its lantern.
+  as `HasSoulLantern`.
 - Shears drop one Soul Jack o'Lantern, damage the shears once, and clear the
   synced head flag. Repeat shearing gives nothing. Dispenser shearing uses the
   `Shearable` interface. The body still renders and shoots when sheared.
@@ -62,7 +61,7 @@
   survival consumption, and no explosion.
 - Dispensers launch the soul projectile rather than vanilla's ordinary small
   fireball. Soul projectiles use a soul-flame particle trail.
-- Regular thrown charges retain 2 HP direct damage. Soul projectiles deal
+- Soul projectiles deal
   3 HP direct damage and apply two seconds of fire after a successful hit.
   Armor, difficulty, immunity, and later burning can affect observed total
   damage. Soul Golem shots use this same projectile, not randomized melee rolls.
@@ -72,7 +71,7 @@
 - Block impacts light eligible candles/campfires; otherwise they attempt the
   hit face and then the top of a block for unsuccessful horizontal hits.
   Occupied spaces are never replaced.
-- Ignition places `minecraft:soul_fire`, not a custom fire block. A persisted
+- Ignition places `minecraft:soul_fire`. A persisted
   `patchwork_charge_placed` block-state flag lets charge-created fire survive
   on any sturdy top face as well as normal soul-fire supports. No support block
   is replaced. Ordinary soul fire defaults to false and retains vanilla survival.
