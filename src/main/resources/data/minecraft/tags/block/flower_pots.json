@@ -1,1 +1,6 @@
-{ "replace": false, "values": ["patchwork:potted_paeonia"] }
+{
+    "replace": false,
+    "values": [
+        "patchwork:potted_paeonia"
+    ]
+}

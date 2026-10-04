@@ -3,10 +3,30 @@
 	"criteria": {
 		"has_honeycomb": {
 			"trigger": "minecraft:inventory_changed",
-			"conditions": { "items": [{ "items": "minecraft:honeycomb" }] }
+			"conditions": {
+				"items": [
+					{
+						"items": "minecraft:honeycomb"
+					}
+				]
+			}
 		},
-		"has_the_recipe": { "trigger": "minecraft:recipe_unlocked", "conditions": { "recipes": "patchwork:wax_block" } }
+		"has_the_recipe": {
+			"trigger": "minecraft:recipe_unlocked",
+			"conditions": {
+				"recipes": "patchwork:wax_block"
+			}
+		}
 	},
-	"requirements": [["has_honeycomb", "has_the_recipe"]],
-	"rewards": { "recipes": ["patchwork:wax_block"] }
+	"requirements": [
+		[
+			"has_honeycomb",
+			"has_the_recipe"
+		]
+	],
+	"rewards": {
+		"recipes": [
+			"patchwork:wax_block"
+		]
+	}
 }

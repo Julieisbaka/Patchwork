@@ -4,7 +4,11 @@
 	"key": {
 		"C": "minecraft:charcoal"
 	},
-	"pattern": ["CCC", "CCC", "CCC"],
+	"pattern": [
+		"CCC",
+		"CCC",
+		"CCC"
+	],
 	"result": {
 		"id": "patchwork:charcoal_block"
 	}

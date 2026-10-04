@@ -1,10 +1,16 @@
 {
 	"type": "minecraft:crafting_shaped",
 	"category": "misc",
-	"pattern": ["SSS", "SFS", "SSS"],
+	"pattern": [
+		"SSS",
+		"SFS",
+		"SSS"
+	],
 	"key": {
 		"S": "#patchwork:soul_fire_charge_materials",
 		"F": "minecraft:fire_charge"
 	},
-	"result": { "id": "patchwork:soul_fire_charge" }
+	"result": {
+		"id": "patchwork:soul_fire_charge"
+	}
 }

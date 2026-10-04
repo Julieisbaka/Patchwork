@@ -35,7 +35,5 @@ Build with `.\gradlew.bat build`.
 - [Technical details](docs/technical.md)
 - [Tests](docs/testing.md)
 - [Artwork](docs/textures.md)
-- [Remaining ideas](TODO.md)
 
-Includes original soul-themed and unlit-light artwork, plus supplied wax and
-Paeonia textures.
+Textures are WIP.

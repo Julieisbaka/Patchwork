@@ -128,10 +128,6 @@ Lanterns include regular, soul, and eight copper variants. State conversion
 preserves hanging/waterlogging, weathering, and wax. Copper mappings use Fabric's
 oxidizable-block registry. Waterlogged lanterns cannot be relit.
 
-All ten lantern items use generated 2D item models, not placed block models.
-Waxed versions share models/textures with the matching unwaxed oxidation stage.
-Original flat icons and block sheets are included; see [artwork](textures.md).
-
 ## Experience clumping
 
 XP awards create one orb. Every 20 ticks, nearby orbs within an actual two-block

@@ -18,8 +18,15 @@
 			}
 		}
 	},
-	"requirements": [["has_torch", "has_the_recipe"]],
+	"requirements": [
+		[
+			"has_torch",
+			"has_the_recipe"
+		]
+	],
 	"rewards": {
-		"recipes": ["patchwork:waxed_exposed_copper_torch_from_honeycomb"]
+		"recipes": [
+			"patchwork:waxed_exposed_copper_torch_from_honeycomb"
+		]
 	}
 }

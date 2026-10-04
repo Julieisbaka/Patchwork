@@ -1,5 +1,9 @@
 {
-	"fabric:load_conditions": [{ "condition": "patchwork:chainmail_recipes" }],
+	"fabric:load_conditions": [
+		{
+			"condition": "patchwork:chainmail_recipes"
+		}
+	],
 	"parent": "minecraft:recipes/root",
 	"criteria": {
 		"has_chain": {
@@ -19,8 +23,15 @@
 			"trigger": "minecraft:recipe_unlocked"
 		}
 	},
-	"requirements": [["has_the_recipe", "has_chain"]],
+	"requirements": [
+		[
+			"has_the_recipe",
+			"has_chain"
+		]
+	],
 	"rewards": {
-		"recipes": ["patchwork:chainmail_leggings"]
+		"recipes": [
+			"patchwork:chainmail_leggings"
+		]
 	}
 }

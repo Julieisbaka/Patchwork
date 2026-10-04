@@ -18,8 +18,15 @@
 			"trigger": "minecraft:recipe_unlocked"
 		}
 	},
-	"requirements": [["has_the_recipe", "has_charcoal"]],
+	"requirements": [
+		[
+			"has_the_recipe",
+			"has_charcoal"
+		]
+	],
 	"rewards": {
-		"recipes": ["patchwork:charcoal_block"]
+		"recipes": [
+			"patchwork:charcoal_block"
+		]
 	}
 }

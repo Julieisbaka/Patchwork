@@ -1,7 +1,16 @@
 {
 	"type": "minecraft:crafting_shaped",
 	"category": "building",
-	"key": { "H": "minecraft:honeycomb" },
-	"pattern": ["HHH", "HHH", "HHH"],
-	"result": { "id": "patchwork:wax_block", "count": 1 }
+	"key": {
+		"H": "minecraft:honeycomb"
+	},
+	"pattern": [
+		"HHH",
+		"HHH",
+		"HHH"
+	],
+	"result": {
+		"id": "patchwork:wax_block",
+		"count": 1
+	}
 }
