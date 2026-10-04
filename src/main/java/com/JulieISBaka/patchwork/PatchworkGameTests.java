@@ -75,6 +75,92 @@ public class PatchworkGameTests {
 	}
 
 	@GameTest
+	public void soulGolemAcceptsSoulSandSoilAndMixedStacks(GameTestHelper test) {
+		test.setBlock(CENTER.below(), Blocks.STONE);
+		for (var bottom : new net.minecraft.world.level.block.Block[] {Blocks.SOUL_SAND, Blocks.SOUL_SOIL}) {
+			for (var middle : new net.minecraft.world.level.block.Block[] {Blocks.SOUL_SAND, Blocks.SOUL_SOIL}) {
+				test.setBlock(CENTER, bottom);
+				test.setBlock(CENTER.above(), middle);
+				test.setBlock(CENTER.above(2), PumpkinLanterns.SOUL_BLOCK);
+				var golems = test.getEntities(SoulGolems.TYPE);
+				test.assertTrue(golems.size() == 1, "Soul stack did not create exactly one Soul Golem");
+				SoulGolem golem = golems.getFirst();
+				test.assertTrue(golem.isPlayerCreated() && golem.isPersistenceRequired(),
+					"Soul Golem is not a persistent player-built defender");
+				test.assertTrue(golem.getMaxHealth() == 100.0F,
+					"Soul Golem did not inherit iron golem health");
+				test.assertBlockPresent(Blocks.AIR, CENTER);
+				test.assertBlockPresent(Blocks.AIR, CENTER.above());
+				test.assertBlockPresent(Blocks.AIR, CENTER.above(2));
+				test.assertBlockPresent(Blocks.STONE, CENTER.below());
+				test.assertTrue(!SoulGolems.trySpawn(test.getLevel(), test.absolutePos(CENTER.above(2))),
+					"Consumed pattern spawned another Soul Golem");
+				golem.discard();
+			}
+		}
+		test.succeed();
+	}
+
+	@GameTest
+	public void soulGolemRejectsIncompleteOrWrongStacks(GameTestHelper test) {
+		test.setBlock(CENTER, Blocks.STONE);
+		test.setBlock(CENTER.above(), Blocks.SOUL_SAND);
+		test.setBlock(CENTER.above(2), PumpkinLanterns.SOUL_BLOCK);
+		test.assertTrue(test.getEntities(SoulGolems.TYPE).isEmpty(), "Wrong base created a Soul Golem");
+		test.assertBlockPresent(Blocks.STONE, CENTER);
+		test.assertBlockPresent(Blocks.SOUL_SAND, CENTER.above());
+		test.assertBlockPresent(PumpkinLanterns.SOUL_BLOCK, CENTER.above(2));
+		test.setBlock(CENTER.above(2), Blocks.AIR);
+		test.setBlock(CENTER, Blocks.AIR);
+		test.setBlock(CENTER.above(2), PumpkinLanterns.SOUL_BLOCK);
+		test.assertTrue(test.getEntities(SoulGolems.TYPE).isEmpty(), "One soul block created a Soul Golem");
+		test.setBlock(CENTER.above(2), Blocks.AIR);
+		test.setBlock(CENTER, Blocks.SOUL_SOIL);
+		test.setBlock(CENTER.above(2), Blocks.JACK_O_LANTERN);
+		test.assertTrue(test.getEntities(SoulGolems.TYPE).isEmpty(), "Ordinary lantern created a Soul Golem");
+		test.assertBlockPresent(Blocks.SOUL_SOIL, CENTER);
+		test.assertBlockPresent(Blocks.SOUL_SAND, CENTER.above());
+		test.assertBlockPresent(Blocks.JACK_O_LANTERN, CENTER.above(2));
+		test.succeed();
+	}
+
+	@GameTest
+	public void lightingSoulGolemHeadConsumesPatternAndTorch(GameTestHelper test) {
+		require(test, PatchworkConfig.settings().pumpkinLanterns(), "pumpkinLanterns");
+		test.setBlock(CENTER, Blocks.SOUL_SAND);
+		test.setBlock(CENTER.above(), Blocks.SOUL_SOIL);
+		test.setBlock(CENTER.above(2), Blocks.CARVED_PUMPKIN);
+		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.SOUL_TORCH, 2));
+		BlockPos head = test.absolutePos(CENTER.above(2));
+		UseBlockCallback.EVENT.invoker().interact(player, test.getLevel(), InteractionHand.MAIN_HAND,
+			new BlockHitResult(Vec3.atCenterOf(head), Direction.NORTH, head, false));
+		test.assertTrue(test.getEntities(SoulGolems.TYPE).size() == 1, "Lighting did not create a Soul Golem");
+		test.assertTrue(player.getMainHandItem().getCount() == 1, "Lighting did not consume one soul torch");
+		test.assertBlockPresent(Blocks.AIR, CENTER);
+		test.assertBlockPresent(Blocks.AIR, CENTER.above());
+		test.assertBlockPresent(Blocks.AIR, CENTER.above(2));
+		test.succeed();
+	}
+
+	@GameTest
+	public void soulGolemIsFriendlyAndDealsMeleeDamage(GameTestHelper test) {
+		SoulGolem golem = test.spawn(SoulGolems.TYPE, CENTER);
+		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		var creeper = test.spawn(EntityTypes.CREEPER, CENTER.offset(2, 0, 0));
+		creeper.setNoAi(true);
+		test.assertTrue(!golem.canAttack(player), "Player-created Soul Golem can attack a player");
+		test.assertTrue(!golem.canAttack(creeper), "Soul Golem can target a Creeper");
+		var zombie = test.spawn(EntityTypes.ZOMBIE, CENTER.offset(0, 0, 2));
+		zombie.setNoAi(true);
+		test.assertTrue(golem.canAttack(zombie), "Soul Golem cannot attack a hostile Zombie");
+		float health = zombie.getHealth();
+		test.assertTrue(golem.doHurtTarget(test.getLevel(), zombie) && zombie.getHealth() < health,
+			"Soul Golem's melee attack did not damage its target");
+		test.succeed();
+	}
+
+	@GameTest
 	public void unlitTorchVariants(GameTestHelper test) {
 		test.setBlock(CENTER.below(), Blocks.STONE);
 		test.setBlock(CENTER, Blocks.TORCH);
@@ -144,6 +230,7 @@ public class PatchworkGameTests {
 		test.setBlock(CENTER, Blocks.WATER_CAULDRON.defaultBlockState().setValue(LayeredCauldronBlock.LEVEL, 3));
 		Player player = test.makeMockPlayer(GameType.SURVIVAL);
 		ItemStack potion = PotionContents.createItemStack(Items.POTION, Potions.SWIFTNESS);
+		PotionContents contents = potion.get(DataComponents.POTION_CONTENTS);
 		player.setItemInHand(InteractionHand.MAIN_HAND, potion);
 		CauldronInteractions.WATER.get(potion).interact(test.getBlockState(CENTER),
 			test.getLevel(), test.absolutePos(CENTER), player, InteractionHand.MAIN_HAND, potion);
@@ -151,7 +238,7 @@ public class PatchworkGameTests {
 		test.assertTrue(test.getBlockState(CENTER).getValue(LayeredCauldronBlock.LEVEL) == 1,
 			"Potion did not replace water with one level");
 		test.assertTrue(((PotionCauldronEntity)test.getLevel().getBlockEntity(test.absolutePos(CENTER)))
-			.potion().equals(potion.get(DataComponents.POTION_CONTENTS)), "Potion contents were not retained");
+			.potion().equals(contents), "Potion contents were not retained");
 		test.assertTrue(player.getMainHandItem().is(Items.GLASS_BOTTLE), "Pouring did not return a glass bottle");
 		player.setItemInHand(InteractionHand.MAIN_HAND, PotionContents.createItemStack(Items.POTION, Potions.SWIFTNESS));
 		test.useBlock(CENTER, player);
@@ -161,52 +248,96 @@ public class PatchworkGameTests {
 		test.useBlock(CENTER, player);
 		test.assertTrue(test.getBlockState(CENTER).getValue(LayeredCauldronBlock.LEVEL) == 2
 			&& ((PotionCauldronEntity)test.getLevel().getBlockEntity(test.absolutePos(CENTER)))
-				.potion().equals(potion.get(DataComponents.POTION_CONTENTS)),
+				.potion().equals(contents),
 			"Different potion contents were mixed");
 		player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
-		player.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.ARROW, 8));
+		player.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.ARROW));
 		test.getBlockState(CENTER).useItemOn(player.getOffhandItem(), test.getLevel(), player,
 			InteractionHand.OFF_HAND, new BlockHitResult(Vec3.atCenterOf(test.absolutePos(CENTER)),
 				Direction.NORTH, test.absolutePos(CENTER), false));
 		test.assertTrue(player.getOffhandItem().is(Items.TIPPED_ARROW)
-			&& player.getOffhandItem().getCount() == 8
+			&& player.getOffhandItem().getCount() == 1
 			&& player.getOffhandItem().get(DataComponents.POTION_CONTENTS).equals(
 				((PotionCauldronEntity)test.getLevel().getBlockEntity(test.absolutePos(CENTER))).potion()),
-			"Offhand dipping did not return eight matching tipped arrows");
+			"Offhand dipping did not return one matching tipped arrow");
 		test.assertTrue(test.getBlockState(CENTER).getValue(LayeredCauldronBlock.LEVEL) == 1,
 			"Offhand dipping did not use one potion level");
+		player.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
+		player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.ARROW, 8));
+		test.useBlock(CENTER, player);
+		test.assertTrue(player.getMainHandItem().is(Items.ARROW) && player.getMainHandItem().getCount() == 7,
+			"Dipping a held stack did not consume exactly one arrow");
+		test.assertTrue(player.getInventory().countItem(Items.TIPPED_ARROW) == 1,
+			"Dipping a held stack did not put exactly one tipped arrow in inventory");
+		test.assertBlockPresent(Blocks.CAULDRON, CENTER);
 		test.succeed();
 	}
 
-	@GameTest
-	public void charcoalBlockMatchesCoalBlockFuel(GameTestHelper test) {
+	@GameTest(maxTicks = 10)
+	public void charcoalBlockBurnsFor16000Ticks(GameTestHelper test) {
 		var coalFuel = Items.COAL_BLOCK.getDefaultInstance().get(DataComponents.COOKING_FUEL);
 		var charcoalFuel = CharcoalBlocks.ITEM.getDefaultInstance().get(DataComponents.COOKING_FUEL);
 		test.assertTrue(coalFuel != null && coalFuel.equals(charcoalFuel),
 			"Charcoal block does not have the coal block's furnace fuel value");
-		test.succeed();
+		test.setBlock(CENTER, Blocks.FURNACE);
+		var furnace = (net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity)
+			test.getLevel().getBlockEntity(test.absolutePos(CENTER));
+		furnace.setItem(0, new ItemStack(Items.COBBLESTONE));
+		furnace.setItem(1, new ItemStack(CharcoalBlocks.ITEM));
+		test.runAfterDelay(2, () -> {
+			int duration = furnace.saveWithoutMetadata(test.getLevel().registryAccess())
+				.getInt("lit_total_time").orElse(0);
+			test.assertTrue(duration == 16000, "Expected 16000 charcoal fuel ticks, got " + duration);
+			test.assertTrue(furnace.getItem(1).isEmpty(), "Furnace did not consume the charcoal block");
+			test.succeed();
+		});
 	}
 
 	@GameTest(maxTicks = 30)
-	public void droppedArrowsUseOnePotionLevel(GameTestHelper test) {
+	public void potionDroppedSingleArrowUsesOnePotionLevel(GameTestHelper test) {
 		require(test, PatchworkConfig.settings().potionCauldrons(), "potionCauldrons");
 		test.setBlock(CENTER, PotionCauldrons.BLOCK.defaultBlockState().setValue(LayeredCauldronBlock.LEVEL, 2));
 		((PotionCauldronEntity)test.getLevel().getBlockEntity(test.absolutePos(CENTER)))
 			.setPotion(PotionContents.createItemStack(Items.POTION, Potions.HEALING)
 				.get(DataComponents.POTION_CONTENTS));
 		Vec3 center = Vec3.atBottomCenterOf(test.absolutePos(CENTER)).add(0, 0.5, 0);
-		ItemEntity insufficient = new ItemEntity(test.getLevel(), center.x, center.y, center.z,
-			new ItemStack(Items.ARROW, 7));
-		test.getLevel().addFreshEntity(insufficient);
 		ItemEntity arrows = new ItemEntity(test.getLevel(), center.x, center.y, center.z,
-			new ItemStack(Items.ARROW, 9));
+			new ItemStack(Items.ARROW));
+		arrows.setDeltaMovement(Vec3.ZERO);
 		test.getLevel().addFreshEntity(arrows);
 		test.runAfterDelay(5, () -> {
-			test.assertTrue(insufficient.getItem().getCount() == 7, "Fewer than eight arrows were converted");
-			test.assertTrue(arrows.getItem().getCount() == 1, "Dropped stack did not consume exactly eight arrows");
+			test.assertTrue(arrows.isRemoved(), "Dropped single arrow was not consumed");
 			test.assertTrue(test.getBlockState(CENTER).getValue(LayeredCauldronBlock.LEVEL) == 1,
 				"Dropped arrows did not use one potion level");
 			test.assertItemEntityPresent(Items.TIPPED_ARROW, CENTER, 2);
+			test.succeed();
+		});
+	}
+
+	@GameTest(maxTicks = 30)
+	public void potionDroppedArrowStackProducesAtMostThreeArrows(GameTestHelper test) {
+		require(test, PatchworkConfig.settings().potionCauldrons(), "potionCauldrons");
+		test.setBlock(CENTER, PotionCauldrons.BLOCK.defaultBlockState().setValue(LayeredCauldronBlock.LEVEL, 3));
+		var contents = PotionContents.createItemStack(Items.POTION, Potions.HEALING)
+			.get(DataComponents.POTION_CONTENTS);
+		((PotionCauldronEntity)test.getLevel().getBlockEntity(test.absolutePos(CENTER))).setPotion(contents);
+		Vec3 center = Vec3.atBottomCenterOf(test.absolutePos(CENTER)).add(0, 0.5, 0);
+		ItemEntity arrows = new ItemEntity(test.getLevel(), center.x, center.y, center.z,
+			new ItemStack(Items.ARROW, 8));
+		arrows.setDeltaMovement(Vec3.ZERO);
+		test.getLevel().addFreshEntity(arrows);
+		test.runAfterDelay(5, () -> {
+			test.assertTrue(arrows.getItem().getCount() == 5, "Full cauldron did not consume exactly three arrows");
+			test.assertBlockPresent(Blocks.CAULDRON, CENTER);
+			int tippedCount = 0;
+			for (ItemEntity item : test.getEntities(EntityTypes.ITEM)) {
+				if (item.getItem().is(Items.TIPPED_ARROW)) {
+					test.assertTrue(contents.equals(item.getItem().get(DataComponents.POTION_CONTENTS)),
+						"Dropped tipped arrow lost its potion contents");
+					tippedCount += item.getItem().getCount();
+				}
+			}
+			test.assertTrue(tippedCount == 3, "Full cauldron did not produce exactly three tipped arrows");
 			test.succeed();
 		});
 	}

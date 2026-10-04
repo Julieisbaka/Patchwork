@@ -58,6 +58,7 @@ public class Patchwork implements ModInitializer {
 		UnlitTorches.register();
 		PotionCauldrons.register();
 		CharcoalBlocks.register();
+		SoulGolems.register();
 		PumpkinLanterns.register();
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register(output -> {
 			output.insertAfter(Items.TORCH, UnlitTorches.TORCH_ITEM);

@@ -70,16 +70,16 @@ public final class PotionCauldrons {
 	}
 
 	public static boolean dip(ServerLevel level, BlockPos pos, ItemStack arrows, Player player, InteractionHand hand) {
-		if (arrows.getCount() < 8 || !arrows.is(Items.ARROW)) {
+		if (arrows.isEmpty() || !arrows.is(Items.ARROW)) {
 			return false;
 		}
 		PotionCauldronEntity cauldron = entity(level, pos);
 		if (cauldron.potion().equals(PotionContents.EMPTY)) {
 			return false;
 		}
-		ItemStack tipped = new ItemStack(Items.TIPPED_ARROW, 8);
+		ItemStack tipped = new ItemStack(Items.TIPPED_ARROW);
 		tipped.set(DataComponents.POTION_CONTENTS, cauldron.potion());
-		arrows.shrink(8);
+		arrows.shrink(1);
 		LayeredCauldronBlock.lowerFillLevel(level.getBlockState(pos), level, pos);
 		if (player != null) {
 			if (arrows.isEmpty()) {
@@ -129,9 +129,6 @@ public final class PotionCauldrons {
 				return InteractionResult.TRY_WITH_EMPTY_HAND;
 			}
 			if (stack.is(Items.ARROW)) {
-				if (stack.getCount() < 8) {
-					return InteractionResult.TRY_WITH_EMPTY_HAND;
-				}
 				if (level instanceof ServerLevel serverLevel) {
 					dip(serverLevel, pos, stack, player, hand);
 				}

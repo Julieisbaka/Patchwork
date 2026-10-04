@@ -5,6 +5,7 @@ import com.JulieISBaka.patchwork.PotionCauldrons;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.Items;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -16,7 +17,7 @@ public class PotionArrowItemMixin {
 	private void patchwork$dipDroppedArrows(CallbackInfo ci) {
 		ItemEntity item = (ItemEntity)(Object)this;
 		if (!PatchworkConfig.settings().potionCauldrons() || item.isRemoved()
-			|| !(item.level() instanceof ServerLevel level) || item.getItem().getCount() < 8) {
+			|| !(item.level() instanceof ServerLevel level) || !item.getItem().is(Items.ARROW)) {
 			return;
 		}
 		BlockPos pos = item.blockPosition();
@@ -25,9 +26,12 @@ public class PotionArrowItemMixin {
 			&& item.getZ() > pos.getZ() + 0.125 && item.getZ() < pos.getZ() + 0.875
 			&& item.getY() < pos.getY() + (6 + 3 * level.getBlockState(pos)
 				.getValue(net.minecraft.world.level.block.LayeredCauldronBlock.LEVEL)) / 16.0) {
-			PotionCauldrons.dip(level, pos, item.getItem(), null, null);
-			if (item.getItem().isEmpty()) {
-				item.discard();
+			if (PotionCauldrons.dip(level, pos, item.getItem(), null, null)) {
+				if (item.getItem().isEmpty()) {
+					item.discard();
+				} else {
+					item.setItem(item.getItem().copy());
+				}
 			}
 		}
 	}

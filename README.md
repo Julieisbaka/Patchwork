@@ -67,7 +67,9 @@ and a thrown fire charge igniting the top of a solid block after a side impact.
 They also check potion transfer replacing water with one level, matching-potion
 refills, offhand arrow dipping, dropped-arrow dipping, and lighting both kinds
 of carved pumpkin with the correct facing, torch consumption, and soul variant
-drop, plus Soul Jack o'Lantern Snow Golem construction. Tests requiring a
+drop, plus Soul Jack o'Lantern Snow Golem and Soul Golem construction,
+Soul Golem player safety and melee damage, and a charcoal block's 16,000-tick
+furnace burn duration. Tests requiring a
 switch fail with an instruction to enable it rather than silently passing
 without exercising the feature. `breezeExtinguishesLights` also requires
 `mobGriefing=true`.
@@ -103,10 +105,11 @@ position to draw and fire. Without suitable cover it uses vanilla movement.
 Use a drinkable non-water potion on a water cauldron to replace the water
 with one level of that potion, regardless of the original water level. Up to
 two matching potions refill it to three levels; different contents do not mix.
-Right-click the potion cauldron with at least eight ordinary arrows in either
-hand, or drop a stack of at least eight inside it, to convert exactly eight
-into tipped arrows carrying the potion's contents. Each conversion consumes
-one level. Smaller stacks and already tipped arrows are unaffected. Potion
+Right-click the potion cauldron with ordinary arrows in either hand, or drop
+them inside it, to convert one arrow into a tipped arrow carrying the potion's
+contents. Each arrow consumes one level. Dropped stacks can use up the remaining
+levels, one arrow at a time; a full cauldron produces at most three tipped arrows.
+Already tipped arrows are unaffected. Potion
 cauldrons tint their liquid surface to match the potion;
 breaking one drops a normal empty cauldron. Disabling `potionCauldrons`
 prevents new transfers/refills and dipping but does not remove existing
@@ -114,8 +117,25 @@ potion cauldrons from saved worlds.
 
 ## Charcoal blocks
 
-Craft a Block of Charcoal from nine charcoal in a crafting grid. It uses the
-same furnace fuel value as a coal block.
+Craft a Block of Charcoal from nine charcoal in a crafting grid. It burns for
+16,000 ticks in a normal furnace (800 seconds, enough to smelt 80 items), matching
+a coal block. Blast furnaces and smokers use vanilla's faster burn rate.
+
+## Soul Golem
+
+Stack two blocks of soul sand or soul soil (mixed stacks also work), then place
+a Soul Jack o'Lantern on top. Lighting a carved pumpkin on that stack with a
+soul torch also works when `pumpkinLanterns` is enabled. All three blocks are
+consumed to create a persistent, friendly Soul Golem.
+
+It uses an iron-golem-shaped model with a temporary original brown-and-cyan
+soul-themed texture, and inherits iron golem health, melee attacks, hostile-mob
+targeting (excluding Creepers), and iron-ingot repairs. Built Soul Golems do not
+attack players. Construction does not require the `pumpkinLanterns` switch
+when placing an already obtained Soul Jack o'Lantern. It has no natural spawns
+or death drops yet. The placeholder texture uses the iron golem's 128x128 UV
+layout and can be replaced with a custom texture later. Its in-game appearance
+and animations still need a manual client check.
 
 ## Wither
 
