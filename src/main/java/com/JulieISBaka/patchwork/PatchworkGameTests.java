@@ -81,6 +81,19 @@ public class PatchworkGameTests {
 	}
 
 	@GameTest
+	public void gardenWaxBlockCraftsBackIntoNineHoneycomb(GameTestHelper test) {
+		var input = net.minecraft.world.item.crafting.CraftingInput.of(
+				1, 1, java.util.List.of(new ItemStack(GardenBlocks.WAX_ITEM)));
+		var recipe = test.getLevel().getServer().getRecipeManager()
+				.getRecipeFor(net.minecraft.world.item.crafting.RecipeType.CRAFTING, input, test.getLevel());
+		test.assertTrue(
+				recipe.isPresent() && recipe.orElseThrow().value().assemble(input).is(Items.HONEYCOMB)
+						&& recipe.orElseThrow().value().assemble(input).getCount() == 9,
+				"One wax block did not craft exactly nine honeycomb");
+		test.succeed();
+	}
+
+	@GameTest
 	public void gardenPaeoniaBehavesLikeASmallFlower(GameTestHelper test) {
 		var state = GardenBlocks.PAEONIA.defaultBlockState();
 		test.setBlock(CENTER.below(), Blocks.GRASS_BLOCK);

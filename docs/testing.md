@@ -46,8 +46,8 @@ directories with separate configurations.
 
 ## Automated coverage
 
-- Wax block's exact nine-honeycomb recipe, incomplete/wrong ingredient
-  rejection, and block drops.
+- Wax block's exact nine-honeycomb recipe, recovery of nine honeycomb from one
+  wax block, incomplete/wrong ingredient rejection, and block drops.
 - Paeonia ground support, flower tags, compost component, potting and pot
   drops, magenta dye recipe, actual feature placement, and biome registration
   in flower forests/meadows but not plains. Select these with `patchwork:*garden*`.
