@@ -69,8 +69,13 @@ They also check potion transfer replacing water with one level, matching-potion
 refills, offhand arrow dipping, dropped-arrow dipping, and lighting both kinds
 of carved pumpkin with the correct facing, torch consumption, and soul variant
 drop, plus Soul Jack o'Lantern Snow Golem and Soul Golem construction,
-Soul Golem player safety and melee damage, and a charcoal block's 16,000-tick
-furnace burn duration. Tests requiring a
+Soul Golem player safety, 50 HP, exact quarter-damage rolls and two-second fire,
+and a charcoal block's 16,000-tick furnace burn duration. Additional tests cover
+the nine-layer loom limit and banner copying, all ten unlit lantern variants'
+relighting and drops, waterlogging and copper mappings, and Breeze lantern
+extinguishing. XP tests cover mixed values and vanilla counts, the two-block
+merge radius, full-value pickup with Mending, large-value persistence, and
+overflow-safe merging. Tests requiring a
 switch fail with an instruction to enable it rather than silently passing
 without exercising the feature. `breezeExtinguishesLights` also requires
 `mobGriefing=true`.
@@ -89,7 +94,8 @@ and ten-second cooldown; and collide with a wall/ceiling after a Hoglin
 launch to check its 2 HP impact. Check all four unlit items in Creative and
 verify unlit redstone torches supply no signal. Check throwable slimeballs and
 fire charges in the Combat creative tab when their respective features are
-enabled. Mod Menu switches and client banner
+enabled. Check the unlit lantern textures, nine-layer loom screen, and enlarged
+XP orb appearance on a client. Mod Menu switches and client banner
 rendering (including walking and sitting wolves) also require a client. Test Skeletons seeking a reachable wall
 corner and returning to their firing position against a close player, and
 verify unlike potions cannot mix and potion contents survive a save/reload.

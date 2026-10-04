@@ -368,6 +368,49 @@ public class PatchworkGameTests {
 	}
 
 	@GameTest
+	public void experienceClumpingSettingControlsVanillaBehavior(GameTestHelper test) {
+		boolean clumping = PatchworkConfig.settings().experienceClumping();
+		Vec3 center = Vec3.atCenterOf(test.absolutePos(CENTER));
+		net.minecraft.world.entity.ExperienceOrb.award(test.getLevel(), center, 30);
+		var awarded = test.getEntities(EntityTypes.EXPERIENCE_ORB);
+		test.assertTrue(clumping ? awarded.size() == 1 : awarded.size() > 1,
+			"XP award did not respect the clumping setting");
+		long total = awarded.stream().mapToLong(orb -> (long)orb.getValue()
+			* ((com.JulieISBaka.patchwork.mixin.ExperienceOrbAccessor)orb).patchwork$count()).sum();
+		test.assertTrue(total == 30, "Vanilla XP award lost value");
+		awarded.forEach(net.minecraft.world.entity.ExperienceOrb::discard);
+
+		var player = test.makeMockServerPlayer(GameType.SURVIVAL);
+		var stacked = new net.minecraft.world.entity.ExperienceOrb(test.getLevel(), center.x, center.y, center.z, 15);
+		var data = (com.JulieISBaka.patchwork.mixin.ExperienceOrbAccessor)stacked;
+		data.patchwork$setCount(2);
+		test.getLevel().addFreshEntity(stacked);
+		int before = player.totalExperience;
+		player.takeXpDelay = 0;
+		stacked.playerTouch(player);
+		test.assertTrue(clumping ? stacked.isRemoved() : !stacked.isRemoved() && data.patchwork$count() == 1,
+			"Counted pickup did not respect the clumping setting");
+		test.assertTrue(player.totalExperience == before + (clumping ? 30 : 15),
+			"Counted pickup granted the wrong XP");
+		stacked.discard();
+		player.discard();
+
+		for (int value : new int[] {7, 11}) {
+			var orb = new net.minecraft.world.entity.ExperienceOrb(test.getLevel(), center.x, center.y, center.z, value);
+			orb.setNoGravity(true);
+			orb.setDeltaMovement(Vec3.ZERO);
+			test.getLevel().addFreshEntity(orb);
+		}
+		test.runAfterDelay(3, () -> {
+			var orbs = test.getEntities(EntityTypes.EXPERIENCE_ORB);
+			test.assertTrue(orbs.size() == (clumping ? 1 : 2)
+				&& orbs.stream().mapToInt(net.minecraft.world.entity.ExperienceOrb::getValue).sum() == 18,
+				"Different-value merging did not respect the clumping setting");
+			test.succeed();
+		});
+	}
+
+	@GameTest
 	public void unlitTorchVariants(GameTestHelper test) {
 		test.setBlock(CENTER.below(), Blocks.STONE);
 		test.setBlock(CENTER, Blocks.TORCH);
