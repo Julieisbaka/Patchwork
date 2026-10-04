@@ -30,7 +30,6 @@ Requires Java 25, Fabric Loader, and Fabric API. Mod Menu is optional.
 Build with `.\gradlew.bat build`.
 
 - [Configuration](docs/configuration.md)
-- [Technical details](docs/technical.md)
 - [Tests](docs/testing.md)
 
 Textures are WIP.
