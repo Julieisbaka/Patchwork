@@ -1,3 +1,6 @@
 {
-	"model": { "type": "minecraft:model", "model": "patchwork:item/soul_fire_charge" }
+	"model": {
+		"type": "minecraft:model",
+		"model": "patchwork:item/soul_fire_charge"
+	}
 }

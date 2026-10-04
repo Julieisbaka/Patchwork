@@ -73,7 +73,7 @@ public final class CopperTorches {
 	}
 
 	private static Block counterpart(Block block, WeatheringCopperCollection<Block> source,
-		WeatheringCopperCollection<Block> target) {
+			WeatheringCopperCollection<Block> target) {
 		int index = source.asList().indexOf(block);
 		return index < 0 ? null : target.asList().get(index);
 	}
@@ -88,9 +88,9 @@ public final class CopperTorches {
 
 	private static WeatheringCopperCollection<Block> createCollection(boolean unlit, boolean wall) {
 		var names = WeatheringCopperCollection
-			.prefixWithState(WeatheringCopperCollection.create(wall ? "copper_wall_torch" : "copper_torch"));
+				.prefixWithState(WeatheringCopperCollection.create(wall ? "copper_wall_torch" : "copper_torch"));
 		var ages = new WeatheringCopperCollection<>(WeatheringCopperCollection.STATES,
-			WeatheringCopperCollection.STATES);
+				WeatheringCopperCollection.STATES);
 		return WeatheringCopperCollection.zipMap(names, ages, (name, age) -> {
 			if (!unlit && name.equals("copper_torch")) {
 				return Blocks.COPPER_TORCH;
@@ -101,11 +101,12 @@ public final class CopperTorches {
 			String id = (unlit ? "unlit_" : "") + name;
 			ResourceKey<Block> key = ResourceKey.create(Registries.BLOCK, Patchwork.id(id));
 			var properties = BlockBehaviour.Properties
-				.ofLegacyCopy(wall ? Blocks.COPPER_WALL_TORCH : Blocks.COPPER_TORCH).lightLevel(state -> unlit ? 0 : 14)
-				.setId(key);
+					.ofLegacyCopy(wall ? Blocks.COPPER_WALL_TORCH : Blocks.COPPER_TORCH)
+					.lightLevel(state -> unlit ? 0 : 14)
+					.setId(key);
 			if (wall) {
 				ResourceKey<LootTable> loot = ResourceKey.create(Registries.LOOT_TABLE,
-					Patchwork.id(id.replace("_wall_torch", "_torch")));
+						Patchwork.id(id.replace("_wall_torch", "_torch")));
 				properties.overrideLootTable(Optional.of(loot));
 			}
 			boolean waxed = name.startsWith("waxed_");
@@ -113,9 +114,10 @@ public final class CopperTorches {
 				properties.randomTicks();
 			}
 			Block block = wall
-				? (waxed ? new CopperWallTorchBlock(unlit, properties)
-					: new WeatheringWallTorchBlock(age, unlit, properties))
-				: (waxed ? new CopperTorchBlock(unlit, properties) : new WeatheringTorchBlock(age, unlit, properties));
+					? (waxed ? new CopperWallTorchBlock(unlit, properties)
+							: new WeatheringWallTorchBlock(age, unlit, properties))
+					: (waxed ? new CopperTorchBlock(unlit, properties)
+							: new WeatheringTorchBlock(age, unlit, properties));
 			return Registry.register(BuiltInRegistries.BLOCK, key, block);
 		});
 	}
@@ -126,7 +128,7 @@ public final class CopperTorches {
 		}
 		ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, BuiltInRegistries.BLOCK.getKey(standing));
 		Item item = Registry.register(BuiltInRegistries.ITEM, key, new StandingAndWallBlockItem(standing, wall,
-			Direction.DOWN, new Item.Properties().setId(key).useBlockDescriptionPrefix()));
+				Direction.DOWN, new Item.Properties().setId(key).useBlockDescriptionPrefix()));
 		Item.BY_BLOCK.put(standing, item);
 		Item.BY_BLOCK.put(wall, item);
 	}
@@ -153,9 +155,9 @@ public final class CopperTorches {
 
 		@Override
 		protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
-			Player player, InteractionHand hand, BlockHitResult hit) {
+				Player player, InteractionHand hand, BlockHitResult hit) {
 			return unlit ? UnlitTorches.relight(stack, level, pos, player, hand, relit(state, false))
-				: super.useItemOn(stack, state, level, pos, player, hand, hit);
+					: super.useItemOn(stack, state, level, pos, player, hand, hit);
 		}
 	}
 
@@ -181,9 +183,9 @@ public final class CopperTorches {
 
 		@Override
 		protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
-			Player player, InteractionHand hand, BlockHitResult hit) {
+				Player player, InteractionHand hand, BlockHitResult hit) {
 			return unlit ? UnlitTorches.relight(stack, level, pos, player, hand, relit(state, true))
-				: super.useItemOn(stack, state, level, pos, player, hand, hit);
+					: super.useItemOn(stack, state, level, pos, player, hand, hit);
 		}
 	}
 

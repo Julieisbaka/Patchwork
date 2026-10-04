@@ -36,20 +36,21 @@ public final class UnlitTorches {
 	public static final Block WALL_TORCH = wall("unlit_wall_torch", "unlit_torch", Blocks.WALL_TORCH);
 	public static final Block SOUL_TORCH = standing("unlit_soul_torch", Blocks.SOUL_TORCH);
 	public static final Block SOUL_WALL_TORCH = wall("unlit_soul_wall_torch", "unlit_soul_torch",
-		Blocks.SOUL_WALL_TORCH);
+			Blocks.SOUL_WALL_TORCH);
 	public static final Block COPPER_TORCH = CopperTorches.UNLIT.weathering().unaffected();
 	public static final Block COPPER_WALL_TORCH = CopperTorches.UNLIT_WALL.weathering().unaffected();
 	public static final Block REDSTONE_TORCH = standing("unlit_redstone_torch", Blocks.REDSTONE_TORCH);
 	public static final Block REDSTONE_WALL_TORCH = wall("unlit_redstone_wall_torch", "unlit_redstone_torch",
-		Blocks.REDSTONE_WALL_TORCH);
+			Blocks.REDSTONE_WALL_TORCH);
 	public static final Item TORCH_ITEM = item("unlit_torch", TORCH, WALL_TORCH);
 	public static final Item SOUL_TORCH_ITEM = item("unlit_soul_torch", SOUL_TORCH, SOUL_WALL_TORCH);
 	public static final Item COPPER_TORCH_ITEM = COPPER_TORCH.asItem();
 	public static final Item REDSTONE_TORCH_ITEM = item("unlit_redstone_torch", REDSTONE_TORCH, REDSTONE_WALL_TORCH);
 	private static final Map<Block, Block> UNLIT = Map.of(Blocks.TORCH, TORCH, Blocks.WALL_TORCH, WALL_TORCH,
-		Blocks.SOUL_TORCH, SOUL_TORCH, Blocks.SOUL_WALL_TORCH, SOUL_WALL_TORCH, Blocks.COPPER_TORCH, COPPER_TORCH,
-		Blocks.COPPER_WALL_TORCH, COPPER_WALL_TORCH, Blocks.REDSTONE_TORCH, REDSTONE_TORCH, Blocks.REDSTONE_WALL_TORCH,
-		REDSTONE_WALL_TORCH);
+			Blocks.SOUL_TORCH, SOUL_TORCH, Blocks.SOUL_WALL_TORCH, SOUL_WALL_TORCH, Blocks.COPPER_TORCH, COPPER_TORCH,
+			Blocks.COPPER_WALL_TORCH, COPPER_WALL_TORCH, Blocks.REDSTONE_TORCH, REDSTONE_TORCH,
+			Blocks.REDSTONE_WALL_TORCH,
+			REDSTONE_WALL_TORCH);
 
 	private UnlitTorches() {
 	}
@@ -79,20 +80,20 @@ public final class UnlitTorches {
 		ResourceKey<Block> key = ResourceKey.create(Registries.BLOCK, Patchwork.id(name));
 		ResourceKey<LootTable> loot = ResourceKey.create(Registries.LOOT_TABLE, Patchwork.id("blocks/" + drop));
 		return Registry.register(BuiltInRegistries.BLOCK, key,
-			new UnlitWallTorchBlock(lit, properties(lit, key).overrideLootTable(Optional.of(loot))));
+				new UnlitWallTorchBlock(lit, properties(lit, key).overrideLootTable(Optional.of(loot))));
 	}
 
 	private static Item item(String name, Block standing, Block wall) {
 		ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, Patchwork.id(name));
 		Item item = Registry.register(BuiltInRegistries.ITEM, key, new StandingAndWallBlockItem(standing, wall,
-			Direction.DOWN, new Item.Properties().setId(key).useBlockDescriptionPrefix()));
+				Direction.DOWN, new Item.Properties().setId(key).useBlockDescriptionPrefix()));
 		Item.BY_BLOCK.put(standing, item);
 		Item.BY_BLOCK.put(wall, item);
 		return item;
 	}
 
 	static InteractionResult relight(ItemStack stack, Level level, BlockPos pos, Player player, InteractionHand hand,
-		BlockState lit) {
+			BlockState lit) {
 		boolean flint = stack.is(Items.FLINT_AND_STEEL);
 		if (!flint && !stack.is(Items.FIRE_CHARGE)) {
 			return InteractionResult.TRY_WITH_EMPTY_HAND;
@@ -105,7 +106,7 @@ public final class UnlitTorches {
 				stack.consume(1, player);
 			}
 			level.playSound(null, pos, flint ? SoundEvents.FLINTANDSTEEL_USE : SoundEvents.FIRECHARGE_USE,
-				SoundSource.BLOCKS, 1.0F, 1.0F);
+					SoundSource.BLOCKS, 1.0F, 1.0F);
 			level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
 		}
 		return InteractionResult.SUCCESS;
@@ -125,7 +126,7 @@ public final class UnlitTorches {
 
 		@Override
 		protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
-			Player player, InteractionHand hand, BlockHitResult hit) {
+				Player player, InteractionHand hand, BlockHitResult hit) {
 			return relight(stack, level, pos, player, hand, lit.defaultBlockState());
 		}
 
@@ -149,9 +150,9 @@ public final class UnlitTorches {
 
 		@Override
 		protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
-			Player player, InteractionHand hand, BlockHitResult hit) {
+				Player player, InteractionHand hand, BlockHitResult hit) {
 			return relight(stack, level, pos, player, hand,
-				lit.defaultBlockState().setValue(FACING, state.getValue(FACING)));
+					lit.defaultBlockState().setValue(FACING, state.getValue(FACING)));
 		}
 
 		@Override

@@ -35,7 +35,7 @@ public class SoulFireball extends LargeFireball {
 	@Override
 	protected boolean canHitEntity(Entity entity) {
 		if (getOwner() instanceof SoulGolem golem && entity instanceof LivingEntity living
-			&& golem.isProtected(living)) {
+				&& golem.isProtected(living)) {
 			return false;
 		}
 		return super.canHitEntity(entity);
@@ -49,15 +49,15 @@ public class SoulFireball extends LargeFireball {
 		if (hit instanceof EntityHitResult entityHit) {
 			Entity target = entityHit.getEntity();
 			if (!(getOwner() instanceof SoulGolem golem && target instanceof LivingEntity living
-				&& golem.isProtected(living))
-				&& target.hurtServer(level, damageSources().fireball(this, getOwner()), 3.0F)) {
+					&& golem.isProtected(living))
+					&& target.hurtServer(level, damageSources().fireball(this, getOwner()), 3.0F)) {
 				target.igniteForSeconds(2.0F);
 				if (getOwner() instanceof LivingEntity shooter) {
 					shooter.setLastHurtMob(target);
 				}
 			}
 		} else if (hit instanceof BlockHitResult blockHit
-			&& (!(getOwner() instanceof SoulGolem) || level.getGameRules().get(GameRules.MOB_GRIEFING))) {
+				&& (!(getOwner() instanceof SoulGolem) || level.getGameRules().get(GameRules.MOB_GRIEFING))) {
 			SoulFireCharges.ignite(level, blockHit);
 		}
 		discard();

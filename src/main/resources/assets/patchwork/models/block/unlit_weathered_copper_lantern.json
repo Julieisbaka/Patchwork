@@ -1,4 +1,6 @@
 {
 	"parent": "minecraft:block/template_lantern",
-	"textures": { "lantern": "patchwork:block/unlit_weathered_copper_lantern" }
+	"textures": {
+		"lantern": "patchwork:block/unlit_weathered_copper_lantern"
+	}
 }

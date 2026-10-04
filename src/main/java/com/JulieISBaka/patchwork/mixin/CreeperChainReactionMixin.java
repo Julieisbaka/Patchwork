@@ -15,10 +15,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class CreeperChainReactionMixin {
 	@Inject(method = "hurtServer", at = @At("RETURN"))
 	private void patchwork$primeCreeper(ServerLevel level, DamageSource source, float damage,
-		CallbackInfoReturnable<Boolean> cir) {
+			CallbackInfoReturnable<Boolean> cir) {
 		if (PatchworkConfig.settings().creeperChainReactions() && cir.getReturnValue()
-			&& (Object) this instanceof Creeper creeper && creeper.isAlive() && source.is(DamageTypeTags.IS_EXPLOSION)
-			&& source.getDirectEntity() instanceof Creeper other && other != creeper) {
+				&& (Object) this instanceof Creeper creeper && creeper.isAlive()
+				&& source.is(DamageTypeTags.IS_EXPLOSION)
+				&& source.getDirectEntity() instanceof Creeper other && other != creeper) {
 			creeper.ignite();
 		}
 	}

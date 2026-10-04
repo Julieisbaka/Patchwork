@@ -1,1 +1,6 @@
-{ "parent": "minecraft:block/template_lantern", "textures": { "lantern": "patchwork:block/unlit_soul_lantern" } }
+{
+    "parent": "minecraft:block/template_lantern",
+    "textures": {
+        "lantern": "patchwork:block/unlit_soul_lantern"
+    }
+}

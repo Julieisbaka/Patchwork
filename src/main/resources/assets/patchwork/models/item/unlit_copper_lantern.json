@@ -1,1 +1,6 @@
-{ "parent": "minecraft:item/generated", "textures": { "layer0": "patchwork:item/unlit_copper_lantern" } }
+{
+    "parent": "minecraft:item/generated",
+    "textures": {
+        "layer0": "patchwork:item/unlit_copper_lantern"
+    }
+}

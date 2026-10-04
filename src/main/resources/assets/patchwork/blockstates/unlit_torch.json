@@ -1,1 +1,7 @@
-{ "variants": { "": { "model": "patchwork:block/unlit_torch" } } }
+{
+    "variants": {
+        "": {
+            "model": "patchwork:block/unlit_torch"
+        }
+    }
+}

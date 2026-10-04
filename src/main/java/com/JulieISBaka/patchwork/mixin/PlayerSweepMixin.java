@@ -14,7 +14,7 @@ public class PlayerSweepMixin {
 	@Redirect(method = "doSweepAttack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;isAlliedTo(Lnet/minecraft/world/entity/Entity;)Z"))
 	private boolean patchwork$protectOwnedPetsFromSweep(Player player, Entity nearby) {
 		return player.isAlliedTo(nearby) || PatchworkConfig.settings().ownerSweepProtection()
-			&& (nearby instanceof Wolf wolf && wolf.isTame() && wolf.isOwnedBy(player)
-				|| nearby instanceof Cat cat && cat.isTame() && cat.isOwnedBy(player));
+				&& (nearby instanceof Wolf wolf && wolf.isTame() && wolf.isOwnedBy(player)
+						|| nearby instanceof Cat cat && cat.isTame() && cat.isOwnedBy(player));
 	}
 }

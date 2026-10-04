@@ -1,1 +1,6 @@
-{ "model": { "type": "minecraft:model", "model": "patchwork:block/wax_block" } }
+{
+    "model": {
+        "type": "minecraft:model",
+        "model": "patchwork:block/wax_block"
+    }
+}

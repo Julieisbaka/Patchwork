@@ -36,7 +36,8 @@ public final class SlimeSplitClouds {
 	public static void spawn(Slime slime, ServerLevel level) {
 		Vec3 from = slime.position().add(0.0, 0.5, 0.0);
 		HitResult hit = level.clip(
-			new ClipContext(from, from.add(0.0, -6.0, 0.0), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, slime));
+				new ClipContext(from, from.add(0.0, -6.0, 0.0), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE,
+						slime));
 		if (!(hit instanceof BlockHitResult ground) || ground.getDirection() != Direction.UP) {
 			return;
 		}
@@ -47,14 +48,14 @@ public final class SlimeSplitClouds {
 			for (int z = -1; z <= 1; z++) {
 				BlockPos tile = origin.offset(x, 0, z);
 				if (level.getBlockState(tile).isAir()
-					&& level.getBlockState(tile.below()).isFaceSturdy(level, tile.below(), Direction.UP)) {
+						&& level.getBlockState(tile.below()).isFaceSturdy(level, tile.below(), Direction.UP)) {
 					tiles.add(tile);
 				}
 			}
 		}
 		if (!tiles.isEmpty()) {
 			CLOUDS.computeIfAbsent(level, unused -> new ArrayList<>())
-				.add(new Cloud(List.copyOf(tiles), level.getGameTime() + LIFETIME_TICKS));
+					.add(new Cloud(List.copyOf(tiles), level.getGameTime() + LIFETIME_TICKS));
 		}
 	}
 
@@ -75,15 +76,15 @@ public final class SlimeSplitClouds {
 		for (Cloud cloud : clouds) {
 			for (BlockPos tile : cloud.tiles()) {
 				level.sendParticles(ParticleTypes.ITEM_SLIME, tile.getX() + 0.5, tile.getY() + 0.08, tile.getZ() + 0.5,
-					2, 0.4, 0.02, 0.4, 0.01);
+						2, 0.4, 0.02, 0.4, 0.01);
 				level.sendParticles(SLIME_DUST, tile.getX() + 0.5, tile.getY() + 0.12, tile.getZ() + 0.5, 3, 0.42, 0.03,
-					0.42, 0.005);
+						0.42, 0.005);
 			}
 			for (ServerPlayer player : level.players()) {
 				if (!player.isSpectator() && cloud.tiles().stream()
-					.anyMatch(tile -> player.getX() >= tile.getX() && player.getX() < tile.getX() + 1
-						&& player.getZ() >= tile.getZ() && player.getZ() < tile.getZ() + 1
-						&& Math.abs(player.getY() - tile.getY()) < 0.6)) {
+						.anyMatch(tile -> player.getX() >= tile.getX() && player.getX() < tile.getX() + 1
+								&& player.getZ() >= tile.getZ() && player.getZ() < tile.getZ() + 1
+								&& Math.abs(player.getY() - tile.getY()) < 0.6)) {
 					player.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 10, 1, false, false));
 				}
 			}

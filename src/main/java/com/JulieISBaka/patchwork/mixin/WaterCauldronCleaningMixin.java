@@ -31,7 +31,7 @@ public class WaterCauldronCleaningMixin {
 					cir.setReturnValue(PotionCauldrons::pour);
 				} else if ((Object) this == CauldronInteractions.WATER) {
 					cir.setReturnValue(
-						(state, level, pos, player, hand, held) -> InteractionResult.TRY_WITH_EMPTY_HAND);
+							(state, level, pos, player, hand, held) -> InteractionResult.TRY_WITH_EMPTY_HAND);
 				}
 			}
 			return;

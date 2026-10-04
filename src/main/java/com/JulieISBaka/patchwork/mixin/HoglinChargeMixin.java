@@ -19,8 +19,8 @@ public class HoglinChargeMixin {
 	private void patchwork$launch(ServerLevel level, Entity target, CallbackInfoReturnable<Boolean> cir) {
 		Hoglin hoglin = (Hoglin) (Object) this;
 		if (!PatchworkConfig.settings().hoglinCharge() || !cir.getReturnValue() || !hoglin.isAdult()
-			|| !(target instanceof LivingEntity living)
-			|| !(hoglin.isSprinting() || hoglin.getDeltaMovement().horizontalDistanceSqr() >= 0.0324)) {
+				|| !(target instanceof LivingEntity living)
+				|| !(hoglin.isSprinting() || hoglin.getDeltaMovement().horizontalDistanceSqr() >= 0.0324)) {
 			return;
 		}
 		Vec3 away = living.position().subtract(hoglin.position()).multiply(1.0, 0.0, 1.0);

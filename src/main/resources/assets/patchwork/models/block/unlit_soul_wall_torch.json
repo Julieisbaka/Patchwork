@@ -1,1 +1,6 @@
-{ "parent": "minecraft:block/template_torch_wall_unlit", "textures": { "torch": "patchwork:block/unlit_soul_torch" } }
+{
+    "parent": "minecraft:block/template_torch_wall_unlit",
+    "textures": {
+        "torch": "patchwork:block/unlit_soul_torch"
+    }
+}

@@ -14,14 +14,14 @@ public final class PatchworkConfig {
 	private static final int MAX_RECALL_RADIUS = 256;
 	private static final String RECALL_RADIUS_KEY = "callHornRecallRadius";
 	private static volatile Settings settings = new Settings(true, true, true, true, true, true, true, true, true, true,
-		false, true, true, true, true, true, true, true, true, true, true, true, DEFAULT_RECALL_RADIUS);
+			false, true, true, true, true, true, true, true, true, true, true, true, DEFAULT_RECALL_RADIUS);
 
 	public record Settings(boolean witherDifficultyHealth, boolean witherBirthExplosion, boolean chainmailRecipes,
-		boolean wolfBanners, boolean ownerSweepProtection, boolean shulkerDyeing, boolean throwableSlimeballs,
-		boolean callHornRecall, boolean cauldronCleaning, boolean beesDefendFlowers, boolean creeperChainReactions,
-		boolean endermanDefense, boolean spiderWebs, boolean throwableFireCharges, boolean slimeSplitClouds,
-		boolean breezeShockwave, boolean breezeTorchExtinguishing, boolean hoglinCharge, boolean skeletonCover,
-		boolean potionCauldrons, boolean pumpkinLanterns, boolean experienceClumping, int callHornRecallRadius) {
+			boolean wolfBanners, boolean ownerSweepProtection, boolean shulkerDyeing, boolean throwableSlimeballs,
+			boolean callHornRecall, boolean cauldronCleaning, boolean beesDefendFlowers, boolean creeperChainReactions,
+			boolean endermanDefense, boolean spiderWebs, boolean throwableFireCharges, boolean slimeSplitClouds,
+			boolean breezeShockwave, boolean breezeTorchExtinguishing, boolean hoglinCharge, boolean skeletonCover,
+			boolean potionCauldrons, boolean pumpkinLanterns, boolean experienceClumping, int callHornRecallRadius) {
 	}
 
 	private PatchworkConfig() {
@@ -67,7 +67,7 @@ public final class PatchworkConfig {
 		}
 		if (radius < MIN_RECALL_RADIUS || radius > MAX_RECALL_RADIUS) {
 			throw new IllegalArgumentException(
-				RECALL_RADIUS_KEY + " must be from 16 to 256 in " + path + ": " + radius);
+					RECALL_RADIUS_KEY + " must be from 16 to 256 in " + path + ": " + radius);
 		}
 		int originalSize = properties.size();
 		boolean migratedTorches = properties.containsKey("unlitTorches");
@@ -101,16 +101,17 @@ public final class PatchworkConfig {
 		if (migratedTorches || properties.size() != originalSize || Files.notExists(path)) {
 			try (Writer writer = Files.newBufferedWriter(path)) {
 				properties.store(writer,
-					"Patchwork features: true/false; callHornRecallRadius: 16-256 blocks. Restart to apply.");
+						"Patchwork features: true/false; callHornRecallRadius: 16-256 blocks. Restart to apply.");
 			} catch (IOException e) {
 				throw new IllegalStateException("Unable to write Patchwork config: " + path, e);
 			}
 		}
 		Settings loaded = new Settings(witherDifficultyHealth, witherBirthExplosion, chainmailRecipes, wolfBanners,
-			ownerSweepProtection, shulkerDyeing, throwableSlimeballs, callHornRecall, cauldronCleaning,
-			beesDefendFlowers, creeperChainReactions, endermanDefense, spiderWebs, throwableFireCharges,
-			slimeSplitClouds, breezeShockwave, breezeTorchExtinguishing, hoglinCharge, skeletonCover, potionCauldrons,
-			pumpkinLanterns, experienceClumping, radius);
+				ownerSweepProtection, shulkerDyeing, throwableSlimeballs, callHornRecall, cauldronCleaning,
+				beesDefendFlowers, creeperChainReactions, endermanDefense, spiderWebs, throwableFireCharges,
+				slimeSplitClouds, breezeShockwave, breezeTorchExtinguishing, hoglinCharge, skeletonCover,
+				potionCauldrons,
+				pumpkinLanterns, experienceClumping, radius);
 		Patchwork.LOGGER.info("Patchwork config loaded from {}", path);
 		return loaded;
 	}
@@ -152,7 +153,7 @@ public final class PatchworkConfig {
 			properties.setProperty(RECALL_RADIUS_KEY, Integer.toString(radius));
 			try (Writer writer = Files.newBufferedWriter(path)) {
 				properties.store(writer,
-					"Patchwork features: true/false; callHornRecallRadius: 16-256 blocks. Restart to apply.");
+						"Patchwork features: true/false; callHornRecallRadius: 16-256 blocks. Restart to apply.");
 			}
 		} catch (IOException e) {
 			throw new IllegalStateException("Unable to save Patchwork config: " + path, e);

@@ -1,6 +1,10 @@
 {
 	"variants": {
-		"hanging=false": { "model": "patchwork:block/unlit_lantern" },
-		"hanging=true": { "model": "patchwork:block/unlit_lantern_hanging" }
+		"hanging=false": {
+			"model": "patchwork:block/unlit_lantern"
+		},
+		"hanging=true": {
+			"model": "patchwork:block/unlit_lantern_hanging"
+		}
 	}
 }

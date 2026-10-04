@@ -36,13 +36,13 @@ public class SkeletonCoverMixin {
 	@Inject(method = "tick", at = @At("TAIL"))
 	private void patchwork$useCoverWhileReloading(CallbackInfo ci) {
 		if (!(mob instanceof Skeleton skeleton) || !(mob.level() instanceof ServerLevel level)
-			|| !PatchworkConfig.settings().skeletonCover()) {
+				|| !PatchworkConfig.settings().skeletonCover()) {
 			patchwork$clear();
 			return;
 		}
 		LivingEntity target = skeleton.getTarget();
 		if (!(target instanceof Player) || !target.isAlive() || skeleton.distanceToSqr(target) > 36.0
-			|| !skeleton.isHolding(net.minecraft.world.item.Items.BOW)) {
+				|| !skeleton.isHolding(net.minecraft.world.item.Items.BOW)) {
 			patchwork$clear();
 			return;
 		}
@@ -55,11 +55,11 @@ public class SkeletonCoverMixin {
 		}
 		if (attackTime > 0 && !skeleton.isUsingItem()) {
 			skeleton.getNavigation().moveTo(patchwork$cover.getX() + 0.5, patchwork$cover.getY(),
-				patchwork$cover.getZ() + 0.5, 1.15);
+					patchwork$cover.getZ() + 0.5, 1.15);
 		} else {
 			if (patchwork$peek != null && skeleton.blockPosition().distSqr(patchwork$peek) > 1) {
 				skeleton.getNavigation().moveTo(patchwork$peek.getX() + 0.5, patchwork$peek.getY(),
-					patchwork$peek.getZ() + 0.5, 1.15);
+						patchwork$peek.getZ() + 0.5, 1.15);
 			} else {
 				patchwork$clear();
 			}
@@ -78,7 +78,8 @@ public class SkeletonCoverMixin {
 				}
 				BlockPos candidate = origin.offset(dx, 0, dz);
 				if (!level.getBlockState(candidate).isAir() || !level.getBlockState(candidate.above()).isAir()
-					|| !level.getBlockState(candidate.below()).isFaceSturdy(level, candidate.below(), Direction.UP)) {
+						|| !level.getBlockState(candidate.below()).isFaceSturdy(level, candidate.below(),
+								Direction.UP)) {
 					continue;
 				}
 				Path path = skeleton.getNavigation().createPath(candidate, 0);
@@ -87,9 +88,9 @@ public class SkeletonCoverMixin {
 				}
 				Vec3 eye = Vec3.atBottomCenterOf(candidate).add(0, skeleton.getEyeHeight(), 0);
 				HitResult obstruction = level.clip(new ClipContext(eye, target.getEyePosition(),
-					ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, skeleton));
+						ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, skeleton));
 				if (obstruction.getType() == HitResult.Type.MISS
-					|| obstruction.getLocation().distanceToSqr(eye) > 3.0) {
+						|| obstruction.getLocation().distanceToSqr(eye) > 3.0) {
 					continue;
 				}
 				double distance = origin.distSqr(candidate);

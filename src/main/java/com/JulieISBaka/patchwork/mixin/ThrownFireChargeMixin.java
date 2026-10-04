@@ -30,7 +30,7 @@ public class ThrownFireChargeMixin {
 
 	@Redirect(method = "onHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;explode(Lnet/minecraft/world/entity/Entity;DDDFZLnet/minecraft/world/level/Level$ExplosionInteraction;)V"))
 	private void patchwork$igniteWithoutExplosion(Level level, Entity source, double x, double y, double z,
-		float radius, boolean fire, Level.ExplosionInteraction interaction, HitResult hit) {
+			float radius, boolean fire, Level.ExplosionInteraction interaction, HitResult hit) {
 		if (!((LargeFireball) (Object) this).entityTags().contains(Patchwork.THROWN_FIRE_CHARGE_TAG)) {
 			level.explode(source, x, y, z, radius, fire, interaction);
 			return;

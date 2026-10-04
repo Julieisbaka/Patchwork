@@ -36,14 +36,15 @@ import net.minecraft.world.phys.BlockHitResult;
 
 public final class PotionCauldrons {
 	public static final Block BLOCK = Registry.register(BuiltInRegistries.BLOCK,
-		ResourceKey.create(Registries.BLOCK, Patchwork.id("potion_cauldron")),
-		new PotionCauldronBlock(BlockBehaviour.Properties.ofLegacyCopy(Blocks.WATER_CAULDRON)
-			.overrideLootTable(Blocks.CAULDRON.getLootTable()).overrideDescription(Blocks.CAULDRON.getDescriptionId())
-			.setId(ResourceKey.create(Registries.BLOCK, Patchwork.id("potion_cauldron")))));
+			ResourceKey.create(Registries.BLOCK, Patchwork.id("potion_cauldron")),
+			new PotionCauldronBlock(BlockBehaviour.Properties.ofLegacyCopy(Blocks.WATER_CAULDRON)
+					.overrideLootTable(Blocks.CAULDRON.getLootTable())
+					.overrideDescription(Blocks.CAULDRON.getDescriptionId())
+					.setId(ResourceKey.create(Registries.BLOCK, Patchwork.id("potion_cauldron")))));
 	public static final BlockEntityType<PotionCauldronEntity> TYPE = Registry.register(
-		BuiltInRegistries.BLOCK_ENTITY_TYPE,
-		ResourceKey.create(Registries.BLOCK_ENTITY_TYPE, Patchwork.id("potion_cauldron")),
-		new BlockEntityType<>(PotionCauldronEntity::new, Set.of(BLOCK)));
+			BuiltInRegistries.BLOCK_ENTITY_TYPE,
+			ResourceKey.create(Registries.BLOCK_ENTITY_TYPE, Patchwork.id("potion_cauldron")),
+			new BlockEntityType<>(PotionCauldronEntity::new, Set.of(BLOCK)));
 
 	private PotionCauldrons() {
 	}
@@ -52,10 +53,10 @@ public final class PotionCauldrons {
 	}
 
 	public static InteractionResult pour(BlockState state, Level level, BlockPos pos, Player player,
-		InteractionHand hand, ItemStack bottle) {
+			InteractionHand hand, ItemStack bottle) {
 		PotionContents contents = bottle.get(DataComponents.POTION_CONTENTS);
 		if (!state.is(Blocks.CAULDRON) || contents == null || contents.equals(PotionContents.EMPTY)
-			|| contents.is(Potions.WATER)) {
+				|| contents.is(Potions.WATER)) {
 			return InteractionResult.TRY_WITH_EMPTY_HAND;
 		}
 		if (!level.isClientSide()) {
@@ -103,7 +104,7 @@ public final class PotionCauldrons {
 		int remaining = item.getItem().getCount() - count;
 		if (remaining > 0) {
 			ItemEntity remainder = new ItemEntity(level, item.getX(), item.getY(), item.getZ(),
-				item.getItem().copyWithCount(remaining));
+					item.getItem().copyWithCount(remaining));
 			PotionArrowItemAccessor original = (PotionArrowItemAccessor) item;
 			PotionArrowItemAccessor split = (PotionArrowItemAccessor) remainder;
 			split.patchwork$setAge(item.getAge());
@@ -142,18 +143,18 @@ public final class PotionCauldrons {
 
 		@Override
 		protected ItemStack getCloneItemStack(net.minecraft.world.level.LevelReader level, BlockPos pos,
-			BlockState state, boolean includeData) {
+				BlockState state, boolean includeData) {
 			return new ItemStack(Items.CAULDRON);
 		}
 
 		@Override
 		public void handlePrecipitation(BlockState state, Level level, BlockPos pos,
-			Biome.Precipitation precipitation) {
+				Biome.Precipitation precipitation) {
 		}
 
 		@Override
 		protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
-			Player player, InteractionHand hand, BlockHitResult hit) {
+				Player player, InteractionHand hand, BlockHitResult hit) {
 			if (!PatchworkConfig.settings().potionCauldrons()) {
 				return InteractionResult.TRY_WITH_EMPTY_HAND;
 			}
@@ -179,13 +180,13 @@ public final class PotionCauldrons {
 			if (stack.is(Items.POTION)) {
 				PotionContents contents = stack.get(DataComponents.POTION_CONTENTS);
 				if (contents == null || contents.equals(PotionContents.EMPTY) || state.getValue(LEVEL) == 3
-					|| !contents.equals(entity(level, pos).potion())) {
+						|| !contents.equals(entity(level, pos).potion())) {
 					return InteractionResult.TRY_WITH_EMPTY_HAND;
 				}
 				if (!level.isClientSide()) {
 					level.setBlockAndUpdate(pos, state.cycle(LEVEL));
 					player.setItemInHand(hand,
-						ItemUtils.createFilledResult(stack, player, new ItemStack(Items.GLASS_BOTTLE)));
+							ItemUtils.createFilledResult(stack, player, new ItemStack(Items.GLASS_BOTTLE)));
 					player.awardStat(Stats.USE_CAULDRON);
 					player.awardStat(Stats.ITEM_USED.get(Items.POTION));
 					level.playSound(null, pos, SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);

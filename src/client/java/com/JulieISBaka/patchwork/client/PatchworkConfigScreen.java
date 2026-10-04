@@ -55,7 +55,7 @@ public class PatchworkConfigScreen extends OptionsSubScreen {
 
 		options.addHeader(Component.translatable("patchwork.config.callHornRecallRadius"));
 		EditBox radius = new EditBox(this.font, 310, 20,
-			Component.translatable("patchwork.config.callHornRecallRadius"));
+				Component.translatable("patchwork.config.callHornRecallRadius"));
 		radius.setMaxLength(3);
 		radius.setTooltip(Tooltip.create(Component.translatable("patchwork.config.callHornRecallRadius.description")));
 		radius.setValue(this.radiusText);
@@ -67,15 +67,16 @@ public class PatchworkConfigScreen extends OptionsSubScreen {
 		});
 		options.addBig(radius);
 		options
-			.addBig(new StringWidget(Component.translatable("patchwork.config.callHornRecallRadius.summary"), this.font)
-				.setMaxWidth(310));
+				.addBig(new StringWidget(Component.translatable("patchwork.config.callHornRecallRadius.summary"),
+						this.font)
+						.setMaxWidth(310));
 	}
 
 	@Override
 	protected void addFooter() {
 		LinearLayout footer = LinearLayout.horizontal().spacing(8);
 		this.saveButton = footer.addChild(
-			Button.builder(Component.translatable("patchwork.config.save"), button -> save()).width(150).build());
+				Button.builder(Component.translatable("patchwork.config.save"), button -> save()).width(150).build());
 		this.saveButton.active = validRadius();
 		footer.addChild(Button.builder(Component.translatable("gui.cancel"), button -> onClose()).width(150).build());
 		this.layout.addToFooter(footer);
@@ -83,7 +84,7 @@ public class PatchworkConfigScreen extends OptionsSubScreen {
 
 	private Component label(int index) {
 		return Component.translatable("patchwork.config." + KEYS[index]).append(": ")
-			.append(Component.translatable(this.enabled[index] ? "options.on" : "options.off"));
+				.append(Component.translatable(this.enabled[index] ? "options.on" : "options.off"));
 	}
 
 	private boolean validRadius() {
@@ -101,10 +102,11 @@ public class PatchworkConfigScreen extends OptionsSubScreen {
 		}
 		try {
 			PatchworkConfig.save(new PatchworkConfig.Settings(this.enabled[0], this.enabled[1], this.enabled[2],
-				this.enabled[3], this.enabled[4], this.enabled[5], this.enabled[6], this.enabled[7], this.enabled[8],
-				this.enabled[9], this.enabled[10], this.enabled[11], this.enabled[12], this.enabled[13],
-				this.enabled[14], this.enabled[15], this.enabled[16], this.enabled[17], this.enabled[18],
-				this.enabled[19], this.enabled[20], this.enabled[21], Integer.parseInt(this.radiusText)));
+					this.enabled[3], this.enabled[4], this.enabled[5], this.enabled[6], this.enabled[7],
+					this.enabled[8],
+					this.enabled[9], this.enabled[10], this.enabled[11], this.enabled[12], this.enabled[13],
+					this.enabled[14], this.enabled[15], this.enabled[16], this.enabled[17], this.enabled[18],
+					this.enabled[19], this.enabled[20], this.enabled[21], Integer.parseInt(this.radiusText)));
 		} catch (IllegalStateException e) {
 			Patchwork.LOGGER.error("Could not save Patchwork settings", e);
 			this.saveButton.setMessage(Component.translatable("patchwork.config.save_failed"));

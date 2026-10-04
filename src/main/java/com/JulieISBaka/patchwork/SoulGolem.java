@@ -41,9 +41,9 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class SoulGolem extends IronGolem implements OwnableEntity, RangedAttackMob, Shearable {
 	private static final EntityDataAccessor<Boolean> HAS_LANTERN = SynchedEntityData.defineId(SoulGolem.class,
-		EntityDataSerializers.BOOLEAN);
+			EntityDataSerializers.BOOLEAN);
 	private static final EntityDataAccessor<Boolean> HAS_OWNER = SynchedEntityData.defineId(SoulGolem.class,
-		EntityDataSerializers.BOOLEAN);
+			EntityDataSerializers.BOOLEAN);
 	private EntityReference<LivingEntity> owner;
 
 	public SoulGolem(EntityType<? extends SoulGolem> type, Level level) {
@@ -67,7 +67,7 @@ public class SoulGolem extends IronGolem implements OwnableEntity, RangedAttackM
 		targetSelector.addGoal(1, new OwnerCombatGoal(false));
 		targetSelector.addGoal(2, new HurtByTargetGoal(this));
 		targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Monster.class, true,
-			(target, level) -> !(target instanceof Creeper)));
+				(target, level) -> !(target instanceof Creeper)));
 	}
 
 	@Override
@@ -100,7 +100,7 @@ public class SoulGolem extends IronGolem implements OwnableEntity, RangedAttackM
 			return true;
 		}
 		return owner != null && target instanceof OwnableEntity pet && pet.getOwnerReference() != null
-			&& pet.getOwnerReference().getUUID().equals(owner.getUUID());
+				&& pet.getOwnerReference().getUUID().equals(owner.getUUID());
 	}
 
 	@Override
@@ -112,8 +112,8 @@ public class SoulGolem extends IronGolem implements OwnableEntity, RangedAttackM
 		if (target instanceof Player || target instanceof Creeper) {
 			LivingEntity builder = getOwner();
 			return builder != null && target.isAlive() && !target.isSpectator()
-				&& !(target instanceof Player player && player.isCreative())
-				&& (builder.getLastHurtByMob() == target || builder.getLastHurtMob() == target);
+					&& !(target instanceof Player player && player.isCreative())
+					&& (builder.getLastHurtByMob() == target || builder.getLastHurtMob() == target);
 		}
 		return super.canAttack(target);
 	}
@@ -203,7 +203,7 @@ public class SoulGolem extends IronGolem implements OwnableEntity, RangedAttackM
 			candidate = defend ? builder.getLastHurtByMob() : builder.getLastHurtMob();
 			int current = defend ? builder.getLastHurtByMobTimestamp() : builder.getLastHurtMobTimestamp();
 			return current != timestamp && candidate != null && SoulGolem.this.canAttack(candidate)
-				&& canAttack(candidate, TargetingConditions.DEFAULT);
+					&& canAttack(candidate, TargetingConditions.DEFAULT);
 		}
 
 		@Override

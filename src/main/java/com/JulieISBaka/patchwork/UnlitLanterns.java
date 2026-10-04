@@ -37,7 +37,7 @@ public final class UnlitLanterns {
 	public static final Block LANTERN = create(Blocks.LANTERN);
 	public static final Block SOUL_LANTERN = create(Blocks.SOUL_LANTERN);
 	public static final WeatheringCopperCollection<Block> COPPER_LANTERN = Blocks.COPPER_LANTERN
-		.map(UnlitLanterns::create);
+			.map(UnlitLanterns::create);
 
 	private UnlitLanterns() {
 	}
@@ -45,7 +45,7 @@ public final class UnlitLanterns {
 	public static void register() {
 		OxidizableBlocksRegistry.registerWeatheringCopperBlocks(COPPER_LANTERN);
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS)
-			.register(output -> UNLIT.forEach((lit, unlit) -> output.insertAfter(lit.asItem(), unlit.asItem())));
+				.register(output -> UNLIT.forEach((lit, unlit) -> output.insertAfter(lit.asItem(), unlit.asItem())));
 	}
 
 	public static BlockState extinguish(BlockState lit) {
@@ -57,13 +57,14 @@ public final class UnlitLanterns {
 		String name = "unlit_" + BuiltInRegistries.BLOCK.getKey(lit).getPath();
 		ResourceKey<Block> blockKey = ResourceKey.create(Registries.BLOCK, Patchwork.id(name));
 		BlockBehaviour.Properties properties = BlockBehaviour.Properties.ofLegacyCopy(lit).lightLevel(state -> 0)
-			.setId(blockKey);
+				.setId(blockKey);
 		Block block = Registry.register(BuiltInRegistries.BLOCK, blockKey,
-			lit instanceof WeatheringCopper copper ? new UnlitWeatheringLanternBlock(lit, copper.getAge(), properties)
-				: new UnlitLanternBlock(lit, properties));
+				lit instanceof WeatheringCopper copper
+						? new UnlitWeatheringLanternBlock(lit, copper.getAge(), properties)
+						: new UnlitLanternBlock(lit, properties));
 		ResourceKey<Item> itemKey = ResourceKey.create(Registries.ITEM, Patchwork.id(name));
 		Item item = Registry.register(BuiltInRegistries.ITEM, itemKey,
-			new BlockItem(block, new Item.Properties().setId(itemKey).useBlockDescriptionPrefix()));
+				new BlockItem(block, new Item.Properties().setId(itemKey).useBlockDescriptionPrefix()));
 		Item.BY_BLOCK.put(block, item);
 		UNLIT.put(lit, block);
 		return block;
@@ -79,7 +80,7 @@ public final class UnlitLanterns {
 
 		@Override
 		protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
-			Player player, InteractionHand hand, BlockHitResult hit) {
+				Player player, InteractionHand hand, BlockHitResult hit) {
 			if (!stack.is(Items.FIRE_CHARGE) || state.getValue(WATERLOGGED)) {
 				return InteractionResult.TRY_WITH_EMPTY_HAND;
 			}

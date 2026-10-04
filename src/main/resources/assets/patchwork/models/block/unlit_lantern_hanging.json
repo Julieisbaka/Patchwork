@@ -1,1 +1,6 @@
-{ "parent": "minecraft:block/template_hanging_lantern", "textures": { "lantern": "patchwork:block/unlit_lantern" } }
+{
+    "parent": "minecraft:block/template_hanging_lantern",
+    "textures": {
+        "lantern": "patchwork:block/unlit_lantern"
+    }
+}

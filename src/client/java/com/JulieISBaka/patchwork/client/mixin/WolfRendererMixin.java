@@ -31,6 +31,6 @@ public abstract class WolfRendererMixin extends AgeableMobRenderer<Wolf, WolfRen
 	private void patchwork$extractBanner(Wolf wolf, WolfRenderState state, float partialTicks, CallbackInfo ci) {
 		ItemStack headItem = wolf.getItemBySlot(EquipmentSlot.HEAD);
 		((WolfBannerState) state)
-			.patchwork$setBanner(headItem.getItem() instanceof BannerItem ? headItem.copy() : ItemStack.EMPTY);
+				.patchwork$setBanner(headItem.getItem() instanceof BannerItem ? headItem.copy() : ItemStack.EMPTY);
 	}
 }

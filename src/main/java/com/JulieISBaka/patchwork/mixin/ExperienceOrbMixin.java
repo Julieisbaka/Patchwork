@@ -32,7 +32,7 @@ public abstract class ExperienceOrbMixin {
 
 	@Inject(method = "awardWithDirection", at = @At("HEAD"), cancellable = true)
 	private static void patchwork$awardSingleOrb(ServerLevel level, Vec3 pos, Vec3 direction, int amount,
-		CallbackInfo ci) {
+			CallbackInfo ci) {
 		if (PatchworkConfig.settings().experienceClumping()) {
 			if (amount > 0 && !level.addFreshEntity(new ExperienceOrb(level, pos, direction, amount))) {
 				throw new IllegalStateException("Could not spawn experience orb at " + pos);
@@ -52,12 +52,12 @@ public abstract class ExperienceOrbMixin {
 	private void patchwork$clump(CallbackInfo ci) {
 		ExperienceOrb self = (ExperienceOrb) (Object) this;
 		if (!PatchworkConfig.settings().experienceClumping() || self.isRemoved()
-			|| !(self.level() instanceof ServerLevel level) || level.getGameTime() < patchwork$nextMergeTick) {
+				|| !(self.level() instanceof ServerLevel level) || level.getGameTime() < patchwork$nextMergeTick) {
 			return;
 		}
 		patchwork$nextMergeTick = level.getGameTime() + 20;
 		for (ExperienceOrb other : level.getEntitiesOfClass(ExperienceOrb.class, self.getBoundingBox().inflate(2.0),
-			orb -> orb != self && !orb.isRemoved() && self.distanceToSqr(orb) <= 4.0)) {
+				orb -> orb != self && !orb.isRemoved() && self.distanceToSqr(orb) <= 4.0)) {
 			ExperienceOrbAccessor otherData = (ExperienceOrbAccessor) other;
 			long total = (long) getValue() * count + (long) other.getValue() * otherData.patchwork$count();
 			if (total > 0 && total <= Integer.MAX_VALUE) {

@@ -38,17 +38,17 @@ public abstract class SoulFireSupportMixin extends BaseFireBlock {
 
 	@Inject(method = "canSurvive", at = @At("HEAD"), cancellable = true)
 	private void patchwork$chargeSupport(BlockState state, LevelReader level, BlockPos pos,
-		CallbackInfoReturnable<Boolean> cir) {
+			CallbackInfoReturnable<Boolean> cir) {
 		if (state.getValue(SoulFireSupport.CHARGE_PLACED)
-			&& level.getBlockState(pos.below()).isFaceSturdy(level, pos.below(), Direction.UP)) {
+				&& level.getBlockState(pos.below()).isFaceSturdy(level, pos.below(), Direction.UP)) {
 			cir.setReturnValue(true);
 		}
 	}
 
 	@Inject(method = "updateShape", at = @At("HEAD"), cancellable = true)
 	private void patchwork$preserveChargeSupport(BlockState state, LevelReader level, ScheduledTickAccess ticks,
-		BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState, RandomSource random,
-		CallbackInfoReturnable<BlockState> cir) {
+			BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState, RandomSource random,
+			CallbackInfoReturnable<BlockState> cir) {
 		if (state.getValue(SoulFireSupport.CHARGE_PLACED)) {
 			cir.setReturnValue(state.canSurvive(level, pos) ? state : Blocks.AIR.defaultBlockState());
 		}

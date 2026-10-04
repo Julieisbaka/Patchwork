@@ -38,7 +38,7 @@ public class SoulGolemRenderer extends MobRenderer<SoulGolem, SnowGolemRenderSta
 		super.extractRenderState(golem, state, partialTick);
 		if (golem.hasLantern()) {
 			blockModelResolver.update(state.headBlock, PumpkinLanterns.SOUL_BLOCK.defaultBlockState(),
-				SnowGolemRenderer.BLOCK_DISPLAY_CONTEXT);
+					SnowGolemRenderer.BLOCK_DISPLAY_CONTEXT);
 		} else {
 			state.headBlock.clear();
 		}

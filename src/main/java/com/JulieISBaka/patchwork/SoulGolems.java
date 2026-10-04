@@ -26,14 +26,14 @@ import net.minecraft.world.level.block.state.BlockState;
 public final class SoulGolems {
 	private static final ThreadLocal<Player> BUILDER = new ThreadLocal<>();
 	private static final ResourceKey<EntityType<?>> TYPE_KEY = ResourceKey.create(Registries.ENTITY_TYPE,
-		Patchwork.id("soul_golem"));
+			Patchwork.id("soul_golem"));
 	public static final EntityType<SoulGolem> TYPE = Registry.register(BuiltInRegistries.ENTITY_TYPE, TYPE_KEY,
-		EntityType.Builder.of(SoulGolem::new, MobCategory.MISC).sized(0.7F, 1.9F).eyeHeight(1.7F)
-			.clientTrackingRange(10).noLootTable().build(TYPE_KEY));
+			EntityType.Builder.of(SoulGolem::new, MobCategory.MISC).sized(0.7F, 1.9F).eyeHeight(1.7F)
+					.clientTrackingRange(10).noLootTable().build(TYPE_KEY));
 	private static final ResourceKey<Item> EGG_KEY = ResourceKey.create(Registries.ITEM,
-		Patchwork.id("soul_golem_spawn_egg"));
+			Patchwork.id("soul_golem_spawn_egg"));
 	public static final Item SPAWN_EGG = Registry.register(BuiltInRegistries.ITEM, EGG_KEY,
-		new SpawnEggItem(new Item.Properties().spawnEgg(TYPE).setId(EGG_KEY)));
+			new SpawnEggItem(new Item.Properties().spawnEgg(TYPE).setId(EGG_KEY)));
 
 	private SoulGolems() {
 	}
@@ -59,7 +59,8 @@ public final class SoulGolems {
 	public static boolean trySpawn(Level level, BlockPos head) {
 		BlockState lantern = level.getBlockState(head);
 		if (!(level instanceof ServerLevel serverLevel) || !lantern.is(PumpkinLanterns.SOUL_BLOCK)
-			|| !isSoulBlock(level.getBlockState(head.below())) || !isSoulBlock(level.getBlockState(head.below(2)))) {
+				|| !isSoulBlock(level.getBlockState(head.below()))
+				|| !isSoulBlock(level.getBlockState(head.below(2)))) {
 			return false;
 		}
 		SoulGolem golem = new SoulGolem(TYPE, level);
@@ -68,7 +69,7 @@ public final class SoulGolems {
 		}
 		BlockPos base = head.below(2);
 		golem.snapTo(base.getX() + 0.5, base.getY() + 0.05, base.getZ() + 0.5,
-			lantern.getValue(CarvedPumpkinBlock.FACING).toYRot(), 0.0F);
+				lantern.getValue(CarvedPumpkinBlock.FACING).toYRot(), 0.0F);
 		if (!serverLevel.addFreshEntity(golem)) {
 			throw new IllegalStateException("Could not spawn Soul Golem at " + base);
 		}
@@ -78,7 +79,7 @@ public final class SoulGolems {
 			level.levelEvent(2001, pos, Block.getId(state));
 		}
 		for (ServerPlayer player : serverLevel.getEntitiesOfClass(ServerPlayer.class,
-			golem.getBoundingBox().inflate(5.0))) {
+				golem.getBoundingBox().inflate(5.0))) {
 			CriteriaTriggers.SUMMONED_ENTITY.trigger(player, golem);
 		}
 		return true;

@@ -20,20 +20,21 @@ public class SpiderWebMixin {
 	private void patchwork$spinWeb(CallbackInfo ci) {
 		Spider spider = (Spider) (Object) this;
 		if (!PatchworkConfig.settings().spiderWebs() || !(spider.level() instanceof ServerLevel level)
-			|| !spider.isAlive() || spider.tickCount % 100 != 0 || !level.getGameRules().get(GameRules.MOB_GRIEFING)) {
+				|| !spider.isAlive() || spider.tickCount % 100 != 0
+				|| !level.getGameRules().get(GameRules.MOB_GRIEFING)) {
 			return;
 		}
 		LivingEntity target = spider.getTarget();
 		if (target == null || !target.isAlive() || spider.distanceToSqr(target) > 64.0
-			|| spider.distanceToSqr(target) < 4.0 || spider.getRandom().nextInt(4) != 0) {
+				|| spider.distanceToSqr(target) < 4.0 || spider.getRandom().nextInt(4) != 0) {
 			return;
 		}
 		BlockPos pos = target.blockPosition();
 		if (level.getBlockState(pos).isAir()
-			&& level.getBlockState(pos.below()).isFaceSturdy(level, pos.below(), Direction.UP)
-			&& level.setBlockAndUpdate(pos, Blocks.COBWEB.defaultBlockState())) {
+				&& level.getBlockState(pos.below()).isFaceSturdy(level, pos.below(), Direction.UP)
+				&& level.setBlockAndUpdate(pos, Blocks.COBWEB.defaultBlockState())) {
 			level.gameEvent(GameEvent.BLOCK_PLACE, pos,
-				GameEvent.Context.of(spider, Blocks.COBWEB.defaultBlockState()));
+					GameEvent.Context.of(spider, Blocks.COBWEB.defaultBlockState()));
 		}
 	}
 }

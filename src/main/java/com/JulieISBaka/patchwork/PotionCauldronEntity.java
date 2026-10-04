@@ -44,7 +44,7 @@ public class PotionCauldronEntity extends BlockEntity {
 	protected void loadAdditional(ValueInput input) {
 		super.loadAdditional(input);
 		potion = input.read("potion", PotionContents.CODEC)
-			.orElseThrow(() -> new IllegalStateException("Potion cauldron has no potion at " + worldPosition));
+				.orElseThrow(() -> new IllegalStateException("Potion cauldron has no potion at " + worldPosition));
 		if (level != null && level.isClientSide()) {
 			// The block update can build the mesh before its potion data arrives.
 			level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);

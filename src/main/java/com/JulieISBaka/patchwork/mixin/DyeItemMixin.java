@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class DyeItemMixin {
 	@Inject(method = "interactLivingEntity", at = @At("HEAD"), cancellable = true)
 	private void patchwork$dyeShulker(ItemStack dye, Player player, LivingEntity target, InteractionHand hand,
-		CallbackInfoReturnable<InteractionResult> cir) {
+			CallbackInfoReturnable<InteractionResult> cir) {
 		if (PatchworkConfig.settings().shulkerDyeing() && target instanceof Shulker shulker && shulker.isAlive()) {
 			DyeColor color = dye.get(DataComponents.DYE);
 			if (color != null && shulker.getColor() != color) {

@@ -31,7 +31,7 @@ public class Patchwork implements ModInitializer {
 	private static final int SLIMEBALL_COOLDOWN_TICKS = 20;
 	public static final String THROWN_FIRE_CHARGE_TAG = "patchwork:thrown_fire_charge";
 	private static final ResourceConditionType<ChainmailCondition> CHAINMAIL_CONDITION = ResourceConditionType
-		.create(id("chainmail_recipes"), MapCodec.unit(new ChainmailCondition()));
+			.create(id("chainmail_recipes"), MapCodec.unit(new ChainmailCondition()));
 
 	private record ChainmailCondition() implements ResourceCondition {
 		@Override
@@ -80,24 +80,24 @@ public class Patchwork implements ModInitializer {
 				output.insertAfter(Items.WIND_CHARGE, Items.SLIME_BALL);
 			}
 			output.insertAfter(PatchworkConfig.settings().throwableSlimeballs() ? Items.SLIME_BALL : Items.WIND_CHARGE,
-				Items.FIRE_CHARGE);
+					Items.FIRE_CHARGE);
 			output.insertAfter(Items.FIRE_CHARGE, SoulFireCharges.ITEM);
 		});
 		SlimeSplitClouds.register();
 		ResourceConditions.register(CHAINMAIL_CONDITION);
 		PlayerBlockBreakEvents.AFTER.register((level, player, pos, state, blockEntity) -> {
 			if (!PatchworkConfig.settings().beesDefendFlowers() || !(level instanceof ServerLevel serverLevel)
-				|| !state.is(BlockTags.FLOWERS)) {
+					|| !state.is(BlockTags.FLOWERS)) {
 				return;
 			}
 			for (BlockPos nearby : BlockPos.betweenClosed(pos.offset(-4, -4, -4), pos.offset(4, 4, 4))) {
 				if (nearby.distSqr(pos) > 16.0 || !serverLevel.getBlockState(nearby).is(BlockTags.BEEHIVES)
-					|| !(serverLevel.getBlockEntity(nearby) instanceof BeehiveBlockEntity hive) || hive.isEmpty()
-					|| hive.isSedated()) {
+						|| !(serverLevel.getBlockEntity(nearby) instanceof BeehiveBlockEntity hive) || hive.isEmpty()
+						|| hive.isSedated()) {
 					continue;
 				}
 				hive.emptyAllLivingFromHive(player, serverLevel.getBlockState(nearby),
-					BeehiveBlockEntity.BeeReleaseStatus.EMERGENCY);
+						BeehiveBlockEntity.BeeReleaseStatus.EMERGENCY);
 			}
 		});
 		UseItemCallback.EVENT.register((player, level, hand) -> {
@@ -110,7 +110,7 @@ public class Patchwork implements ModInitializer {
 			}
 
 			level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.SNOWBALL_THROW,
-				SoundSource.NEUTRAL, 0.5F, 0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
+					SoundSource.NEUTRAL, 0.5F, 0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
 			if (level instanceof ServerLevel serverLevel) {
 				Projectile.spawnProjectileFromRotation(Snowball::new, serverLevel, stack, player, 0.0F, 1.5F, 1.0F);
 			}

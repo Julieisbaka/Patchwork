@@ -30,7 +30,7 @@ public class SlimeballSnowballMixin {
 				slime.heal(1.0F);
 				slime.addEffect(new MobEffectInstance(MobEffects.SPEED, 60, 0), projectile.getOwner());
 			} else if (target.hurtServer(level, projectile.damageSources().thrown(projectile, projectile.getOwner()),
-				1.0F) && target instanceof LivingEntity living) {
+					1.0F) && target instanceof LivingEntity living) {
 				living.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 60, 0), projectile.getOwner());
 			}
 		}

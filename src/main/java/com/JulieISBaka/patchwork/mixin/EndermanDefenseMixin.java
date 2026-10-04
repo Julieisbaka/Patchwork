@@ -22,12 +22,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class EndermanDefenseMixin {
 	@Inject(method = "hurtServer", at = @At("RETURN"))
 	private void patchwork$placeDefensiveBlock(ServerLevel level, DamageSource source, float damage,
-		CallbackInfoReturnable<Boolean> cir) {
+			CallbackInfoReturnable<Boolean> cir) {
 		Enderman enderman = (Enderman) (Object) this;
 		BlockState carried = enderman.getCarriedBlock();
 		if (!PatchworkConfig.settings().endermanDefense() || !cir.getReturnValue() || !enderman.isAlive()
-			|| carried == null || !(source.getEntity() instanceof LivingEntity attacker)
-			|| !level.getGameRules().get(GameRules.MOB_GRIEFING) || enderman.getRandom().nextInt(3) != 0) {
+				|| carried == null || !(source.getEntity() instanceof LivingEntity attacker)
+				|| !level.getGameRules().get(GameRules.MOB_GRIEFING) || enderman.getRandom().nextInt(3) != 0) {
 			return;
 		}
 
@@ -37,14 +37,14 @@ public class EndermanDefenseMixin {
 			return;
 		}
 		BlockPos pos = enderman.blockPosition().offset(Math.abs(dx) >= Math.abs(dz) ? (int) Math.signum(dx) : 0, 0,
-			Math.abs(dx) < Math.abs(dz) ? (int) Math.signum(dz) : 0);
+				Math.abs(dx) < Math.abs(dz) ? (int) Math.signum(dz) : 0);
 		BlockPos below = pos.below();
 		BlockState placement = Block.updateFromNeighbourShapes(carried, level, pos);
 		if (!placement.isAir() && level.getBlockState(pos).isAir()
-			&& level.getBlockState(below).isCollisionShapeFullBlock(level, below)
-			&& !level.getBlockState(below).is(Blocks.BEDROCK) && placement.canSurvive(level, pos)
-			&& level.getEntities(enderman, AABB.unitCubeFromLowerCorner(Vec3.atLowerCornerOf(pos))).isEmpty()
-			&& level.setBlockAndUpdate(pos, placement)) {
+				&& level.getBlockState(below).isCollisionShapeFullBlock(level, below)
+				&& !level.getBlockState(below).is(Blocks.BEDROCK) && placement.canSurvive(level, pos)
+				&& level.getEntities(enderman, AABB.unitCubeFromLowerCorner(Vec3.atLowerCornerOf(pos))).isEmpty()
+				&& level.setBlockAndUpdate(pos, placement)) {
 			level.gameEvent(GameEvent.BLOCK_PLACE, pos, GameEvent.Context.of(enderman, placement));
 			enderman.setCarriedBlock(null);
 		}
