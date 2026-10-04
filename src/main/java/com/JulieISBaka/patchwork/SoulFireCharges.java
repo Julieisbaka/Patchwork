@@ -26,15 +26,12 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.CandleBlock;
 import net.minecraft.world.level.block.CandleCakeBlock;
 import net.minecraft.world.level.block.DispenserBlock;
-import net.minecraft.world.level.block.SoulFireBlock;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -43,15 +40,6 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 public final class SoulFireCharges {
-	private static final ResourceKey<Block> FIRE_KEY = ResourceKey.create(Registries.BLOCK, Patchwork.id("supported_soul_fire"));
-	public static final Block FIRE = Registry.register(BuiltInRegistries.BLOCK, FIRE_KEY,
-		new SoulFireBlock(BlockBehaviour.Properties.ofLegacyCopy(Blocks.SOUL_FIRE).setId(FIRE_KEY)) {
-			@Override
-			protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
-				BlockState support = level.getBlockState(pos.below());
-				return SoulFireBlock.canSurviveOnBlock(support) || support.isFaceSturdy(level, pos.below(), Direction.UP);
-			}
-		});
 	private static final ResourceKey<Item> ITEM_KEY = ResourceKey.create(Registries.ITEM, Patchwork.id("soul_fire_charge"));
 	public static final Item ITEM = Registry.register(BuiltInRegistries.ITEM, ITEM_KEY,
 		new FireChargeItem(new Item.Properties().setId(ITEM_KEY)) {
@@ -78,7 +66,7 @@ public final class SoulFireCharges {
 					if (light) {
 						context.getLevel().setBlockAndUpdate(pos, state.setValue(BlockStateProperties.LIT, true));
 					} else {
-						context.getLevel().setBlockAndUpdate(firePos, FIRE.defaultBlockState());
+						context.getLevel().setBlockAndUpdate(firePos, Blocks.SOUL_FIRE.defaultBlockState());
 					}
 					context.getLevel().playSound(null, pos, SoundEvents.FIRECHARGE_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
 					context.getLevel().gameEvent(context.getPlayer(), GameEvent.BLOCK_PLACE, light ? pos : firePos);
@@ -151,7 +139,7 @@ public final class SoulFireCharges {
 	}
 
 	public static boolean canPlaceFire(Level level, BlockPos pos) {
-		return level.getBlockState(pos).isAir() && FIRE.defaultBlockState().canSurvive(level, pos);
+		return level.getBlockState(pos).isAir() && Blocks.SOUL_FIRE.defaultBlockState().canSurvive(level, pos);
 	}
 
 	public static void ignite(Level level, BlockHitResult hit) {
@@ -166,7 +154,7 @@ public final class SoulFireCharges {
 			pos = struck.above();
 		}
 		if (canPlaceFire(level, pos)) {
-			level.setBlockAndUpdate(pos, FIRE.defaultBlockState());
+			level.setBlockAndUpdate(pos, Blocks.SOUL_FIRE.defaultBlockState());
 		}
 	}
 }

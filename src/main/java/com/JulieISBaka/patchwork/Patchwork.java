@@ -61,7 +61,7 @@ public class Patchwork implements ModInitializer {
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register(output -> {
 			output.insertAfter(Items.TORCH, UnlitTorches.TORCH_ITEM);
 			output.insertAfter(Items.SOUL_TORCH, UnlitTorches.SOUL_TORCH_ITEM);
-			output.insertAfter(Items.COPPER_TORCH, UnlitTorches.COPPER_TORCH_ITEM);
+			output.insertAfter(Items.COPPER_TORCH, UnlitTorches.COPPER_TORCH.asItem());
 			output.insertAfter(Items.REDSTONE_TORCH, UnlitTorches.REDSTONE_TORCH_ITEM);
 			output.insertAfter(Items.JACK_O_LANTERN, PumpkinLanterns.SOUL_ITEM);
 		});

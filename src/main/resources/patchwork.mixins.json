@@ -7,6 +7,7 @@
 		"BreezeShockwaveMixin",
 		"CallGoatHornMixin",
 		"CreeperChainReactionMixin",
+		"CopperTorchRegistrationMixin",
 		"DyeItemMixin",
 		"EndermanDefenseMixin",
 		"ExperienceOrbMixin",

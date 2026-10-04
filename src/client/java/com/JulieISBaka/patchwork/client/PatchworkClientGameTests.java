@@ -1,6 +1,9 @@
 package com.JulieISBaka.patchwork.client;
 
 import com.JulieISBaka.patchwork.Patchwork;
+import com.JulieISBaka.patchwork.CopperTorches;
+import com.JulieISBaka.patchwork.PotionCauldronEntity;
+import com.JulieISBaka.patchwork.PotionCauldrons;
 import com.JulieISBaka.patchwork.SoulGolem;
 import com.JulieISBaka.patchwork.SoulGolems;
 import com.JulieISBaka.patchwork.SoulFireCharges;
@@ -14,17 +17,25 @@ import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.level.block.LayeredCauldronBlock;
 
 public class PatchworkClientGameTests implements FabricClientGameTest {
 	@Override
 	public void runTest(ClientGameTestContext context) {
+		testPotionFirstFillTint(context);
 		try (var world = context.worldBuilder().create()) {
 			world.getServer().runCommand("fill -10 100 -10 10 100 10 minecraft:stone");
 			world.getServer().runCommand("time set day");
 			world.getServer().runCommand("weather clear");
 			world.getServer().runCommand("tp @a 0.5 101 5.5 180 0");
 			world.getServer().runCommand("summon patchwork:soul_golem 0.5 101 0.5 {NoAI:1b}");
-			world.getServer().runCommand("setblock 2 101 0 patchwork:supported_soul_fire");
+			world.getServer().runCommand("setblock 2 100 0 minecraft:soul_soil");
+			world.getServer().runCommand("setblock 2 101 0 minecraft:soul_fire");
 			world.getServer().runCommand("summon patchwork:soul_fireball -2.5 102.5 0.5 {acceleration_power:0.0d}");
 			world.getServer().runOnServer(server -> server.getPlayerList().getPlayers().getFirst()
 				.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(SoulGolems.SPAWN_EGG)));
@@ -53,6 +64,21 @@ public class PatchworkClientGameTests implements FabricClientGameTest {
 						ItemDisplayContext.NONE, client.player);
 					if (itemState.isEmpty() || itemState.usesBlockLight() || itemState.getModelBoundingBox().getZsize() > 0.07) {
 						throw new AssertionError("Lantern did not use a flat generated item model: " + lantern);
+					}
+					for (var collection : java.util.List.of(CopperTorches.LIT, CopperTorches.LIT_WALL,
+						CopperTorches.UNLIT, CopperTorches.UNLIT_WALL)) {
+						for (var torch : collection.asList()) {
+							var model = client.getModelManager().getBlockStateModelSet().get(torch.defaultBlockState());
+							if (model == null) {
+								throw new AssertionError("Copper torch block model is missing: " + torch);
+							}
+							var itemState = new ItemStackRenderState();
+							client.getItemModelResolver().updateForLiving(itemState, new ItemStack(torch.asItem()),
+								ItemDisplayContext.GUI, client.player);
+							if (itemState.isEmpty()) {
+								throw new AssertionError("Copper torch item model is missing: " + torch);
+							}
+						}
 					}
 				}
 				var chargeState = new ItemStackRenderState();
@@ -83,6 +109,78 @@ public class PatchworkClientGameTests implements FabricClientGameTest {
 						if (state.headBlock.isEmpty() || !soulRenderer.getTextureLocation(state)
 							.equals(Patchwork.id("textures/entity/soul_golem.png"))) {
 							throw new AssertionError("Soul Golem head or body texture is missing");
+						}
+					}
+
+					private static void testPotionFirstFillTint(ClientGameTestContext context) {
+						BlockPos pos = new BlockPos(0, 101, 0);
+						try (var world = context.worldBuilder().create()) {
+							world.getServer().runCommand("fill -5 100 -5 5 100 5 minecraft:stone");
+							world.getServer().runCommand("time set day");
+							world.getServer().runCommand("weather clear");
+							world.getServer().runCommand("tp @a 0.5 102 3.5 180 35");
+							world.getServer().runCommand("setblock 0 101 0 minecraft:cauldron");
+							world.getConnection().waitForChunksRender();
+							for (int color : new int[] {0xFF0000, 0x00FF00}) {
+								world.getServer().runOnServer(server -> {
+									var player = server.getPlayerList().getPlayers().getFirst();
+									var level = player.level();
+									level.setBlockAndUpdate(pos, Blocks.CAULDRON.defaultBlockState());
+									var contents = new PotionContents(java.util.Optional.of(Potions.HEALING),
+										java.util.Optional.of(color), java.util.List.of(), java.util.Optional.empty());
+									ItemStack potion = new ItemStack(Items.POTION);
+									potion.set(DataComponents.POTION_CONTENTS, contents);
+									player.setItemInHand(InteractionHand.MAIN_HAND, potion);
+									PotionCauldrons.pour(level.getBlockState(pos), level, pos, player, InteractionHand.MAIN_HAND, potion);
+									player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+								});
+								context.waitFor(client -> client.level.getBlockEntity(pos) instanceof PotionCauldronEntity cauldron
+									&& cauldron.potion().getColor() == color
+									&& client.level.getBlockState(pos).getValue(LayeredCauldronBlock.LEVEL) == 1);
+								world.getConnection().waitForChunksRender();
+								assertRenderedPotionColor(context, color, "potion-first-fill-" + Integer.toHexString(color));
+							}
+							world.getServer().runOnServer(server -> {
+								var player = server.getPlayerList().getPlayers().getFirst();
+								if (!(player.level().getBlockEntity(pos) instanceof PotionCauldronEntity cauldron)) {
+									throw new AssertionError("Potion cauldron disappeared before updating its contents");
+								}
+								cauldron.setPotion(new PotionContents(java.util.Optional.of(Potions.HEALING),
+									java.util.Optional.of(0xFF0000), java.util.List.of(), java.util.Optional.empty()));
+							});
+							context.waitFor(client -> client.level.getBlockEntity(pos) instanceof PotionCauldronEntity cauldron
+								&& cauldron.potion().getColor() == 0xFF0000);
+							world.getConnection().waitForChunksRender();
+							assertRenderedPotionColor(context, 0xFF0000, "potion-data-only-update");
+						}
+					}
+
+					private static void assertRenderedPotionColor(ClientGameTestContext context, int color, String name) {
+						var screenshot = context.takeScreenshot(name);
+						try {
+							var image = javax.imageio.ImageIO.read(screenshot.toFile());
+							if (image == null) {
+								throw new AssertionError("Could not decode potion screenshot: " + screenshot);
+							}
+							int matchingPixels = 0;
+							for (int y = 0; y < image.getHeight() * 3 / 4; y++) {
+								for (int x = image.getWidth() / 4; x < image.getWidth() * 3 / 4; x++) {
+									int pixel = image.getRGB(x, y);
+									int red = (pixel >> 16) & 255;
+									int green = (pixel >> 8) & 255;
+									int blue = pixel & 255;
+									if (color == 0xFF0000 ? red > 60 && red > green * 2 && red > blue * 2
+										: green > 60 && green > red * 2 && green > blue * 2) {
+										matchingPixels++;
+									}
+								}
+							}
+							if (matchingPixels < 100) {
+								throw new AssertionError("Potion mesh did not show its current tint without a reload: "
+									+ matchingPixels + " matching pixels in " + screenshot);
+							}
+						} catch (java.io.IOException exception) {
+							throw new AssertionError("Could not read potion screenshot: " + screenshot, exception);
 						}
 					}
 				}

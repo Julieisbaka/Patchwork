@@ -6,6 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -44,6 +45,10 @@ public class PotionCauldronEntity extends BlockEntity {
 		super.loadAdditional(input);
 		potion = input.read("potion", PotionContents.CODEC)
 			.orElseThrow(() -> new IllegalStateException("Potion cauldron has no potion at " + worldPosition));
+		if (level != null && level.isClientSide()) {
+			// The block update can build the mesh before its potion data arrives.
+			level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
+		}
 	}
 
 	@Override

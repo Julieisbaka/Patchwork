@@ -1,0 +1,12 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"category": "misc",
+	"ingredients": [
+		"patchwork:unlit_copper_torch",
+		"minecraft:honeycomb"
+	],
+	"result": {
+		"id": "patchwork:unlit_waxed_copper_torch",
+		"count": 1
+	}
+}

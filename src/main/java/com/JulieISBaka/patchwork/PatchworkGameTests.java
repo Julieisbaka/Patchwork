@@ -10,6 +10,7 @@ import com.JulieISBaka.patchwork.mixin.PotionArrowItemAccessor;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
@@ -344,19 +345,19 @@ public class PatchworkGameTests {
 	}
 
 	@GameTest(maxTicks = 30)
-	public void soulFireChargeIgnitesOrdinarySupportAndDoesNotExplode(GameTestHelper test) {
+	public void soulFireChargeIgnitesVanillaSoulFireAndDoesNotExplode(GameTestHelper test) {
 		BlockPos wall = CENTER.offset(1, 1, 0);
-		test.setBlock(wall, Blocks.STONE);
+		test.setBlock(wall, Blocks.SOUL_SOIL);
 		Player player = test.makeMockPlayer(GameType.SURVIVAL);
 		var fireball = SoulFireCharges.shoot(test.getLevel(), player,
 			Vec3.atCenterOf(test.absolutePos(CENTER)).add(0, 1, 0), new Vec3(1, 0, 0));
 		test.runAfterDelay(6, () -> {
-			test.assertBlockPresent(SoulFireCharges.FIRE, wall.above());
-			test.assertBlockPresent(Blocks.STONE, wall);
+			test.assertBlockPresent(Blocks.SOUL_FIRE, wall.above());
+			test.assertBlockPresent(Blocks.SOUL_SOIL, wall);
 			test.assertTrue(fireball.isRemoved(), "Soul projectile was not removed on impact");
 		});
 		test.runAfterDelay(12, () -> {
-			test.assertBlockPresent(SoulFireCharges.FIRE, wall.above());
+			test.assertBlockPresent(Blocks.SOUL_FIRE, wall.above());
 			test.setBlock(wall, Blocks.AIR);
 			test.assertBlockPresent(Blocks.AIR, wall.above());
 			test.succeed();
@@ -408,10 +409,16 @@ public class PatchworkGameTests {
 			test.setBlock(CENTER.above(), Blocks.AIR);
 			player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(SoulFireCharges.ITEM, 2));
 			BlockPos pos = test.absolutePos(CENTER);
-			SoulFireCharges.ITEM.useOn(new UseOnContext(player, InteractionHand.MAIN_HAND,
+			var result = SoulFireCharges.ITEM.useOn(new UseOnContext(player, InteractionHand.MAIN_HAND,
 				new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, false)));
-			test.assertBlockPresent(SoulFireCharges.FIRE, CENTER.above());
-			test.assertTrue(player.getMainHandItem().getCount() == 1, "Direct soul-fire placement did not use one charge");
+			if (support == Blocks.STONE) {
+				test.assertBlockPresent(Blocks.AIR, CENTER.above());
+				test.assertTrue(result == InteractionResult.FAIL && player.getMainHandItem().getCount() == 2,
+					"Unsupported soul fire consumed a charge or placed fire");
+			} else {
+				test.assertBlockPresent(Blocks.SOUL_FIRE, CENTER.above());
+				test.assertTrue(player.getMainHandItem().getCount() == 1, "Direct soul-fire placement did not use one charge");
+			}
 		}
 		var projectile = ((net.minecraft.world.item.ProjectileItem)SoulFireCharges.ITEM).asProjectile(
 			test.getLevel(), Vec3.atCenterOf(test.absolutePos(CENTER)), new ItemStack(SoulFireCharges.ITEM), Direction.EAST);
@@ -505,6 +512,96 @@ public class PatchworkGameTests {
 				&& player.getOffhandItem().getDamageValue() == i + 1, "Relighting did not use one durability");
 		}
 		test.succeed();
+	}
+
+	@GameTest
+	public void unlitTorchCopperWeatheringWaxingAndScraping(GameTestHelper test) {
+		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		test.setBlock(CENTER.below(), Blocks.STONE);
+		test.setBlock(CENTER.west(), Blocks.STONE);
+		for (var collection : java.util.List.of(CopperTorches.LIT, CopperTorches.LIT_WALL,
+			CopperTorches.UNLIT, CopperTorches.UNLIT_WALL)) {
+			var normal = collection.weathering().map(block -> block.defaultBlockState()
+				.hasProperty(WallTorchBlock.FACING)
+					? block.defaultBlockState().setValue(WallTorchBlock.FACING, Direction.EAST)
+					: block.defaultBlockState());
+			var waxed = collection.waxed().map(block -> block.withPropertiesOf(normal.unaffected()));
+			var normalStates = new net.minecraft.world.level.block.WeatheringCopperCollection<>(normal, waxed);
+			normalStates.zipUnwaxedWaxed((state, waxedState) -> {
+				test.setBlock(CENTER, state);
+				player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.HONEYCOMB, 2));
+				useTorchItem(test, player);
+				test.assertTrue(test.getBlockState(CENTER).equals(waxedState)
+					&& player.getMainHandItem().getCount() == 1, "Waxing changed torch orientation/type or consumption");
+				test.assertTrue(!waxedState.isRandomlyTicking(), "Waxed torch can weather");
+				player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.IRON_AXE));
+				useTorchItem(test, player);
+				test.assertTrue(test.getBlockState(CENTER).equals(state)
+					&& player.getMainHandItem().getDamageValue() == 1, "Axe did not strip wax while preserving state");
+				var previous = net.minecraft.world.level.block.WeatheringCopper.getPrevious(state);
+				if (previous.isPresent()) {
+					useTorchItem(test, player);
+					test.assertTrue(test.getBlockState(CENTER).equals(previous.orElseThrow())
+						&& player.getMainHandItem().getDamageValue() == 2, "Axe did not remove exactly one oxidation stage");
+				}
+				test.setBlock(CENTER, state);
+				var next = net.minecraft.world.level.block.WeatheringCopper.getNext(state.getBlock())
+					.map(block -> block.withPropertiesOf(state));
+				test.assertTrue(state.isRandomlyTicking() == next.isPresent(), "Torch random tick eligibility is incorrect");
+				if (next.isPresent()) {
+					var random = net.minecraft.util.RandomSource.create(42);
+					for (int tick = 0; tick < 10000 && test.getBlockState(CENTER).equals(state); tick++) {
+						state.randomTick(test.getLevel(), test.absolutePos(CENTER), random);
+					}
+					test.assertTrue(test.getBlockState(CENTER).equals(next.orElseThrow()),
+						"Random weathering lost orientation/type or did not advance one stage");
+				}
+			});
+		}
+		test.succeed();
+	}
+
+	@GameTest
+	public void unlitTorchCopperStagesRelightDropAndCraftWaxed(GameTestHelper test) {
+		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		test.setBlock(CENTER.below(), Blocks.STONE);
+		test.setBlock(CENTER.west(), Blocks.STONE);
+		for (var collection : java.util.List.of(CopperTorches.LIT, CopperTorches.LIT_WALL)) {
+			for (var lit : collection.asList()) {
+				var state = lit.defaultBlockState();
+				if (state.hasProperty(WallTorchBlock.FACING)) {
+					state = state.setValue(WallTorchBlock.FACING, Direction.EAST);
+				}
+				var unlit = UnlitTorches.extinguish(state);
+				test.assertTrue(unlit != null && unlit.getLightEmission() == 0, "Copper stage did not extinguish");
+				test.setBlock(CENTER, unlit);
+				player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.FLINT_AND_STEEL));
+				test.getBlockState(CENTER).useItemOn(player.getMainHandItem(), test.getLevel(), player,
+					InteractionHand.MAIN_HAND, new BlockHitResult(Vec3.atCenterOf(test.absolutePos(CENTER)),
+						Direction.UP, test.absolutePos(CENTER), false));
+				test.assertTrue(test.getBlockState(CENTER).equals(state), "Relighting lost copper stage, wax, or facing");
+				test.setBlock(CENTER, unlit);
+				test.getLevel().destroyBlock(test.absolutePos(CENTER), true, null, 512);
+				test.assertItemEntityPresent(unlit.getBlock().asItem(), CENTER, 2);
+			}
+		}
+		for (var collection : java.util.List.of(CopperTorches.LIT, CopperTorches.UNLIT)) {
+			collection.zipUnwaxedWaxed((normal, waxed) -> {
+				var input = net.minecraft.world.item.crafting.CraftingInput.of(2, 1,
+					java.util.List.of(new ItemStack(normal), new ItemStack(Items.HONEYCOMB)));
+				var recipe = test.getLevel().recipeAccess()
+					.getRecipeFor(net.minecraft.world.item.crafting.RecipeType.CRAFTING, input, test.getLevel());
+				test.assertTrue(recipe.isPresent() && recipe.orElseThrow().value().assemble(input).is(waxed.asItem()),
+					"Waxing recipe lost copper torch stage or lit state");
+			});
+		}
+		test.succeed();
+	}
+
+	private static void useTorchItem(GameTestHelper test, Player player) {
+		BlockPos pos = test.absolutePos(CENTER);
+		player.getMainHandItem().useOn(new UseOnContext(player, InteractionHand.MAIN_HAND,
+			new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, false)));
 	}
 
 	@GameTest

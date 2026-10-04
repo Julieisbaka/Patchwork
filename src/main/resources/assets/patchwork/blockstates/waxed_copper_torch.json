@@ -1,0 +1,7 @@
+{
+	"variants": {
+		"": {
+			"model": "patchwork:block/copper_torch"
+		}
+	}
+}

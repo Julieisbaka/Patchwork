@@ -36,13 +36,13 @@ public final class UnlitTorches {
 	public static final Block WALL_TORCH = wall("unlit_wall_torch", "unlit_torch", Blocks.WALL_TORCH);
 	public static final Block SOUL_TORCH = standing("unlit_soul_torch", Blocks.SOUL_TORCH);
 	public static final Block SOUL_WALL_TORCH = wall("unlit_soul_wall_torch", "unlit_soul_torch", Blocks.SOUL_WALL_TORCH);
-	public static final Block COPPER_TORCH = standing("unlit_copper_torch", Blocks.COPPER_TORCH);
-	public static final Block COPPER_WALL_TORCH = wall("unlit_copper_wall_torch", "unlit_copper_torch", Blocks.COPPER_WALL_TORCH);
+	public static final Block COPPER_TORCH = CopperTorches.UNLIT.weathering().unaffected();
+	public static final Block COPPER_WALL_TORCH = CopperTorches.UNLIT_WALL.weathering().unaffected();
 	public static final Block REDSTONE_TORCH = standing("unlit_redstone_torch", Blocks.REDSTONE_TORCH);
 	public static final Block REDSTONE_WALL_TORCH = wall("unlit_redstone_wall_torch", "unlit_redstone_torch", Blocks.REDSTONE_WALL_TORCH);
 	public static final Item TORCH_ITEM = item("unlit_torch", TORCH, WALL_TORCH);
 	public static final Item SOUL_TORCH_ITEM = item("unlit_soul_torch", SOUL_TORCH, SOUL_WALL_TORCH);
-	public static final Item COPPER_TORCH_ITEM = item("unlit_copper_torch", COPPER_TORCH, COPPER_WALL_TORCH);
+	public static final Item COPPER_TORCH_ITEM = COPPER_TORCH.asItem();
 	public static final Item REDSTONE_TORCH_ITEM = item("unlit_redstone_torch", REDSTONE_TORCH, REDSTONE_WALL_TORCH);
 	private static final Map<Block, Block> UNLIT = Map.of(
 		Blocks.TORCH, TORCH, Blocks.WALL_TORCH, WALL_TORCH,
@@ -55,6 +55,7 @@ public final class UnlitTorches {
 	}
 
 	public static void register() {
+		CopperTorches.register();
 	}
 
 	public static BlockState extinguish(BlockState lit) {
@@ -62,7 +63,7 @@ public final class UnlitTorches {
 			return null;
 		}
 		Block unlit = UNLIT.get(lit.getBlock());
-		return unlit == null ? null : unlit.withPropertiesOf(lit);
+		return unlit == null ? CopperTorches.extinguish(lit) : unlit.withPropertiesOf(lit);
 	}
 
 	private static BlockBehaviour.Properties properties(Block lit, ResourceKey<Block> key) {
@@ -92,7 +93,7 @@ public final class UnlitTorches {
 		return item;
 	}
 
-	private static InteractionResult relight(ItemStack stack, Level level, BlockPos pos, Player player,
+	static InteractionResult relight(ItemStack stack, Level level, BlockPos pos, Player player,
 		InteractionHand hand, BlockState lit) {
 		boolean flint = stack.is(Items.FLINT_AND_STEEL);
 		if (!flint && !stack.is(Items.FIRE_CHARGE)) {

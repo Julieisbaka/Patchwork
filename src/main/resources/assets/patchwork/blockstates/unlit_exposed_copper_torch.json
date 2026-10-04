@@ -1,0 +1,7 @@
+{
+	"variants": {
+		"": {
+			"model": "patchwork:block/unlit_exposed_copper_torch"
+		}
+	}
+}
