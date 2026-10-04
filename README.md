@@ -34,6 +34,5 @@ Build with `.\gradlew.bat build`.
 - [Configuration](docs/configuration.md)
 - [Technical details](docs/technical.md)
 - [Tests](docs/testing.md)
-- [Artwork](docs/textures.md)
 
 Textures are WIP.
