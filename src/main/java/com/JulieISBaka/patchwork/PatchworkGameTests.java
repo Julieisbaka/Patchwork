@@ -56,18 +56,21 @@ public class PatchworkGameTests {
 		var input = net.minecraft.world.item.crafting.CraftingInput.of(3, 3, items);
 		var recipe = test.getLevel().getServer().getRecipeManager()
 			.getRecipeFor(net.minecraft.world.item.crafting.RecipeType.CRAFTING, input, test.getLevel());
-		test.assertTrue(recipe.isPresent() && recipe.orElseThrow().value().assemble(input).is(GardenBlocks.WAX_ITEM)
-			&& recipe.orElseThrow().value().assemble(input).getCount() == 1,
+		test.assertTrue(
+			recipe.isPresent() && recipe.orElseThrow().value().assemble(input).is(GardenBlocks.WAX_ITEM)
+				&& recipe.orElseThrow().value().assemble(input).getCount() == 1,
 			"Nine honeycomb did not craft exactly one wax block");
 		items.set(4, ItemStack.EMPTY);
 		input = net.minecraft.world.item.crafting.CraftingInput.of(3, 3, items);
-		test.assertTrue(test.getLevel().getServer().getRecipeManager()
-			.getRecipeFor(net.minecraft.world.item.crafting.RecipeType.CRAFTING, input, test.getLevel()).isEmpty(),
+		test.assertTrue(
+			test.getLevel().getServer().getRecipeManager()
+				.getRecipeFor(net.minecraft.world.item.crafting.RecipeType.CRAFTING, input, test.getLevel()).isEmpty(),
 			"Incomplete honeycomb grid crafted a wax block");
 		items.set(4, new ItemStack(Items.HONEY_BOTTLE));
 		input = net.minecraft.world.item.crafting.CraftingInput.of(3, 3, items);
-		test.assertTrue(test.getLevel().getServer().getRecipeManager()
-			.getRecipeFor(net.minecraft.world.item.crafting.RecipeType.CRAFTING, input, test.getLevel()).isEmpty(),
+		test.assertTrue(
+			test.getLevel().getServer().getRecipeManager()
+				.getRecipeFor(net.minecraft.world.item.crafting.RecipeType.CRAFTING, input, test.getLevel()).isEmpty(),
 			"Honey bottle substituted for honeycomb");
 		test.setBlock(CENTER, GardenBlocks.WAX_BLOCK);
 		test.getLevel().destroyBlock(test.absolutePos(CENTER), true, null, 512);
@@ -79,19 +82,17 @@ public class PatchworkGameTests {
 	public void gardenPaeoniaBehavesLikeASmallFlower(GameTestHelper test) {
 		var state = GardenBlocks.PAEONIA.defaultBlockState();
 		test.setBlock(CENTER.below(), Blocks.GRASS_BLOCK);
-		test.assertTrue(state.canSurvive(test.getLevel(), test.absolutePos(CENTER)),
-			"Paeonia cannot grow on grass");
+		test.assertTrue(state.canSurvive(test.getLevel(), test.absolutePos(CENTER)), "Paeonia cannot grow on grass");
 		test.setBlock(CENTER.below(), Blocks.STONE);
-		test.assertTrue(!state.canSurvive(test.getLevel(), test.absolutePos(CENTER)),
-			"Paeonia can grow on stone");
+		test.assertTrue(!state.canSurvive(test.getLevel(), test.absolutePos(CENTER)), "Paeonia can grow on stone");
 		test.setBlock(CENTER.below(), Blocks.DIRT);
 		test.setBlock(CENTER, GardenBlocks.PAEONIA);
-		test.assertTrue(state.is(net.minecraft.tags.BlockTags.FLOWERS)
-			&& state.is(net.minecraft.tags.BlockTags.SMALL_FLOWERS)
-			&& new ItemStack(GardenBlocks.PAEONIA_ITEM).is(net.minecraft.tags.TagKey.create(
-				net.minecraft.core.registries.Registries.ITEM,
-				net.minecraft.resources.Identifier.withDefaultNamespace("flowers")))
-			&& GardenBlocks.PAEONIA_ITEM.components().has(DataComponents.COMPOSTABLE),
+		test.assertTrue(
+			state.is(net.minecraft.tags.BlockTags.FLOWERS) && state.is(net.minecraft.tags.BlockTags.SMALL_FLOWERS)
+				&& new ItemStack(GardenBlocks.PAEONIA_ITEM)
+					.is(net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.ITEM,
+						net.minecraft.resources.Identifier.withDefaultNamespace("flowers")))
+				&& GardenBlocks.PAEONIA_ITEM.components().has(DataComponents.COMPOSTABLE),
 			"Paeonia is missing flower tags or composting");
 		test.getLevel().destroyBlock(test.absolutePos(CENTER), true, null, 512);
 		test.assertItemEntityPresent(GardenBlocks.PAEONIA_ITEM, CENTER, 2);
@@ -99,8 +100,9 @@ public class PatchworkGameTests {
 			java.util.List.of(new ItemStack(GardenBlocks.PAEONIA_ITEM)));
 		var recipe = test.getLevel().getServer().getRecipeManager()
 			.getRecipeFor(net.minecraft.world.item.crafting.RecipeType.CRAFTING, input, test.getLevel());
-		test.assertTrue(recipe.isPresent() && recipe.orElseThrow().value().assemble(input).is(Items.DYE.magenta())
-			&& recipe.orElseThrow().value().assemble(input).getCount() == 1,
+		test.assertTrue(
+			recipe.isPresent() && recipe.orElseThrow().value().assemble(input).is(Items.DYE.magenta())
+				&& recipe.orElseThrow().value().assemble(input).getCount() == 1,
 			"Paeonia did not craft one magenta dye");
 		test.setBlock(CENTER, Blocks.FLOWER_POT);
 		Player player = test.makeMockPlayer(GameType.SURVIVAL);
@@ -111,9 +113,33 @@ public class PatchworkGameTests {
 			InteractionHand.MAIN_HAND, hit);
 		test.assertBlockPresent(GardenBlocks.POTTED_PAEONIA, CENTER);
 		test.assertTrue(player.getMainHandItem().getCount() == 1, "Potting did not consume exactly one flower");
+		BlockPos compostPos = test.absolutePos(CENTER.offset(2, 0, 0));
+		test.getLevel().setBlockAndUpdate(compostPos, Blocks.COMPOSTER.defaultBlockState());
+		var compostStack = new ItemStack(GardenBlocks.PAEONIA_ITEM, 2);
+		net.minecraft.world.level.block.ComposterBlock.insertItem(player, test.getLevel().getBlockState(compostPos),
+			test.getLevel(), compostStack, compostPos);
+		test.assertTrue(
+			test.getLevel().getBlockState(compostPos)
+				.getValue(net.minecraft.world.level.block.ComposterBlock.LEVEL) == 1 && compostStack.getCount() == 1,
+			"Composting Paeonia did not consume one flower and start a compost layer");
 		test.getLevel().destroyBlock(pos, true, null, 512);
 		test.assertItemEntityPresent(Items.FLOWER_POT, CENTER, 2);
 		test.assertItemEntityPresent(GardenBlocks.PAEONIA_ITEM, CENTER, 2);
+		test.succeed();
+	}
+
+	@GameTest
+	public void gardenBlocksAppearInCreative(GameTestHelper test) {
+		net.minecraft.world.item.CreativeModeTabs.tryRebuildTabContents(test.getLevel().enabledFeatures(), true,
+			test.getLevel().registryAccess());
+		var building = net.minecraft.core.registries.BuiltInRegistries.CREATIVE_MODE_TAB
+			.getValue(net.minecraft.world.item.CreativeModeTabs.BUILDING_BLOCKS);
+		var natural = net.minecraft.core.registries.BuiltInRegistries.CREATIVE_MODE_TAB
+			.getValue(net.minecraft.world.item.CreativeModeTabs.NATURAL_BLOCKS);
+		test.assertTrue(building.getDisplayItems().stream().anyMatch(stack -> stack.is(GardenBlocks.WAX_ITEM)),
+			"Wax block is missing from Building Blocks");
+		test.assertTrue(natural.getDisplayItems().stream().anyMatch(stack -> stack.is(GardenBlocks.PAEONIA_ITEM)),
+			"Paeonia is missing from Natural Blocks");
 		test.succeed();
 	}
 
@@ -132,9 +158,10 @@ public class PatchworkGameTests {
 			.getGenerationSettings().hasFeature(feature), "Paeonia patch was added outside its selected biomes");
 		test.setBlock(CENTER.below(), Blocks.GRASS_BLOCK);
 		test.setBlock(CENTER, Blocks.AIR);
-		test.assertTrue(feature.feature().value().place(test.getLevel(),
-			test.getLevel().getChunkSource().getGenerator(), net.minecraft.util.RandomSource.create(42),
-			test.absolutePos(CENTER)), "Paeonia feature did not generate a flower on valid ground");
+		test.assertTrue(
+			feature.feature().value().place(test.getLevel(), test.getLevel().getChunkSource().getGenerator(),
+				net.minecraft.util.RandomSource.create(42), test.absolutePos(CENTER)),
+			"Paeonia feature did not generate a flower on valid ground");
 		test.assertBlockPresent(GardenBlocks.PAEONIA, CENTER);
 		test.succeed();
 	}

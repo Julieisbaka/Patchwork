@@ -1,1 +1,7 @@
-{"variants":{"":{"model":"patchwork:block/wax_block"}}}
+{
+    "variants": {
+        "": {
+            "model": "patchwork:block/wax_block"
+        }
+    }
+}

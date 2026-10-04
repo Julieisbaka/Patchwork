@@ -73,7 +73,8 @@ public class PatchworkClientGameTests implements FabricClientGameTest {
 				textures.addAll(List.of("block/wax_block", "block/paeonia", "block/charcoal_block",
 					"block/soul_jack_o_lantern", "item/soul_golem_spawn_egg"));
 				for (String name : List.of("unlit_lantern", "unlit_soul_lantern", "unlit_copper_lantern",
-					"unlit_exposed_copper_lantern", "unlit_weathered_copper_lantern", "unlit_oxidized_copper_lantern")) {
+					"unlit_exposed_copper_lantern", "unlit_weathered_copper_lantern",
+					"unlit_oxidized_copper_lantern")) {
 					textures.add("block/" + name);
 					textures.add("item/" + name);
 				}
@@ -96,6 +97,18 @@ public class PatchworkClientGameTests implements FabricClientGameTest {
 							&& (image.getRGB(0, 0) >>> 24) != 0) {
 							throw new AssertionError("Icon/flower lost its transparent background: " + name);
 						}
+						if (name.equals("entity/soul_golem")) {
+							for (int y = 16; y < 36; y++) {
+								int start = y < 26 ? 10 : 0;
+								int end = y < 26 ? 30 : 40;
+								for (int x = start; x < end; x++) {
+									if ((image.getRGB(x, y) >>> 24) != 255) {
+										throw new AssertionError(
+											"Soul Golem torso UV is transparent at " + x + "," + y);
+									}
+								}
+							}
+						}
 					} catch (IOException exception) {
 						throw new AssertionError("Could not decode texture: " + name, exception);
 					}
@@ -104,6 +117,35 @@ public class PatchworkClientGameTests implements FabricClientGameTest {
 			context.waitTicks(2);
 			world.getConnection().waitForChunksRender();
 			context.takeScreenshot("wax-block-and-paeonia");
+			world.getServer().runCommand("fill -8 101 -4 8 104 4 minecraft:air");
+			world.getServer().runCommand("fill -10 100 -10 10 100 10 minecraft:stone");
+			world.getServer().runCommand("tp @a 0.5 103 8.5 180 30");
+			world.getServer().runOnServer(server -> {
+				var player = server.getPlayerList().getPlayers().getFirst();
+				var level = player.level();
+				var lanterns = new ArrayList<Block>();
+				lanterns.add(UnlitLanterns.LANTERN);
+				lanterns.add(UnlitLanterns.SOUL_LANTERN);
+				for (var age : net.minecraft.world.level.block.WeatheringCopper.WeatherState.values()) {
+					lanterns.add(UnlitLanterns.COPPER_LANTERN.weathering().pick(age));
+				}
+				for (int index = 0; index < lanterns.size(); index++) {
+					level.setBlockAndUpdate(new BlockPos(index * 2 - 5, 101, -2),
+						lanterns.get(index).defaultBlockState());
+				}
+				int index = 0;
+				for (var age : net.minecraft.world.level.block.WeatheringCopper.WeatherState.values()) {
+					level.setBlockAndUpdate(new BlockPos(index * 2 - 3, 101, 0),
+						CopperTorches.LIT.weathering().pick(age).defaultBlockState());
+					level.setBlockAndUpdate(new BlockPos(index * 2 - 3, 101, 2),
+						CopperTorches.UNLIT.weathering().pick(age).defaultBlockState());
+					index++;
+				}
+				player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(UnlitLanterns.SOUL_LANTERN.asItem()));
+			});
+			context.waitTicks(10);
+			world.getConnection().waitForChunksRender();
+			context.takeScreenshot("original-lantern-and-copper-torch-artwork");
 		}
 	}
 

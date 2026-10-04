@@ -102,7 +102,7 @@ validate those.
 
 ## Remaining manual checks
 
-- Final supplied textures: see [texture handoff](textures.md).
+- Artist preference review of the included textures: see [artwork](textures.md).
 - Ranged cadence, pathing around obstacles, distant/offline owners, PvP team
   behavior, and listening to golem sounds.
 - Configuration screen scrolling/tooltips, canceled edits, multiplayer server

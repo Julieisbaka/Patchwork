@@ -122,7 +122,7 @@ oxidizable-block registry and vanilla weathering probability/neighborhood rules.
 Only unwaxed, nonterminal stages random-tick. Honeycomb and axe interactions
 are vanilla, and waxing recipes retain oxidation and lit state. Extinguishing,
 relighting, drops, and wall item placement preserve the exact family/stage.
-Stage artwork temporarily shares the unaffected copper torch texture.
+Aged lit and unlit stages have distinct original artwork matching their oxidation.
 
 Lanterns include regular, soul, and eight copper variants. State conversion
 preserves hanging/waterlogging, weathering, and wax. Copper mappings use Fabric's
@@ -130,7 +130,7 @@ oxidizable-block registry. Waterlogged lanterns cannot be relit.
 
 All ten lantern items use generated 2D item models, not placed block models.
 Waxed versions share models/textures with the matching unwaxed oxidation stage.
-Final matching item and block artwork is pending; see [texture handoff](textures.md).
+Original flat icons and block sheets are included; see [artwork](textures.md).
 
 ## Experience clumping
 

@@ -1,1 +1,1 @@
-{"parent":"minecraft:item/generated","textures":{"layer0":"patchwork:block/paeonia"}}
+{ "parent": "minecraft:item/generated", "textures": { "layer0": "patchwork:block/paeonia" } }

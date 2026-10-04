@@ -1,6 +1,6 @@
 {
-	"type":"minecraft:crafting_shapeless",
-	"category":"misc",
-	"ingredients":["patchwork:paeonia"],
-	"result":{"id":"minecraft:magenta_dye","count":1}
+	"type": "minecraft:crafting_shapeless",
+	"category": "misc",
+	"ingredients": ["patchwork:paeonia"],
+	"result": { "id": "minecraft:magenta_dye", "count": 1 }
 }
