@@ -73,4 +73,4 @@ hides items or deletes placed blocks.
 Disabling difficulty-based Wither health restores vanilla maximum health for
 new Withers; it does not reset health saved on existing Withers.
 
-[Feature overview](../README.md) | [Technical details](technical.md)
+[Feature overview](../README.md)
