@@ -68,6 +68,7 @@
   "patchwork.config.pumpkinLanterns.summary": "Use a torch or soul torch on a carved pumpkin.",
   "patchwork.config.pumpkinLanterns.description": "Right-click a placed carved pumpkin with a torch to turn it into a Jack o'Lantern, or with a soul torch to turn it into a blue-flamed Soul Jack o'Lantern. Its facing is preserved and one torch is consumed except in creative mode. Turning this off disables the interaction, not already placed or collected lanterns.",
   "block.patchwork.potion_cauldron": "Potion Cauldron",
+  "block.patchwork.charcoal_block": "Block of Charcoal",
   "block.patchwork.soul_jack_o_lantern": "Soul Jack o'Lantern",
   "block.patchwork.unlit_torch": "Unlit Torch",
   "block.patchwork.unlit_wall_torch": "Unlit Torch",

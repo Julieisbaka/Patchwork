@@ -178,6 +178,15 @@ public class PatchworkGameTests {
 		test.succeed();
 	}
 
+	@GameTest
+	public void charcoalBlockMatchesCoalBlockFuel(GameTestHelper test) {
+		var coalFuel = Items.COAL_BLOCK.getDefaultInstance().get(DataComponents.COOKING_FUEL);
+		var charcoalFuel = CharcoalBlocks.ITEM.getDefaultInstance().get(DataComponents.COOKING_FUEL);
+		test.assertTrue(coalFuel != null && coalFuel.equals(charcoalFuel),
+			"Charcoal block does not have the coal block's furnace fuel value");
+		test.succeed();
+	}
+
 	@GameTest(maxTicks = 30)
 	public void droppedArrowsUseOnePotionLevel(GameTestHelper test) {
 		require(test, PatchworkConfig.settings().potionCauldrons(), "potionCauldrons");

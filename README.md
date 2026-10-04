@@ -107,10 +107,15 @@ Right-click the potion cauldron with at least eight ordinary arrows in either
 hand, or drop a stack of at least eight inside it, to convert exactly eight
 into tipped arrows carrying the potion's contents. Each conversion consumes
 one level. Smaller stacks and already tipped arrows are unaffected. Potion
-cauldrons have a textured purple liquid surface (not a color preview of the potion);
+cauldrons tint their liquid surface to match the potion;
 breaking one drops a normal empty cauldron. Disabling `potionCauldrons`
 prevents new transfers/refills and dipping but does not remove existing
 potion cauldrons from saved worlds.
+
+## Charcoal blocks
+
+Craft a Block of Charcoal from nine charcoal in a crafting grid. It uses the
+same furnace fuel value as a coal block.
 
 ## Wither
 
