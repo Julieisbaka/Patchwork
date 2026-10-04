@@ -18,14 +18,31 @@ All paths below are relative to
 | Soul Fire Charge | 16x16, vanilla-style charge silhouette, cyan soul flame | `item/soul_fire_charge.png` |
 | Six unlit lantern block textures | 16x16, vanilla lantern block UV layout; remove flame/glow only | `block/unlit_*lantern.png` |
 | Six unlit lantern item icons | 16x16, flat vanilla-style lantern icon; flame off | `item/unlit_*lantern.png` |
-| Four unlit torch textures | 16x16, vanilla torch UV layout; remove flame/glow only | `block/unlit_*torch.png` |
+| Six unlit torch textures | 16x16, vanilla torch UV layout; remove flame/glow only | `block/unlit_*torch.png` |
+| Three lit oxidized copper torch textures | 16x16, same copper torch UV layout and green flame; age the copper only | `block/{exposed,weathered,oxidized}_copper_torch.png` |
 
 The six lantern families are `unlit_lantern`, `unlit_soul_lantern`,
 `unlit_copper_lantern`, `unlit_exposed_copper_lantern`,
 `unlit_weathered_copper_lantern`, and `unlit_oxidized_copper_lantern`.
 Waxed variants reuse their unwaxed family's assets; do not create duplicate
-waxed artwork. The four torch families are regular, soul, copper, and redstone.
-Wall torches reuse standing-variant artwork.
+waxed artwork.
+
+The six needed unlit torch files are:
+
+- `block/unlit_torch.png`
+- `block/unlit_soul_torch.png`
+- `block/unlit_copper_torch.png`
+- `block/unlit_exposed_copper_torch.png`
+- `block/unlit_weathered_copper_torch.png`
+- `block/unlit_oxidized_copper_torch.png`
+
+The unlit redstone torch already references vanilla's off texture and does not
+need a new image. Wall torches and waxed variants reuse the corresponding
+standing/unwaxed image. No separate torch item icons are required.
+New copper oxidation stages currently share the unaffected texture until the
+three lit and three unlit aged copper images arrive; wire those six models to
+their matching stage textures when supplied. The unaffected lit copper torch
+already uses vanilla artwork and does not need a replacement.
 
 The Soul Golem model uses UV origins `(0,0)` for the head, `(32,0)` for arms,
 `(0,16)` for the upper body, and `(0,36)` for the lower body. The head must look

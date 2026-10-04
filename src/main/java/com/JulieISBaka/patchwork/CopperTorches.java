@@ -205,7 +205,7 @@ public final class CopperTorches {
 
 		@Override
 		protected boolean isRandomlyTicking(BlockState state) {
-			return WeatheringCopper.getNext(state.getBlock()).isPresent();
+			return age != WeatherState.OXIDIZED;
 		}
 	}
 
@@ -229,7 +229,7 @@ public final class CopperTorches {
 
 		@Override
 		protected boolean isRandomlyTicking(BlockState state) {
-			return WeatheringCopper.getNext(state.getBlock()).isPresent();
+			return age != WeatherState.OXIDIZED;
 		}
 	}
 }

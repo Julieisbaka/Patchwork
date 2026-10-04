@@ -547,7 +547,8 @@ public class PatchworkGameTests {
 				test.setBlock(CENTER, state);
 				var next = net.minecraft.world.level.block.WeatheringCopper.getNext(state.getBlock())
 					.map(block -> block.withPropertiesOf(state));
-				test.assertTrue(state.isRandomlyTicking() == next.isPresent(), "Torch random tick eligibility is incorrect");
+				test.assertTrue(state.isRandomlyTicking() == next.isPresent(),
+					"Torch random tick eligibility is incorrect: " + state + ", block type=" + state.getBlock().getClass());
 				if (next.isPresent()) {
 					var random = net.minecraft.util.RandomSource.create(42);
 					for (int tick = 0; tick < 10000 && test.getBlockState(CENTER).equals(state); tick++) {
@@ -688,6 +689,19 @@ public class PatchworkGameTests {
 			.orElseThrow() == copper.weathering().exposed(), "Unlit copper cannot oxidize");
 		test.assertTrue(net.minecraft.world.level.block.WeatheringCopper.getPrevious(copper.weathering().weathered())
 			.orElseThrow() == copper.weathering().exposed(), "Unlit copper cannot be scraped");
+		copper.weathering().forEach(block -> {
+			var state = block.defaultBlockState();
+			var next = net.minecraft.world.level.block.WeatheringCopper.getNext(block);
+			test.assertTrue(state.isRandomlyTicking() == next.isPresent(), "Unlit copper lantern tick eligibility is incorrect");
+			if (next.isPresent()) {
+				test.setBlock(CENTER, state);
+				var random = net.minecraft.util.RandomSource.create(42);
+				for (int tick = 0; tick < 10000 && test.getBlockState(CENTER).equals(state); tick++) {
+					state.randomTick(test.getLevel(), test.absolutePos(CENTER), random);
+				}
+				test.assertTrue(test.getBlockState(CENTER).is(next.orElseThrow()), "Unlit copper lantern did not weather");
+			}
+		});
 		copper.zipUnwaxedWaxed((normal, waxed) -> {
 			test.assertTrue(net.minecraft.world.item.HoneycombItem.getWaxed(normal.defaultBlockState())
 				.orElseThrow().is(waxed), "Unlit copper cannot be waxed");

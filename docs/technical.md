@@ -54,16 +54,18 @@
 - Block impacts light eligible candles/campfires; otherwise they attempt the
   hit face and then the top of a block for unsuccessful horizontal hits.
   Occupied spaces are never replaced.
-- `patchwork:supported_soul_fire` derives from vanilla `SoulFireBlock`, using
-  vanilla soul-fire models and damage, but can survive on any sturdy top face.
-  It does not spread or time out; removing its support extinguishes it.
-  It has no obtainable block item. It belongs to the vanilla fire block tag.
+- Ignition places `minecraft:soul_fire`, not a custom fire block. It requires
+  vanilla soul-fire support (soul sand or soul soil); ordinary stone cannot
+  sustain it. Unsupported direct use fails without consuming a charge.
+  Vanilla soul-fire damage, survival, particles, and nonspreading behavior apply.
 - Soul Golem ignition respects `mobGriefing`; player ignition does not.
   Soul Fire Charge direct block use consumes one charge except in Creative.
 
 ## Cauldrons, banners, and fuel
 
 - Potion cauldrons store exact `PotionContents` in a synchronized block entity.
+  Client data loading invalidates the terrain mesh after updating its contents,
+  including first fill and data-only color changes, without a resource reload.
   Empty-cauldron insertion rejects water/empty contents; water-cauldron
   insertion rejects non-water potions. Vanilla water bottles and dyed-block
   washing keep their normal dispatch paths.
@@ -87,6 +89,16 @@ Torches include standing and wall regular, soul, copper, and redstone variants.
 They emit no light/flame particles/redstone power. Fire charges consume one
 charge to relight; flint and steel uses one durability in Survival and none in
 Creative. Wall facing and torch type are preserved.
+
+Copper torches have separate four-stage weathering collections for lit/unlit
+standing/wall forms, plus matching waxed forms. The original vanilla copper
+torch IDs are the unaffected lit forms; their factories create weathering
+subclasses without replacing registry entries. All transitions use Fabric's
+oxidizable-block registry and vanilla weathering probability/neighborhood rules.
+Only unwaxed, nonterminal stages random-tick. Honeycomb and axe interactions
+are vanilla, and waxing recipes retain oxidation and lit state. Extinguishing,
+relighting, drops, and wall item placement preserve the exact family/stage.
+Stage artwork temporarily shares the unaffected copper torch texture.
 
 Lanterns include regular, soul, and eight copper variants. State conversion
 preserves hanging/waterlogging, weathering, and wax. Copper mappings use Fabric's

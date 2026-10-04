@@ -14,19 +14,18 @@ import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(Blocks.class)
 public abstract class CopperTorchRegistrationMixin {
-	@WrapOperation(method = "<clinit>", at = @At(value = "INVOKE",
-		target = "Lnet/minecraft/world/level/block/Blocks;register(Lnet/minecraft/resources/ResourceKey;Ljava/util/function/Function;Lnet/minecraft/world/level/block/state/BlockBehaviour$Properties;)Lnet/minecraft/world/level/block/Block;"))
-	private static Block patchwork$weatherCopperTorches(ResourceKey<Block> key,
-		Function<BlockBehaviour.Properties, Block> factory, BlockBehaviour.Properties properties, Operation<Block> original) {
+	@WrapOperation(method = "register(Lnet/minecraft/resources/ResourceKey;Ljava/util/function/Function;Lnet/minecraft/world/level/block/state/BlockBehaviour$Properties;)Lnet/minecraft/world/level/block/Block;",
+		at = @At(value = "INVOKE", target = "Ljava/util/function/Function;apply(Ljava/lang/Object;)Ljava/lang/Object;"))
+	private static Object patchwork$weatherCopperTorches(Function<BlockBehaviour.Properties, Block> factory,
+		Object value, Operation<Object> original, ResourceKey<Block> key,
+		Function<BlockBehaviour.Properties, Block> originalFactory, BlockBehaviour.Properties properties) {
 		if (key.identifier().getNamespace().equals("minecraft")) {
 			if (key.identifier().getPath().equals("copper_torch")) {
-				factory = props -> new CopperTorches.WeatheringTorchBlock(WeatherState.UNAFFECTED, false, props);
-				properties.randomTicks();
+				return new CopperTorches.WeatheringTorchBlock(WeatherState.UNAFFECTED, false, properties.randomTicks());
 			} else if (key.identifier().getPath().equals("copper_wall_torch")) {
-				factory = props -> new CopperTorches.WeatheringWallTorchBlock(WeatherState.UNAFFECTED, false, props);
-				properties.randomTicks();
+				return new CopperTorches.WeatheringWallTorchBlock(WeatherState.UNAFFECTED, false, properties.randomTicks());
 			}
 		}
-		return original.call(key, factory, properties);
+		return original.call(factory, value);
 	}
 }

@@ -113,7 +113,7 @@ public final class UnlitLanterns {
 
 		@Override
 		protected boolean isRandomlyTicking(BlockState state) {
-			return WeatheringCopper.getNext(state.getBlock()).isPresent();
+			return age != WeatherState.OXIDIZED;
 		}
 	}
 }

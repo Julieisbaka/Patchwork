@@ -30,8 +30,8 @@ surrounding it with eight soul sand or soul soil blocks. Mixed materials work.
 
 Throw them like regular fire charges: they deal one extra point of direct
 damage and create soul fire instead of ordinary fire, without an explosion.
-Soul fire from these charges remains lit on ordinary solid supports, not just
-soul blocks. They can also light blocks directly. Both charge types can light
+They place real vanilla soul fire, which needs soul sand or soul soil below it.
+They can also light blocks directly. Both charge types can light
 candles and campfires.
 
 ## Lanterns, torches, and pumpkins
@@ -41,6 +41,10 @@ candles and campfires.
 - Unlit variants drop placeable items. Lanterns retain hanging, waterlogging,
   oxidation, and wax states. Unlit lantern inventory/held models use the same
   flat generated-item style as lit lanterns.
+- Lit and unlit copper torches weather through four oxidation stages. Honeycomb
+  waxes them; axes remove wax first, then one oxidation stage per use.
+  Extinguishing and relighting preserve oxidation, wax, and wall facing.
+  Oxidation-stage torch artwork is still pending.
 - Fire charges relight unlit torches and lanterns. Flint and steel also relights
   all unlit torch variants, including wall torches. Drain a lantern before
   relighting it.
@@ -58,7 +62,8 @@ mix. Glass bottles retrieve the stored potion.
 Use ordinary arrows in either hand, or drop them inside, to make tipped
 arrows. Each potion level converts one arrow. Dropped arrows convert in place
 without a replacement-item pop or conversion sound. The liquid color matches
-the potion, and breaking the block drops a normal cauldron.
+the potion immediately after the first pour, and breaking the block drops a
+normal cauldron.
 
 ## Crafting and customization
 
