@@ -1,10 +1,13 @@
 # Texture handoff
 
-The final texture pass is pending supplied original or licensed artwork.
-Do not replace placeholders with another procedurally generated approximation.
+The remaining texture pass needs supplied original or licensed artwork.
 Reference vanilla's visual language: crisp pixels, restrained shading,
 consistent material colors, and matching silhouettes. Do not repaint the metal
-frame, wood, oxidation, or wax presentation simply to remove a flame.
+frame, wood, oxidation, or wax presentation simply to dim the glowing pixels.
+For unlit variants, keep the normal silhouette and materials and reduce the
+brightness of only the normally luminous area. Supply your original/licensed
+lit source images if you want that edit applied here; Minecraft texture files
+are referenced by models, not copied or modified into this repository.
 
 All paths below are relative to
 `src/main/resources/assets/patchwork/textures/`.
@@ -15,10 +18,9 @@ All paths below are relative to
 | ---------------------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------- |
 | Soul Golem body                          | 64x64, Snow Golem UVs; exposed head also needs a finished face          | `entity/soul_golem.png`                               |
 | Soul Golem spawn egg                     | 16x16, vanilla-style egg silhouette and highlights; brown/cyan identity | `item/soul_golem_spawn_egg.png`                       |
-| Soul Fire Charge                         | 16x16, vanilla-style charge silhouette, cyan soul flame                 | `item/soul_fire_charge.png`                           |
-| Six unlit lantern block textures         | 16x16, vanilla lantern block UV layout; remove flame/glow only          | `block/unlit_*lantern.png`                            |
-| Six unlit lantern item icons             | 16x16, flat vanilla-style lantern icon; flame off                       | `item/unlit_*lantern.png`                             |
-| Six unlit torch textures                 | 16x16, vanilla torch UV layout; remove flame/glow only                  | `block/unlit_*torch.png`                              |
+| Six unlit lantern block textures         | 16x16, vanilla lantern block UV layout; dim luminous pixels only        | `block/unlit_*lantern.png`                            |
+| Six unlit lantern item icons             | 16x16, flat lantern icon; dim luminous pixels only                      | `item/unlit_*lantern.png`                             |
+| Six unlit torch textures                 | 16x16, vanilla torch UV layout; dim luminous pixels only                | `block/unlit_*torch.png`                              |
 | Three lit oxidized copper torch textures | 16x16, same copper torch UV layout and green flame; age the copper only | `block/{exposed,weathered,oxidized}_copper_torch.png` |
 
 The six lantern families are `unlit_lantern`, `unlit_soul_lantern`,
@@ -67,9 +69,11 @@ flame; the actual blocks remain unlit. Once proper item icons arrive,
 change the six item-model texture references to `patchwork:item/unlit_*lantern`.
 Placed lanterns continue to use their block textures and 3D geometry.
 
-The Soul Fire Charge temporarily references the vanilla fire-charge item asset.
-Once supplied, point its item model to `patchwork:item/soul_fire_charge`.
-The same item model renders its projectile, so one icon updates both.
+The Soul Fire Charge now uses an original transparent 16x16 cyan ember icon at
+`item/soul_fire_charge.png`, with a generated item model. No supplied charge
+texture is needed. The same model renders its projectile.
+Charge-placed fire uses the real vanilla soul-fire block and its existing
+textures; no new fire texture is needed.
 The Soul Golem and egg still use their existing temporary textures.
 
 ## Acceptance checks

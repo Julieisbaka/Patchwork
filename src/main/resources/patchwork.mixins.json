@@ -24,6 +24,7 @@
 		"SlimeSplitMixin",
 		"SoulPumpkinGolemMixin",
 		"SoulGolemOwnerMixin",
+		"SoulFireSupportMixin",
 		"SkeletonCoverMixin",
 		"SpiderWebMixin",
 		"ThrownFireChargeMixin",

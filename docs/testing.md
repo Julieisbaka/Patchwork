@@ -45,9 +45,12 @@ directories with separate configurations.
   spawn eggs, owner assignment, owner combat assistance/defense, ranged impact,
   no melee damage, gold-only repair, claim protection, shearing, and persistence.
 - Soul Fire Charge shaped recipe with mixed materials, missing ingredients,
-  throwing clearance/cooldown/consumption, real vanilla soul fire on soul
-  sand/soil, rejection of ordinary supports, direct block use, dispenser factory/registration, automatic ranged
-  goal firing, exact 2-versus-3 HP projectile damage, flight through a protected
+  throwing clearance/cooldown/consumption, real vanilla soul fire on ordinary
+  solid supports and soul sand/soil, unchanged support blocks, charge-only
+  survival, block-state save/load, neighbor/support updates, Creative placement,
+  rejection of floating/occupied positions, Combat tab adjacency, direct block use,
+  dispenser factory/registration, automatic ranged goal firing,
+  exact 2-versus-3 HP projectile damage, flight through a protected
   owner, `mobGriefing` suppression, and removal when support disappears.
 - Snow Golem rejection of soul lanterns and preservation of ordinary pumpkins.
 - Unlit torch conversion, drop, fire-charge relighting, flint-and-steel
@@ -74,15 +77,17 @@ Loom client run with `-Dfabric.client.gametest` and
 
 The test creates a temporary world, checks headed/sheared Soul Golem render
 states, validates all ten lantern items' generated-model thickness, exercises
-Soul Fire Charge item/projectile rendering, copper torch item models, and writes
+Soul Fire Charge item/projectile rendering and original transparent icon,
+all ordinary/charge soul-fire state models, copper torch item models, and writes
 screenshots to the run directory. Potion tests pour one bottle into a rendered
 empty cauldron and require at least 100 strongly red/green pixels in the central
 world-view region of screenshots. They also change only the block entity color
-while keeping the block state unchanged. No second pour or reload is used.
+while keeping the block state unchanged. Two ordinary client ticks let terrain
+extraction submit dirty sections before waiting for rendering to finish.
+No second pour or reload is used.
 Removing the client mesh invalidation makes this regression fail with a stale
 color, confirming it checks the rendered result rather than just stored data.
-In-world checks exercise
-resource reload, model loading, and client mixins; a server-only build cannot
+In-world checks exercise model loading and client mixins; a server-only build cannot
 validate those.
 
 ## Remaining manual checks

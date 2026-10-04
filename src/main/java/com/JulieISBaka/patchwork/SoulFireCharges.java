@@ -68,7 +68,7 @@ public final class SoulFireCharges {
 					if (light) {
 						context.getLevel().setBlockAndUpdate(pos, state.setValue(BlockStateProperties.LIT, true));
 					} else {
-						context.getLevel().setBlockAndUpdate(firePos, Blocks.SOUL_FIRE.defaultBlockState());
+						context.getLevel().setBlockAndUpdate(firePos, SoulFireSupport.chargeFire());
 					}
 					context.getLevel().playSound(null, pos, SoundEvents.FIRECHARGE_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
 					context.getLevel().gameEvent(context.getPlayer(), GameEvent.BLOCK_PLACE, light ? pos : firePos);
@@ -141,7 +141,7 @@ public final class SoulFireCharges {
 	}
 
 	public static boolean canPlaceFire(Level level, BlockPos pos) {
-		return level.getBlockState(pos).isAir() && Blocks.SOUL_FIRE.defaultBlockState().canSurvive(level, pos);
+		return level.getBlockState(pos).isAir() && SoulFireSupport.chargeFire().canSurvive(level, pos);
 	}
 
 	public static void ignite(Level level, BlockHitResult hit) {
@@ -156,7 +156,7 @@ public final class SoulFireCharges {
 			pos = struck.above();
 		}
 		if (canPlaceFire(level, pos)) {
-			level.setBlockAndUpdate(pos, Blocks.SOUL_FIRE.defaultBlockState());
+			level.setBlockAndUpdate(pos, SoulFireSupport.chargeFire());
 		}
 	}
 }

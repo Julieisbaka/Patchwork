@@ -5,6 +5,7 @@ import com.JulieISBaka.patchwork.Patchwork;
 import com.JulieISBaka.patchwork.PotionCauldronEntity;
 import com.JulieISBaka.patchwork.PotionCauldrons;
 import com.JulieISBaka.patchwork.SoulFireCharges;
+import com.JulieISBaka.patchwork.SoulFireSupport;
 import com.JulieISBaka.patchwork.SoulFireball;
 import com.JulieISBaka.patchwork.SoulGolem;
 import com.JulieISBaka.patchwork.SoulGolems;
@@ -44,8 +45,8 @@ public class PatchworkClientGameTests implements FabricClientGameTest {
 			world.getServer().runCommand("weather clear");
 			world.getServer().runCommand("tp @a 0.5 101 5.5 180 0");
 			world.getServer().runCommand("summon patchwork:soul_golem 0.5 101 0.5 {NoAI:1b}");
-			world.getServer().runCommand("setblock 2 100 0 minecraft:soul_soil");
-			world.getServer().runCommand("setblock 2 101 0 minecraft:soul_fire");
+			world.getServer().runOnServer(server -> server.getPlayerList().getPlayers().getFirst().level()
+				.setBlockAndUpdate(new BlockPos(2, 101, 0), SoulFireSupport.chargeFire()));
 			world.getServer().runCommand("summon patchwork:soul_fireball -2.5 102.5 0.5 {acceleration_power:0.0d}");
 			world.getServer().runOnServer(server -> server.getPlayerList().getPlayers().getFirst()
 				.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(SoulGolems.SPAWN_EGG)));
@@ -63,6 +64,27 @@ public class PatchworkClientGameTests implements FabricClientGameTest {
 				return golem && projectile;
 			});
 			context.runOnClient(client -> {
+				var models = client.getModelManager().getBlockStateModelSet();
+				for (var state : Blocks.SOUL_FIRE.getStateDefinition().getPossibleStates()) {
+					if (models.get(state) == models.missingModel()) {
+						throw new AssertionError("Soul-fire state has no model: " + state);
+					}
+				}
+				if (!client.level.getBlockState(new BlockPos(2, 101, 0)).equals(SoulFireSupport.chargeFire())
+					|| !client.level.getBlockState(new BlockPos(2, 100, 0)).is(Blocks.STONE)) {
+					throw new AssertionError("Charge soul fire did not reach the client without changing its stone support");
+				}
+				var icon = client.getResourceManager().getResource(Patchwork.id("textures/item/soul_fire_charge.png"))
+					.orElseThrow(() -> new AssertionError("Original Soul Fire Charge texture is missing"));
+				try (var stream = icon.open()) {
+					var image = ImageIO.read(stream);
+					if (image == null || image.getWidth() != 16 || image.getHeight() != 16
+						|| (image.getRGB(0, 0) >>> 24) != 0) {
+						throw new AssertionError("Soul Fire Charge texture is not a transparent 16x16 icon");
+					}
+				} catch (IOException exception) {
+					throw new AssertionError("Could not read the Soul Fire Charge texture", exception);
+				}
 				var lanterns = new ArrayList<Block>();
 				lanterns.add(UnlitLanterns.LANTERN);
 				lanterns.add(UnlitLanterns.SOUL_LANTERN);
@@ -80,7 +102,6 @@ public class PatchworkClientGameTests implements FabricClientGameTest {
 				for (var collection : List.of(CopperTorches.LIT, CopperTorches.LIT_WALL, CopperTorches.UNLIT,
 					CopperTorches.UNLIT_WALL)) {
 					for (var torch : collection.asList()) {
-						var models = client.getModelManager().getBlockStateModelSet();
 						for (var state : torch.getStateDefinition().getPossibleStates()) {
 							if (models.get(state) == models.missingModel()) {
 								throw new AssertionError("Copper torch block model is missing: " + state);
@@ -137,7 +158,7 @@ public class PatchworkClientGameTests implements FabricClientGameTest {
 			context.takeScreenshot("soul-golem");
 			world.getServer().runCommand("data merge entity @e[type=patchwork:soul_golem,limit=1] {HasSoulLantern:0b}");
 			world.getServer().runOnServer(server -> server.getPlayerList().getPlayers().getFirst()
-				.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(UnlitLanterns.LANTERN.asItem())));
+				.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(SoulFireCharges.ITEM)));
 			context.waitFor(client -> {
 				for (var entity : client.level.entitiesForRendering()) {
 					if (entity instanceof SoulGolem golem && !golem.hasLantern()) {
@@ -156,7 +177,7 @@ public class PatchworkClientGameTests implements FabricClientGameTest {
 				return false;
 			});
 			context.waitTicks(10);
-			context.takeScreenshot("sheared-soul-golem-and-unlit-lantern");
+			context.takeScreenshot("sheared-soul-golem-and-soul-charge");
 		}
 	}
 
@@ -187,6 +208,8 @@ public class PatchworkClientGameTests implements FabricClientGameTest {
 				context.waitFor(client -> client.level.getBlockEntity(pos) instanceof PotionCauldronEntity cauldron
 					&& cauldron.potion().getColor() == color
 					&& client.level.getBlockState(pos).getValue(LayeredCauldronBlock.LEVEL) == 1);
+				// Let extraction submit the dirty section before waiting for its render tasks.
+				context.waitTicks(2);
 				world.getConnection().waitForChunksRender();
 				assertRenderedPotionColor(context, color, "potion-first-fill-" + Integer.toHexString(color));
 			}
@@ -200,6 +223,7 @@ public class PatchworkClientGameTests implements FabricClientGameTest {
 			});
 			context.waitFor(client -> client.level.getBlockEntity(pos) instanceof PotionCauldronEntity cauldron
 				&& cauldron.potion().getColor() == 0xFF0000);
+			context.waitTicks(2);
 			world.getConnection().waitForChunksRender();
 			assertRenderedPotionColor(context, 0xFF0000, "potion-data-only-update");
 		}

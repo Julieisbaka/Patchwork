@@ -54,10 +54,16 @@
 - Block impacts light eligible candles/campfires; otherwise they attempt the
   hit face and then the top of a block for unsuccessful horizontal hits.
   Occupied spaces are never replaced.
-- Ignition places `minecraft:soul_fire`, not a custom fire block. It requires
-  vanilla soul-fire support (soul sand or soul soil); ordinary stone cannot
-  sustain it. Unsupported direct use fails without consuming a charge.
-  Vanilla soul-fire damage, survival, particles, and nonspreading behavior apply.
+- Ignition places `minecraft:soul_fire`, not a custom fire block. A persisted
+  `patchwork_charge_placed` block-state flag lets charge-created fire survive
+  on any sturdy top face as well as normal soul-fire supports. No support block
+  is replaced. Ordinary soul fire defaults to false and retains vanilla survival.
+  Neighbor updates preserve the flag; removing support extinguishes the fire.
+  Vanilla soul-fire damage, particles, and nonspreading behavior apply.
+  Floating fire/occupied positions are rejected without consuming a charge.
+- Both fire charges are available in Combat regardless of the throwing switch,
+  with the Soul Fire Charge immediately after the ordinary charge.
+  Its original transparent 16x16 icon is shared by item and projectile rendering.
 - Soul Golem ignition respects `mobGriefing`; player ignition does not.
   Soul Fire Charge direct block use consumes one charge except in Creative.
 

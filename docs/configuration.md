@@ -46,7 +46,8 @@ does not erase banners already equipped.
 Unlit block items, Soul Golems, Soul Fire Charges, and their recipes have no
 separate availability switch. `throwableFireCharges` gates player air throws
 of both charge types, not Soul Golem attacks, crafting, or direct block use.
-Soul Fire Charge items remain available in Creative when throwing is disabled.
+Both Fire Charge items remain available next to each other in Creative Combat
+when throwing is disabled; disabling air throws does not remove the items.
 `pumpkinLanterns` gates lighting, not placing an existing Soul Jack o'Lantern
 or constructing a golem with it.
 

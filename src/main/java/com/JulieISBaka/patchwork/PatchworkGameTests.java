@@ -351,13 +351,16 @@ public class PatchworkGameTests {
 	@GameTest(maxTicks = 30)
 	public void soulFireChargeIgnitesVanillaSoulFireAndDoesNotExplode(GameTestHelper test) {
 		BlockPos wall = CENTER.offset(1, 1, 0);
-		test.setBlock(wall, Blocks.SOUL_SOIL);
+		test.setBlock(wall, Blocks.STONE);
 		Player player = test.makeMockPlayer(GameType.SURVIVAL);
 		var fireball = SoulFireCharges.shoot(test.getLevel(), player,
 			Vec3.atCenterOf(test.absolutePos(CENTER)).add(0, 1, 0), new Vec3(1, 0, 0));
 		test.runAfterDelay(6, () -> {
 			test.assertBlockPresent(Blocks.SOUL_FIRE, wall.above());
-			test.assertBlockPresent(Blocks.SOUL_SOIL, wall);
+			test.assertBlockPresent(Blocks.STONE, wall);
+			test.assertTrue(test.getBlockState(wall.above()).getValue(SoulFireSupport.CHARGE_PLACED),
+				"Charge did not mark real soul fire for extended support");
+			test.setBlock(wall.above().east(), Blocks.GLASS);
 			test.assertTrue(fireball.isRemoved(), "Soul projectile was not removed on impact");
 		});
 		test.runAfterDelay(12, () -> {
@@ -371,12 +374,12 @@ public class PatchworkGameTests {
 	@GameTest
 	public void soulFireChargeImpactDoesNotPlaceUnsupportedOrOverwriteFire(GameTestHelper test) {
 		BlockPos wall = CENTER.offset(1, 1, 0);
-		test.setBlock(wall, Blocks.STONE);
+		test.setBlock(wall, Blocks.STONE_SLAB);
 		Player player = test.makeMockPlayer(GameType.SURVIVAL);
 		SoulFireCharges.shoot(test.getLevel(), player, Vec3.atCenterOf(test.absolutePos(CENTER)).add(0, 1, 0),
 			new Vec3(1, 0, 0));
 		test.runAfterDelay(6, () -> {
-			test.assertBlockPresent(Blocks.STONE, wall);
+			test.assertBlockPresent(Blocks.STONE_SLAB, wall);
 			test.assertBlockPresent(Blocks.AIR, wall.above());
 			test.setBlock(wall, Blocks.SOUL_SAND);
 			test.setBlock(wall.above(), Blocks.GLASS);
@@ -385,6 +388,86 @@ public class PatchworkGameTests {
 			test.assertBlockPresent(Blocks.GLASS, wall.above());
 			test.succeed();
 		});
+	}
+
+	@GameTest
+	public void soulFireChargeSupportIsScopedAndPersists(GameTestHelper test) {
+		BlockPos pos = test.absolutePos(CENTER.above());
+		test.setBlock(CENTER, Blocks.STONE);
+		var ordinary = Blocks.SOUL_FIRE.defaultBlockState();
+		test.assertTrue(!ordinary.getValue(SoulFireSupport.CHARGE_PLACED)
+			&& !ordinary.canSurvive(test.getLevel(), pos), "Ordinary soul fire gained extended support");
+		var marked = SoulFireSupport.chargeFire();
+		test.assertTrue(marked.is(Blocks.SOUL_FIRE) && marked.canSurvive(test.getLevel(), pos),
+			"Charge fire is not real soul fire supported by stone");
+		var saved = net.minecraft.world.level.block.state.BlockState.CODEC
+			.encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, marked).getOrThrow();
+		var restored = net.minecraft.world.level.block.state.BlockState.CODEC
+			.parse(net.minecraft.nbt.NbtOps.INSTANCE, saved).getOrThrow();
+		test.assertTrue(restored.equals(marked), "Saved soul-fire block state lost charge support");
+		test.setBlock(CENTER.above(), restored);
+		test.setBlock(CENTER.above().north(), Blocks.GLASS);
+		test.assertTrue(test.getBlockState(CENTER.above()).equals(marked),
+			"Neighbor update reset charge fire to ordinary soul fire");
+		test.setBlock(CENTER, Blocks.OAK_PLANKS);
+		test.assertBlockPresent(Blocks.OAK_PLANKS, CENTER);
+		test.assertTrue(test.getBlockState(CENTER.above()).equals(marked),
+			"Changing solid support removed charge fire or its flag");
+		test.setBlock(CENTER, Blocks.AIR);
+		test.assertBlockPresent(Blocks.AIR, CENTER.above());
+		test.setBlock(CENTER, Blocks.SOUL_SAND);
+		test.assertTrue(ordinary.canSurvive(test.getLevel(), pos), "Ordinary soul fire no longer supports soul sand");
+		test.succeed();
+	}
+
+	@GameTest
+	public void soulFireChargeCreativePlacementAndInvalidSupport(GameTestHelper test) {
+		Player player = test.makeMockPlayer(GameType.CREATIVE);
+		player.getAbilities().instabuild = true;
+		player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(SoulFireCharges.ITEM, 2));
+		BlockPos pos = test.absolutePos(CENTER);
+		for (var support : java.util.List.of(Blocks.GLASS, Blocks.OAK_PLANKS, Blocks.COBBLESTONE)) {
+			test.setBlock(CENTER, support);
+			test.setBlock(CENTER.above(), Blocks.AIR);
+			var result = SoulFireCharges.ITEM.useOn(new UseOnContext(player, InteractionHand.MAIN_HAND,
+				new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, false)));
+			test.assertTrue(result == InteractionResult.SUCCESS && player.getMainHandItem().getCount() == 2,
+				"Creative placement consumed a charge or failed on a solid surface");
+			test.assertBlockPresent(support, CENTER);
+			test.assertBlockPresent(Blocks.SOUL_FIRE, CENTER.above());
+		}
+		test.setBlock(CENTER.above(), Blocks.GLASS);
+		var occupied = SoulFireCharges.ITEM.useOn(new UseOnContext(player, InteractionHand.MAIN_HAND,
+			new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, false)));
+		test.assertTrue(occupied == InteractionResult.FAIL, "Charge replaced an occupied fire position");
+		test.setBlock(CENTER.above(), Blocks.AIR);
+		test.setBlock(CENTER, Blocks.STONE_SLAB);
+		var unsupported = SoulFireCharges.ITEM.useOn(new UseOnContext(player, InteractionHand.MAIN_HAND,
+			new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, false)));
+		test.assertTrue(unsupported == InteractionResult.FAIL && player.getMainHandItem().getCount() == 2,
+			"Charge placed floating fire over a bottom slab");
+		test.succeed();
+	}
+
+	@GameTest
+	public void soulFireChargeIsNextToNormalChargeInCombat(GameTestHelper test) {
+		net.minecraft.world.item.CreativeModeTabs.tryRebuildTabContents(test.getLevel().enabledFeatures(), true,
+			test.getLevel().registryAccess());
+		var tab = net.minecraft.core.registries.BuiltInRegistries.CREATIVE_MODE_TAB
+			.getValue(net.minecraft.world.item.CreativeModeTabs.COMBAT);
+		var items = new java.util.ArrayList<>(tab.getDisplayItems());
+		int normalIndex = -1;
+		int soulIndex = -1;
+		for (int index = 0; index < items.size(); index++) {
+			if (items.get(index).is(Items.FIRE_CHARGE)) {
+				normalIndex = index;
+			} else if (items.get(index).is(SoulFireCharges.ITEM)) {
+				soulIndex = index;
+			}
+		}
+		test.assertTrue(normalIndex >= 0 && soulIndex == normalIndex + 1,
+			"Soul Fire Charge is not immediately after the normal charge in Combat");
+		test.succeed();
 	}
 
 	@GameTest
@@ -436,15 +519,10 @@ public class PatchworkGameTests {
 			BlockPos pos = test.absolutePos(CENTER);
 			var result = SoulFireCharges.ITEM.useOn(new UseOnContext(player, InteractionHand.MAIN_HAND,
 				new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, false)));
-			if (support == Blocks.STONE) {
-				test.assertBlockPresent(Blocks.AIR, CENTER.above());
-				test.assertTrue(result == InteractionResult.FAIL && player.getMainHandItem().getCount() == 2,
-					"Unsupported soul fire consumed a charge or placed fire");
-			} else {
-				test.assertBlockPresent(Blocks.SOUL_FIRE, CENTER.above());
-				test.assertTrue(player.getMainHandItem().getCount() == 1,
-					"Direct soul-fire placement did not use one charge");
-			}
+			test.assertBlockPresent(Blocks.SOUL_FIRE, CENTER.above());
+			test.assertBlockPresent(support, CENTER);
+			test.assertTrue(result == InteractionResult.SUCCESS && player.getMainHandItem().getCount() == 1,
+				"Direct soul-fire placement did not use one charge");
 		}
 		var projectile = ((net.minecraft.world.item.ProjectileItem) SoulFireCharges.ITEM).asProjectile(test.getLevel(),
 			Vec3.atCenterOf(test.absolutePos(CENTER)), new ItemStack(SoulFireCharges.ITEM), Direction.EAST);

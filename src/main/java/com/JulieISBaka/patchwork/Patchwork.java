@@ -72,12 +72,10 @@ public class Patchwork implements ModInitializer {
 			if (PatchworkConfig.settings().throwableSlimeballs()) {
 				output.insertAfter(Items.WIND_CHARGE, Items.SLIME_BALL);
 			}
-			if (PatchworkConfig.settings().throwableFireCharges()) {
-				output.insertAfter(
-					PatchworkConfig.settings().throwableSlimeballs() ? Items.SLIME_BALL : Items.WIND_CHARGE,
-					Items.FIRE_CHARGE);
-			}
-			output.accept(SoulFireCharges.ITEM);
+			output.insertAfter(
+				PatchworkConfig.settings().throwableSlimeballs() ? Items.SLIME_BALL : Items.WIND_CHARGE,
+				Items.FIRE_CHARGE);
+			output.insertAfter(Items.FIRE_CHARGE, SoulFireCharges.ITEM);
 		});
 		SlimeSplitClouds.register();
 		ResourceConditions.register(CHAINMAIL_CONDITION);
