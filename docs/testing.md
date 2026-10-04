@@ -47,8 +47,8 @@ directories with separate configurations.
   drops, magenta dye recipe, actual feature placement, and biome registration
   in flower forests/meadows but not plains. Select these with `patchwork:*garden*`.
 - Client garden block/item models, supplied texture dimensions/transparency,
-  all original replacement texture resources, and a placed wax/flower/pot
-  screenshot.
+  all original replacement texture resources, opaque Soul Golem torso UVs,
+  and placed wax/flower/pot and lantern/copper-torch screenshots.
 
 - Soul Golem build combinations, invalid builds, torch lighting, head placement,
   spawn eggs, owner assignment, owner combat assistance/defense, ranged impact,
