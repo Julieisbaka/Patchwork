@@ -1,6 +1,6 @@
 {
 	"parent": "minecraft:item/generated",
 	"textures": {
-		"layer0": "patchwork:block/unlit_copper_torch"
+		"layer0": "patchwork:block/unlit_oxidized_copper_torch"
 	}
 }

@@ -1,6 +1,6 @@
 {
 	"parent": "minecraft:block/template_torch_wall_unlit",
 	"textures": {
-		"torch": "patchwork:block/unlit_copper_torch"
+		"torch": "patchwork:block/unlit_exposed_copper_torch"
 	}
 }

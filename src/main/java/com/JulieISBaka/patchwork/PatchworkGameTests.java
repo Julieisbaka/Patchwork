@@ -48,6 +48,98 @@ public class PatchworkGameTests {
 	}
 
 	@GameTest
+	public void gardenWaxBlockRequiresNineHoneycomb(GameTestHelper test) {
+		var items = new java.util.ArrayList<ItemStack>();
+		for (int i = 0; i < 9; i++) {
+			items.add(new ItemStack(Items.HONEYCOMB));
+		}
+		var input = net.minecraft.world.item.crafting.CraftingInput.of(3, 3, items);
+		var recipe = test.getLevel().getServer().getRecipeManager()
+			.getRecipeFor(net.minecraft.world.item.crafting.RecipeType.CRAFTING, input, test.getLevel());
+		test.assertTrue(recipe.isPresent() && recipe.orElseThrow().value().assemble(input).is(GardenBlocks.WAX_ITEM)
+			&& recipe.orElseThrow().value().assemble(input).getCount() == 1,
+			"Nine honeycomb did not craft exactly one wax block");
+		items.set(4, ItemStack.EMPTY);
+		input = net.minecraft.world.item.crafting.CraftingInput.of(3, 3, items);
+		test.assertTrue(test.getLevel().getServer().getRecipeManager()
+			.getRecipeFor(net.minecraft.world.item.crafting.RecipeType.CRAFTING, input, test.getLevel()).isEmpty(),
+			"Incomplete honeycomb grid crafted a wax block");
+		items.set(4, new ItemStack(Items.HONEY_BOTTLE));
+		input = net.minecraft.world.item.crafting.CraftingInput.of(3, 3, items);
+		test.assertTrue(test.getLevel().getServer().getRecipeManager()
+			.getRecipeFor(net.minecraft.world.item.crafting.RecipeType.CRAFTING, input, test.getLevel()).isEmpty(),
+			"Honey bottle substituted for honeycomb");
+		test.setBlock(CENTER, GardenBlocks.WAX_BLOCK);
+		test.getLevel().destroyBlock(test.absolutePos(CENTER), true, null, 512);
+		test.assertItemEntityPresent(GardenBlocks.WAX_ITEM, CENTER, 2);
+		test.succeed();
+	}
+
+	@GameTest
+	public void gardenPaeoniaBehavesLikeASmallFlower(GameTestHelper test) {
+		var state = GardenBlocks.PAEONIA.defaultBlockState();
+		test.setBlock(CENTER.below(), Blocks.GRASS_BLOCK);
+		test.assertTrue(state.canSurvive(test.getLevel(), test.absolutePos(CENTER)),
+			"Paeonia cannot grow on grass");
+		test.setBlock(CENTER.below(), Blocks.STONE);
+		test.assertTrue(!state.canSurvive(test.getLevel(), test.absolutePos(CENTER)),
+			"Paeonia can grow on stone");
+		test.setBlock(CENTER.below(), Blocks.DIRT);
+		test.setBlock(CENTER, GardenBlocks.PAEONIA);
+		test.assertTrue(state.is(net.minecraft.tags.BlockTags.FLOWERS)
+			&& state.is(net.minecraft.tags.BlockTags.SMALL_FLOWERS)
+			&& new ItemStack(GardenBlocks.PAEONIA_ITEM).is(net.minecraft.tags.TagKey.create(
+				net.minecraft.core.registries.Registries.ITEM,
+				net.minecraft.resources.Identifier.withDefaultNamespace("flowers")))
+			&& GardenBlocks.PAEONIA_ITEM.components().has(DataComponents.COMPOSTABLE),
+			"Paeonia is missing flower tags or composting");
+		test.getLevel().destroyBlock(test.absolutePos(CENTER), true, null, 512);
+		test.assertItemEntityPresent(GardenBlocks.PAEONIA_ITEM, CENTER, 2);
+		var input = net.minecraft.world.item.crafting.CraftingInput.of(1, 1,
+			java.util.List.of(new ItemStack(GardenBlocks.PAEONIA_ITEM)));
+		var recipe = test.getLevel().getServer().getRecipeManager()
+			.getRecipeFor(net.minecraft.world.item.crafting.RecipeType.CRAFTING, input, test.getLevel());
+		test.assertTrue(recipe.isPresent() && recipe.orElseThrow().value().assemble(input).is(Items.DYE.magenta())
+			&& recipe.orElseThrow().value().assemble(input).getCount() == 1,
+			"Paeonia did not craft one magenta dye");
+		test.setBlock(CENTER, Blocks.FLOWER_POT);
+		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(GardenBlocks.PAEONIA_ITEM, 2));
+		BlockPos pos = test.absolutePos(CENTER);
+		var hit = new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, false);
+		test.getBlockState(CENTER).useItemOn(player.getMainHandItem(), test.getLevel(), player,
+			InteractionHand.MAIN_HAND, hit);
+		test.assertBlockPresent(GardenBlocks.POTTED_PAEONIA, CENTER);
+		test.assertTrue(player.getMainHandItem().getCount() == 1, "Potting did not consume exactly one flower");
+		test.getLevel().destroyBlock(pos, true, null, 512);
+		test.assertItemEntityPresent(Items.FLOWER_POT, CENTER, 2);
+		test.assertItemEntityPresent(GardenBlocks.PAEONIA_ITEM, CENTER, 2);
+		test.succeed();
+	}
+
+	@GameTest
+	public void gardenPaeoniaWorldGenerationIsScoped(GameTestHelper test) {
+		var access = test.getLevel().registryAccess();
+		var feature = access.lookupOrThrow(net.minecraft.core.registries.Registries.PLACED_FEATURE)
+			.getOrThrow(GardenBlocks.PAEONIA_PATCH).value();
+		var biomes = access.lookupOrThrow(net.minecraft.core.registries.Registries.BIOME);
+		for (var key : java.util.List.of(net.minecraft.world.level.biome.Biomes.FLOWER_FOREST,
+			net.minecraft.world.level.biome.Biomes.MEADOW)) {
+			test.assertTrue(biomes.getOrThrow(key).value().getGenerationSettings().hasFeature(feature),
+				"Paeonia patch is missing from " + key);
+		}
+		test.assertTrue(!biomes.getOrThrow(net.minecraft.world.level.biome.Biomes.PLAINS).value()
+			.getGenerationSettings().hasFeature(feature), "Paeonia patch was added outside its selected biomes");
+		test.setBlock(CENTER.below(), Blocks.GRASS_BLOCK);
+		test.setBlock(CENTER, Blocks.AIR);
+		test.assertTrue(feature.feature().value().place(test.getLevel(),
+			test.getLevel().getChunkSource().getGenerator(), net.minecraft.util.RandomSource.create(42),
+			test.absolutePos(CENTER)), "Paeonia feature did not generate a flower on valid ground");
+		test.assertBlockPresent(GardenBlocks.PAEONIA, CENTER);
+		test.succeed();
+	}
+
+	@GameTest
 	public void lightingCarvedPumpkins(GameTestHelper test) {
 		require(test, PatchworkConfig.settings().pumpkinLanterns(), "pumpkinLanterns");
 		Player player = test.makeMockPlayer(GameType.SURVIVAL);
@@ -395,8 +487,8 @@ public class PatchworkGameTests {
 		BlockPos pos = test.absolutePos(CENTER.above());
 		test.setBlock(CENTER, Blocks.STONE);
 		var ordinary = Blocks.SOUL_FIRE.defaultBlockState();
-		test.assertTrue(!ordinary.getValue(SoulFireSupport.CHARGE_PLACED)
-			&& !ordinary.canSurvive(test.getLevel(), pos), "Ordinary soul fire gained extended support");
+		test.assertTrue(!ordinary.getValue(SoulFireSupport.CHARGE_PLACED) && !ordinary.canSurvive(test.getLevel(), pos),
+			"Ordinary soul fire gained extended support");
 		var marked = SoulFireSupport.chargeFire();
 		test.assertTrue(marked.is(Blocks.SOUL_FIRE) && marked.canSurvive(test.getLevel(), pos),
 			"Charge fire is not real soul fire supported by stone");
@@ -532,6 +624,29 @@ public class PatchworkGameTests {
 			net.minecraft.world.level.block.DispenserBlock.DISPENSER_REGISTRY.containsKey(SoulFireCharges.ITEM),
 			"Soul Fire Charge dispenser behavior was not registered");
 		test.succeed();
+	}
+
+	@GameTest(maxTicks = 15)
+	public void soulFireChargeDispenserActuallyLaunchesAndIgnites(GameTestHelper test) {
+		BlockPos dispenserPos = CENTER.west();
+		test.setBlock(dispenserPos, Blocks.DISPENSER.defaultBlockState()
+			.setValue(net.minecraft.world.level.block.DispenserBlock.FACING, Direction.EAST));
+		var entity = test.getLevel().getBlockEntity(test.absolutePos(dispenserPos));
+		test.assertTrue(entity instanceof net.minecraft.world.level.block.entity.DispenserBlockEntity,
+			"Dispenser block entity is missing");
+		var dispenser = (net.minecraft.world.level.block.entity.DispenserBlockEntity) entity;
+		dispenser.setItem(0, new ItemStack(SoulFireCharges.ITEM, 2));
+		BlockPos wall = CENTER.east();
+		test.setBlock(wall, Blocks.STONE);
+		test.pulseRedstone(dispenserPos.below(), 2);
+		test.runAfterDelay(10, () -> {
+			test.assertTrue(dispenser.getItem(0).is(SoulFireCharges.ITEM) && dispenser.getItem(0).getCount() == 1,
+				"Powered dispenser did not consume exactly one Soul Fire Charge");
+			test.assertTrue(test.getBlockState(wall.above()).equals(SoulFireSupport.chargeFire()),
+				"Dispenser projectile did not place charge-supported real soul fire");
+			test.assertBlockPresent(Blocks.STONE, wall);
+			test.succeed();
+		});
 	}
 
 	@GameTest(maxTicks = 15)

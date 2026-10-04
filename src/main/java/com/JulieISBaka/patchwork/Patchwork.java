@@ -52,9 +52,16 @@ public class Patchwork implements ModInitializer {
 		UnlitLanterns.register();
 		PotionCauldrons.register();
 		CharcoalBlocks.register();
+		GardenBlocks.register();
 		SoulFireCharges.register();
 		SoulGolems.register();
 		PumpkinLanterns.register();
+		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.BUILDING_BLOCKS).register(output -> {
+			output.insertAfter(Items.HONEYCOMB_BLOCK, GardenBlocks.WAX_ITEM);
+		});
+		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.NATURAL_BLOCKS).register(output -> {
+			output.insertAfter(Items.ALLIUM, GardenBlocks.PAEONIA_ITEM);
+		});
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.SPAWN_EGGS).register(output -> {
 			output.insertAfter(Items.SNOW_GOLEM_SPAWN_EGG, SoulGolems.SPAWN_EGG);
 		});
@@ -72,8 +79,7 @@ public class Patchwork implements ModInitializer {
 			if (PatchworkConfig.settings().throwableSlimeballs()) {
 				output.insertAfter(Items.WIND_CHARGE, Items.SLIME_BALL);
 			}
-			output.insertAfter(
-				PatchworkConfig.settings().throwableSlimeballs() ? Items.SLIME_BALL : Items.WIND_CHARGE,
+			output.insertAfter(PatchworkConfig.settings().throwableSlimeballs() ? Items.SLIME_BALL : Items.WIND_CHARGE,
 				Items.FIRE_CHARGE);
 			output.insertAfter(Items.FIRE_CHARGE, SoulFireCharges.ITEM);
 		});

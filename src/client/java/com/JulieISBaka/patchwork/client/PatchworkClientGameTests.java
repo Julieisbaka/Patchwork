@@ -45,8 +45,16 @@ public class PatchworkClientGameTests implements FabricClientGameTest {
 			world.getServer().runCommand("weather clear");
 			world.getServer().runCommand("tp @a 0.5 101 5.5 180 0");
 			world.getServer().runCommand("summon patchwork:soul_golem 0.5 101 0.5 {NoAI:1b}");
-			world.getServer().runOnServer(server -> server.getPlayerList().getPlayers().getFirst().level()
-				.setBlockAndUpdate(new BlockPos(2, 101, 0), SoulFireSupport.chargeFire()));
+			world.getServer().runOnServer(server -> {
+				var level = server.getPlayerList().getPlayers().getFirst().level();
+				level.setBlockAndUpdate(new BlockPos(2, 101, 0), SoulFireSupport.chargeFire());
+				if (!level.getBlockState(new BlockPos(2, 101, 0)).equals(SoulFireSupport.chargeFire())
+					|| !level.getBlockState(new BlockPos(2, 100, 0)).is(Blocks.STONE)) {
+					throw new AssertionError(
+						"Server charge fire setup failed: " + level.getBlockState(new BlockPos(2, 101, 0)) + " on "
+							+ level.getBlockState(new BlockPos(2, 100, 0)));
+				}
+			});
 			world.getServer().runCommand("summon patchwork:soul_fireball -2.5 102.5 0.5 {acceleration_power:0.0d}");
 			world.getServer().runOnServer(server -> server.getPlayerList().getPlayers().getFirst()
 				.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(SoulGolems.SPAWN_EGG)));
@@ -63,6 +71,8 @@ public class PatchworkClientGameTests implements FabricClientGameTest {
 				}
 				return golem && projectile;
 			});
+			context.waitFor(
+				client -> client.level.getBlockState(new BlockPos(2, 101, 0)).equals(SoulFireSupport.chargeFire()));
 			context.runOnClient(client -> {
 				var models = client.getModelManager().getBlockStateModelSet();
 				for (var state : Blocks.SOUL_FIRE.getStateDefinition().getPossibleStates()) {
@@ -72,7 +82,8 @@ public class PatchworkClientGameTests implements FabricClientGameTest {
 				}
 				if (!client.level.getBlockState(new BlockPos(2, 101, 0)).equals(SoulFireSupport.chargeFire())
 					|| !client.level.getBlockState(new BlockPos(2, 100, 0)).is(Blocks.STONE)) {
-					throw new AssertionError("Charge soul fire did not reach the client without changing its stone support");
+					throw new AssertionError(
+						"Charge soul fire did not reach the client without changing its stone support");
 				}
 				var icon = client.getResourceManager().getResource(Patchwork.id("textures/item/soul_fire_charge.png"))
 					.orElseThrow(() -> new AssertionError("Original Soul Fire Charge texture is missing"));

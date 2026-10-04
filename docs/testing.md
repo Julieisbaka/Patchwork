@@ -49,6 +49,7 @@ directories with separate configurations.
   solid supports and soul sand/soil, unchanged support blocks, charge-only
   survival, block-state save/load, neighbor/support updates, Creative placement,
   rejection of floating/occupied positions, Combat tab adjacency, direct block use,
+  actual redstone-triggered dispenser consumption/projectile ignition,
   dispenser factory/registration, automatic ranged goal firing,
   exact 2-versus-3 HP projectile damage, flight through a protected
   owner, `mobGriefing` suppression, and removal when support disappears.

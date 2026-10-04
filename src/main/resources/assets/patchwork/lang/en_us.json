@@ -1,4 +1,7 @@
 {
+	"block.patchwork.wax_block": "Wax Block",
+	"block.patchwork.paeonia": "Paeonia",
+	"block.patchwork.potted_paeonia": "Potted Paeonia",
 	"patchwork.config.title": "Patchwork Settings",
 	"patchwork.config.restart": "Restart the game or server to apply changes.",
 	"patchwork.config.multiplayer": "Multiplayer gameplay is controlled by the server's config.",

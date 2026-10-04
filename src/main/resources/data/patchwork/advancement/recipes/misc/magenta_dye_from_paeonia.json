@@ -1,0 +1,9 @@
+{
+	"parent":"minecraft:recipes/root",
+	"criteria":{
+		"has_paeonia":{"trigger":"minecraft:inventory_changed","conditions":{"items":[{"items":"patchwork:paeonia"}]}},
+		"has_the_recipe":{"trigger":"minecraft:recipe_unlocked","conditions":{"recipes":"patchwork:magenta_dye_from_paeonia"}}
+	},
+	"requirements":[["has_paeonia","has_the_recipe"]],
+	"rewards":{"recipes":["patchwork:magenta_dye_from_paeonia"]}
+}
