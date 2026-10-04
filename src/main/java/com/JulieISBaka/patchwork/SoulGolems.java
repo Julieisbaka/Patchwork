@@ -12,6 +12,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.animal.golem.IronGolem;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -29,7 +30,8 @@ public final class SoulGolems {
 	}
 
 	public static void register() {
-		FabricDefaultAttributeRegistry.register(TYPE, IronGolem.createAttributes());
+		FabricDefaultAttributeRegistry.register(TYPE,
+			IronGolem.createAttributes().add(Attributes.MAX_HEALTH, 50.0));
 	}
 
 	public static boolean trySpawn(Level level, BlockPos head) {

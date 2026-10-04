@@ -2,6 +2,7 @@ package com.JulieISBaka.patchwork.mixin;
 
 import com.JulieISBaka.patchwork.PatchworkConfig;
 import com.JulieISBaka.patchwork.UnlitTorches;
+import com.JulieISBaka.patchwork.UnlitLanterns;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -64,6 +65,9 @@ public class BreezeShockwaveMixin {
 			}
 			BlockState state = level.getBlockState(pos);
 			BlockState unlit = PatchworkConfig.settings().breezeTorchExtinguishing() ? UnlitTorches.extinguish(state) : null;
+			if (unlit == null && PatchworkConfig.settings().breezeTorchExtinguishing()) {
+				unlit = UnlitLanterns.extinguish(state);
+			}
 			if (unlit != null) {
 				level.setBlockAndUpdate(pos, unlit);
 			} else if (state.getBlock() instanceof CampfireBlock && state.getValue(CampfireBlock.LIT)) {

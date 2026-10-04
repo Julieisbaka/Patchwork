@@ -14,7 +14,7 @@ public final class PatchworkConfig {
 	private static final int MAX_RECALL_RADIUS = 256;
 	private static final String RECALL_RADIUS_KEY = "callHornRecallRadius";
 	private static volatile Settings settings = new Settings(true, true, true, true, true, true, true, true, true,
-		true, false, true, true, true, true, true, true, true, true, true, true, DEFAULT_RECALL_RADIUS);
+		true, false, true, true, true, true, true, true, true, true, true, true, true, DEFAULT_RECALL_RADIUS);
 
 	public record Settings(
 		boolean witherDifficultyHealth,
@@ -38,6 +38,7 @@ public final class PatchworkConfig {
 		boolean skeletonCover,
 		boolean potionCauldrons,
 		boolean pumpkinLanterns,
+		boolean experienceClumping,
 		int callHornRecallRadius
 	) {
 	}
@@ -113,6 +114,7 @@ public final class PatchworkConfig {
 		boolean skeletonCover = enabled(properties, "skeletonCover", path);
 		boolean potionCauldrons = enabled(properties, "potionCauldrons", path);
 		boolean pumpkinLanterns = enabled(properties, "pumpkinLanterns", path);
+		boolean experienceClumping = enabled(properties, "experienceClumping", path);
 
 		if (migratedTorches || properties.size() != originalSize || Files.notExists(path)) {
 			try (Writer writer = Files.newBufferedWriter(path)) {
@@ -125,7 +127,7 @@ public final class PatchworkConfig {
 			ownerSweepProtection, shulkerDyeing, throwableSlimeballs, callHornRecall, cauldronCleaning,
 			beesDefendFlowers, creeperChainReactions, endermanDefense, spiderWebs, throwableFireCharges,
 			slimeSplitClouds, breezeShockwave, breezeTorchExtinguishing, hoglinCharge, skeletonCover,
-			potionCauldrons, pumpkinLanterns, radius);
+			potionCauldrons, pumpkinLanterns, experienceClumping, radius);
 		Patchwork.LOGGER.info("Patchwork config loaded from {}", path);
 		return loaded;
 	}
@@ -163,6 +165,7 @@ public final class PatchworkConfig {
 			properties.setProperty("skeletonCover", Boolean.toString(updated.skeletonCover()));
 			properties.setProperty("potionCauldrons", Boolean.toString(updated.potionCauldrons()));
 			properties.setProperty("pumpkinLanterns", Boolean.toString(updated.pumpkinLanterns()));
+			properties.setProperty("experienceClumping", Boolean.toString(updated.experienceClumping()));
 			properties.setProperty(RECALL_RADIUS_KEY, Integer.toString(radius));
 			try (Writer writer = Files.newBufferedWriter(path)) {
 				properties.store(writer, "Patchwork features: true/false; callHornRecallRadius: 16-256 blocks. Restart to apply.");

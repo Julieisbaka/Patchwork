@@ -56,6 +56,7 @@ public class Patchwork implements ModInitializer {
 	public void onInitialize() {
 		PatchworkConfig.load();
 		UnlitTorches.register();
+		UnlitLanterns.register();
 		PotionCauldrons.register();
 		CharcoalBlocks.register();
 		SoulGolems.register();

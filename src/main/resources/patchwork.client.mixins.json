@@ -3,6 +3,9 @@
 	"package": "com.JulieISBaka.patchwork.client.mixin",
 	"compatibilityLevel": "JAVA_25",
 	"client": [
+		"LoomScreenMixin",
+		"ExperienceOrbRenderStateMixin",
+		"ExperienceOrbRendererMixin",
 		"WolfRenderStateMixin",
 		"WolfRendererMixin"
 	],
