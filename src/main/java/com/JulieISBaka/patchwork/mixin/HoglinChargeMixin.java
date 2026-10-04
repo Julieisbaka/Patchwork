@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class HoglinChargeMixin {
 	@Inject(method = "doHurtTarget", at = @At("RETURN"))
 	private void patchwork$launch(ServerLevel level, Entity target, CallbackInfoReturnable<Boolean> cir) {
-		Hoglin hoglin = (Hoglin)(Object)this;
+		Hoglin hoglin = (Hoglin) (Object) this;
 		if (!PatchworkConfig.settings().hoglinCharge() || !cir.getReturnValue() || !hoglin.isAdult()
 			|| !(target instanceof LivingEntity living)
 			|| !(hoglin.isSprinting() || hoglin.getDeltaMovement().horizontalDistanceSqr() >= 0.0324)) {
@@ -31,7 +31,7 @@ public class HoglinChargeMixin {
 		living.setDeltaMovement(velocity.x, 0.69, velocity.z);
 		living.syncVelocity = true;
 		if (living instanceof ServerPlayer player) {
-			((HoglinLaunchTarget)player).patchwork$trackHoglinLaunch();
+			((HoglinLaunchTarget) player).patchwork$trackHoglinLaunch();
 		}
 	}
 }

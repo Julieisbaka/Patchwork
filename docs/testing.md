@@ -79,6 +79,8 @@ screenshots to the run directory. Potion tests pour one bottle into a rendered
 empty cauldron and require at least 100 strongly red/green pixels in the central
 world-view region of screenshots. They also change only the block entity color
 while keeping the block state unchanged. No second pour or reload is used.
+Removing the client mesh invalidation makes this regression fail with a stale
+color, confirming it checks the rendered result rather than just stored data.
 In-world checks exercise
 resource reload, model loading, and client mixins; a server-only build cannot
 validate those.

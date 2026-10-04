@@ -23,10 +23,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(RangedBowAttackGoal.class)
 public class SkeletonCoverMixin {
-	@Shadow @Final private Monster mob;
-	@Shadow private int attackTime;
-	@Unique private BlockPos patchwork$cover;
-	@Unique private BlockPos patchwork$peek;
+	@Shadow
+	@Final
+	private Monster mob;
+	@Shadow
+	private int attackTime;
+	@Unique
+	private BlockPos patchwork$cover;
+	@Unique
+	private BlockPos patchwork$peek;
 
 	@Inject(method = "tick", at = @At("TAIL"))
 	private void patchwork$useCoverWhileReloading(CallbackInfo ci) {
@@ -36,8 +41,8 @@ public class SkeletonCoverMixin {
 			return;
 		}
 		LivingEntity target = skeleton.getTarget();
-		if (!(target instanceof Player) || !target.isAlive()
-			|| skeleton.distanceToSqr(target) > 36.0 || !skeleton.isHolding(net.minecraft.world.item.Items.BOW)) {
+		if (!(target instanceof Player) || !target.isAlive() || skeleton.distanceToSqr(target) > 36.0
+			|| !skeleton.isHolding(net.minecraft.world.item.Items.BOW)) {
 			patchwork$clear();
 			return;
 		}
@@ -49,12 +54,12 @@ public class SkeletonCoverMixin {
 			return;
 		}
 		if (attackTime > 0 && !skeleton.isUsingItem()) {
-			skeleton.getNavigation().moveTo(patchwork$cover.getX() + 0.5,
-				patchwork$cover.getY(), patchwork$cover.getZ() + 0.5, 1.15);
+			skeleton.getNavigation().moveTo(patchwork$cover.getX() + 0.5, patchwork$cover.getY(),
+				patchwork$cover.getZ() + 0.5, 1.15);
 		} else {
 			if (patchwork$peek != null && skeleton.blockPosition().distSqr(patchwork$peek) > 1) {
-				skeleton.getNavigation().moveTo(patchwork$peek.getX() + 0.5,
-					patchwork$peek.getY(), patchwork$peek.getZ() + 0.5, 1.15);
+				skeleton.getNavigation().moveTo(patchwork$peek.getX() + 0.5, patchwork$peek.getY(),
+					patchwork$peek.getZ() + 0.5, 1.15);
 			} else {
 				patchwork$clear();
 			}
@@ -83,7 +88,8 @@ public class SkeletonCoverMixin {
 				Vec3 eye = Vec3.atBottomCenterOf(candidate).add(0, skeleton.getEyeHeight(), 0);
 				HitResult obstruction = level.clip(new ClipContext(eye, target.getEyePosition(),
 					ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, skeleton));
-				if (obstruction.getType() == HitResult.Type.MISS || obstruction.getLocation().distanceToSqr(eye) > 3.0) {
+				if (obstruction.getType() == HitResult.Type.MISS
+					|| obstruction.getLocation().distanceToSqr(eye) > 3.0) {
 					continue;
 				}
 				double distance = origin.distSqr(candidate);

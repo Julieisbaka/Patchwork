@@ -1,1 +1,10 @@
-{"type":"minecraft:block","pools":[{"rolls":1,"entries":[{"type":"minecraft:item","name":"patchwork:unlit_torch"}],"conditions":[{"condition":"minecraft:survives_explosion"}]}]}
+{
+	"type": "minecraft:block",
+	"pools": [
+		{
+			"rolls": 1,
+			"entries": [{ "type": "minecraft:item", "name": "patchwork:unlit_torch" }],
+			"conditions": [{ "condition": "minecraft:survives_explosion" }]
+		}
+	]
+}

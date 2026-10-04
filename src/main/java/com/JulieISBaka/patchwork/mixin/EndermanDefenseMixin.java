@@ -21,8 +21,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Enderman.class)
 public class EndermanDefenseMixin {
 	@Inject(method = "hurtServer", at = @At("RETURN"))
-	private void patchwork$placeDefensiveBlock(ServerLevel level, DamageSource source, float damage, CallbackInfoReturnable<Boolean> cir) {
-		Enderman enderman = (Enderman)(Object)this;
+	private void patchwork$placeDefensiveBlock(ServerLevel level, DamageSource source, float damage,
+		CallbackInfoReturnable<Boolean> cir) {
+		Enderman enderman = (Enderman) (Object) this;
 		BlockState carried = enderman.getCarriedBlock();
 		if (!PatchworkConfig.settings().endermanDefense() || !cir.getReturnValue() || !enderman.isAlive()
 			|| carried == null || !(source.getEntity() instanceof LivingEntity attacker)
@@ -35,11 +36,8 @@ public class EndermanDefenseMixin {
 		if (dx * dx + dz * dz < 1.0) {
 			return;
 		}
-		BlockPos pos = enderman.blockPosition().offset(
-			Math.abs(dx) >= Math.abs(dz) ? (int)Math.signum(dx) : 0,
-			0,
-			Math.abs(dx) < Math.abs(dz) ? (int)Math.signum(dz) : 0
-		);
+		BlockPos pos = enderman.blockPosition().offset(Math.abs(dx) >= Math.abs(dz) ? (int) Math.signum(dx) : 0, 0,
+			Math.abs(dx) < Math.abs(dz) ? (int) Math.signum(dz) : 0);
 		BlockPos below = pos.below();
 		BlockState placement = Block.updateFromNeighbourShapes(carried, level, pos);
 		if (!placement.isAir() && level.getBlockState(pos).isAir()

@@ -27,15 +27,16 @@ public class WaterCauldronCleaningMixin {
 		if (PatchworkConfig.settings().potionCauldrons() && stack.is(Items.POTION)) {
 			PotionContents contents = stack.get(DataComponents.POTION_CONTENTS);
 			if (contents != null && !contents.equals(PotionContents.EMPTY) && !contents.is(Potions.WATER)) {
-				if ((Object)this == CauldronInteractions.EMPTY) {
+				if ((Object) this == CauldronInteractions.EMPTY) {
 					cir.setReturnValue(PotionCauldrons::pour);
-				} else if ((Object)this == CauldronInteractions.WATER) {
-					cir.setReturnValue((state, level, pos, player, hand, held) -> InteractionResult.TRY_WITH_EMPTY_HAND);
+				} else if ((Object) this == CauldronInteractions.WATER) {
+					cir.setReturnValue(
+						(state, level, pos, player, hand, held) -> InteractionResult.TRY_WITH_EMPTY_HAND);
 				}
 			}
 			return;
 		}
-		if ((Object)this != CauldronInteractions.WATER) {
+		if ((Object) this != CauldronInteractions.WATER) {
 			return;
 		}
 		Item cleanItem = CauldronCleaningItems.get(stack.getItem());

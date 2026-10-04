@@ -1,1 +1,6 @@
-{"variants":{"hanging=false":{"model":"patchwork:block/unlit_soul_lantern"},"hanging=true":{"model":"patchwork:block/unlit_soul_lantern_hanging"}}}
+{
+	"variants": {
+		"hanging=false": { "model": "patchwork:block/unlit_soul_lantern" },
+		"hanging=true": { "model": "patchwork:block/unlit_soul_lantern_hanging" }
+	}
+}

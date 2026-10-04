@@ -122,21 +122,21 @@ No performance benchmark is claimed.
 
 ## Other balance and behavior
 
-| Feature | Exact behavior |
-| --- | --- |
-| Wither health | Easy/Peaceful 300 HP, Normal 450, Hard 600; difficulty changes preserve health percentage |
-| Wither birth | Adds 3 base damage; keeps radius, exposure, knockback and block interaction |
-| Chainmail | Iron-chain armor patterns: 5 helmet, 8 chestplate, 7 leggings, 4 boots |
-| Slimeball | 1 HP and Slowness I for 3s; Slimes instead heal 1 HP and gain Speed I for 3s; 20-tick cooldown |
-| Call horn | Seated owned pets within configured radius; default 32, range 16-256; safe destinations only; recalled pets stand |
-| Skeleton cover | Bow-wielding Skeletons with player within six blocks seek an adjacent reachable obstructing corner while reloading |
-| Bees | Breaking flowers within four blocks of an occupied, unsmoked hive releases defenders |
-| Enderman | One-in-three defensive placement chance; support, space, survival, and collision checked |
-| Spider | Pursuing targets two-eight blocks away: one-in-four web chance each five seconds; requires empty supported space |
-| Slime cloud | 3x3 supported-ground dust patch, five seconds; Slowness II while inside, fading after exit |
-| Breeze | Melee-response knockback around three blocks; ten-second cooldown; extinguishing range five |
-| Hoglin | Successful charged hit at speed at least 0.18 blocks/tick or while sprinting launches roughly three blocks; wall/ceiling collision adds 2 HP |
-| Creepers | Blast-damaged surviving Creepers ignite full fuse when the optional chain reaction is enabled |
+| Feature        | Exact behavior                                                                                                                               |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Wither health  | Easy/Peaceful 300 HP, Normal 450, Hard 600; difficulty changes preserve health percentage                                                    |
+| Wither birth   | Adds 3 base damage; keeps radius, exposure, knockback and block interaction                                                                  |
+| Chainmail      | Iron-chain armor patterns: 5 helmet, 8 chestplate, 7 leggings, 4 boots                                                                       |
+| Slimeball      | 1 HP and Slowness I for 3s; Slimes instead heal 1 HP and gain Speed I for 3s; 20-tick cooldown                                               |
+| Call horn      | Seated owned pets within configured radius; default 32, range 16-256; safe destinations only; recalled pets stand                            |
+| Skeleton cover | Bow-wielding Skeletons with player within six blocks seek an adjacent reachable obstructing corner while reloading                           |
+| Bees           | Breaking flowers within four blocks of an occupied, unsmoked hive releases defenders                                                         |
+| Enderman       | One-in-three defensive placement chance; support, space, survival, and collision checked                                                     |
+| Spider         | Pursuing targets two-eight blocks away: one-in-four web chance each five seconds; requires empty supported space                             |
+| Slime cloud    | 3x3 supported-ground dust patch, five seconds; Slowness II while inside, fading after exit                                                   |
+| Breeze         | Melee-response knockback around three blocks; ten-second cooldown; extinguishing range five                                                  |
+| Hoglin         | Successful charged hit at speed at least 0.18 blocks/tick or while sprinting launches roughly three blocks; wall/ceiling collision adds 2 HP |
+| Creepers       | Blast-damaged surviving Creepers ignite full fuse when the optional chain reaction is enabled                                                |
 
 Wither reference unarmored birth damage changes from 35.5 to 37 on Easy, 69
 to 72 on Normal, and 103.5 to 108 on Hard; armor, exposure, and distance matter.

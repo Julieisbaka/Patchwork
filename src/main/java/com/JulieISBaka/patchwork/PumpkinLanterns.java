@@ -22,11 +22,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 
 public final class PumpkinLanterns {
-	private static final ResourceKey<Block> BLOCK_KEY = ResourceKey.create(Registries.BLOCK, Patchwork.id("soul_jack_o_lantern"));
-	private static final ResourceKey<Item> ITEM_KEY = ResourceKey.create(Registries.ITEM, Patchwork.id("soul_jack_o_lantern"));
-	public static final Block SOUL_BLOCK = Registry.register(BuiltInRegistries.BLOCK, BLOCK_KEY,
-		new CarvedPumpkinBlock(BlockBehaviour.Properties.ofLegacyCopy(Blocks.JACK_O_LANTERN)
-			.lightLevel(state -> 10).setId(BLOCK_KEY)));
+	private static final ResourceKey<Block> BLOCK_KEY = ResourceKey.create(Registries.BLOCK,
+		Patchwork.id("soul_jack_o_lantern"));
+	private static final ResourceKey<Item> ITEM_KEY = ResourceKey.create(Registries.ITEM,
+		Patchwork.id("soul_jack_o_lantern"));
+	public static final Block SOUL_BLOCK = Registry.register(BuiltInRegistries.BLOCK, BLOCK_KEY, new CarvedPumpkinBlock(
+		BlockBehaviour.Properties.ofLegacyCopy(Blocks.JACK_O_LANTERN).lightLevel(state -> 10).setId(BLOCK_KEY)));
 	public static final Item SOUL_ITEM = Registry.register(BuiltInRegistries.ITEM, ITEM_KEY,
 		new BlockItem(SOUL_BLOCK, new Item.Properties().setId(ITEM_KEY).useBlockDescriptionPrefix()) {
 			@Override
@@ -55,9 +56,11 @@ public final class PumpkinLanterns {
 				return InteractionResult.PASS;
 			}
 			if (level instanceof ServerLevel serverLevel) {
-				SoulGolems.withBuilder(player, () -> serverLevel.setBlockAndUpdate(hit.getBlockPos(),
-					replacement.defaultBlockState().setValue(CarvedPumpkinBlock.FACING, state.getValue(CarvedPumpkinBlock.FACING))));
-				serverLevel.playSound(null, hit.getBlockPos(), SoundEvents.FIRECHARGE_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
+				SoulGolems.withBuilder(player,
+					() -> serverLevel.setBlockAndUpdate(hit.getBlockPos(), replacement.defaultBlockState()
+						.setValue(CarvedPumpkinBlock.FACING, state.getValue(CarvedPumpkinBlock.FACING))));
+				serverLevel.playSound(null, hit.getBlockPos(), SoundEvents.FIRECHARGE_USE, SoundSource.BLOCKS, 1.0F,
+					1.0F);
 				serverLevel.gameEvent(player, GameEvent.BLOCK_CHANGE, hit.getBlockPos());
 				held.consume(1, player);
 			}

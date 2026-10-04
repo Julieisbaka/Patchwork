@@ -14,7 +14,8 @@ public class PatchworkClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		EntityRendererRegistry.register(SoulGolems.TYPE, SoulGolemRenderer::new);
-		EntityRendererRegistry.register(SoulFireCharges.PROJECTILE, context -> new ThrownItemRenderer<>(context, 0.5F, true));
+		EntityRendererRegistry.register(SoulFireCharges.PROJECTILE,
+			context -> new ThrownItemRenderer<>(context, 0.5F, true));
 		BlockColorRegistry.register((state, world, pos, colors) -> {
 			if (world.getBlockEntity(pos) instanceof PotionCauldronEntity cauldron) {
 				colors.add(cauldron.potion().getColor());

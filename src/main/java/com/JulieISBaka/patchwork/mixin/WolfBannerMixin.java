@@ -17,8 +17,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Wolf.class)
 public abstract class WolfBannerMixin {
 	@Inject(method = "mobInteract", at = @At("HEAD"), cancellable = true)
-	private void patchwork$interactWithBanner(Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
-		Wolf wolf = (Wolf)(Object)this;
+	private void patchwork$interactWithBanner(Player player, InteractionHand hand,
+		CallbackInfoReturnable<InteractionResult> cir) {
+		Wolf wolf = (Wolf) (Object) this;
 		if (!PatchworkConfig.settings().wolfBanners() || !wolf.isTame() || !wolf.isOwnedBy(player)) {
 			return;
 		}

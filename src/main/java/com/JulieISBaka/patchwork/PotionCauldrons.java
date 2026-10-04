@@ -38,8 +38,7 @@ public final class PotionCauldrons {
 	public static final Block BLOCK = Registry.register(BuiltInRegistries.BLOCK,
 		ResourceKey.create(Registries.BLOCK, Patchwork.id("potion_cauldron")),
 		new PotionCauldronBlock(BlockBehaviour.Properties.ofLegacyCopy(Blocks.WATER_CAULDRON)
-			.overrideLootTable(Blocks.CAULDRON.getLootTable())
-			.overrideDescription(Blocks.CAULDRON.getDescriptionId())
+			.overrideLootTable(Blocks.CAULDRON.getLootTable()).overrideDescription(Blocks.CAULDRON.getDescriptionId())
 			.setId(ResourceKey.create(Registries.BLOCK, Patchwork.id("potion_cauldron")))));
 	public static final BlockEntityType<PotionCauldronEntity> TYPE = Registry.register(
 		BuiltInRegistries.BLOCK_ENTITY_TYPE,
@@ -105,8 +104,8 @@ public final class PotionCauldrons {
 		if (remaining > 0) {
 			ItemEntity remainder = new ItemEntity(level, item.getX(), item.getY(), item.getZ(),
 				item.getItem().copyWithCount(remaining));
-			PotionArrowItemAccessor original = (PotionArrowItemAccessor)item;
-			PotionArrowItemAccessor split = (PotionArrowItemAccessor)remainder;
+			PotionArrowItemAccessor original = (PotionArrowItemAccessor) item;
+			PotionArrowItemAccessor split = (PotionArrowItemAccessor) remainder;
 			split.patchwork$setAge(item.getAge());
 			remainder.setPickUpDelay(original.patchwork$getPickupDelay());
 			remainder.setTarget(original.patchwork$getTarget());
@@ -116,7 +115,8 @@ public final class PotionCauldrons {
 				throw new IllegalStateException("Could not split dropped arrows at " + pos);
 			}
 		}
-		// Keep the converted entity's identity, motion, and pickup timer instead of respawning it.
+		// Keep the converted entity's identity, motion, and pickup timer instead of
+		// respawning it.
 		item.setItem(tipped);
 		for (int i = 0; i < count; i++) {
 			LayeredCauldronBlock.lowerFillLevel(level.getBlockState(pos), level, pos);
@@ -147,7 +147,8 @@ public final class PotionCauldrons {
 		}
 
 		@Override
-		public void handlePrecipitation(BlockState state, Level level, BlockPos pos, Biome.Precipitation precipitation) {
+		public void handlePrecipitation(BlockState state, Level level, BlockPos pos,
+			Biome.Precipitation precipitation) {
 		}
 
 		@Override
@@ -183,7 +184,8 @@ public final class PotionCauldrons {
 				}
 				if (!level.isClientSide()) {
 					level.setBlockAndUpdate(pos, state.cycle(LEVEL));
-					player.setItemInHand(hand, ItemUtils.createFilledResult(stack, player, new ItemStack(Items.GLASS_BOTTLE)));
+					player.setItemInHand(hand,
+						ItemUtils.createFilledResult(stack, player, new ItemStack(Items.GLASS_BOTTLE)));
 					player.awardStat(Stats.USE_CAULDRON);
 					player.awardStat(Stats.ITEM_USED.get(Items.POTION));
 					level.playSound(null, pos, SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);

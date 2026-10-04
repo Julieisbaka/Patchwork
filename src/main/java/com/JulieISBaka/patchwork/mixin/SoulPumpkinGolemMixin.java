@@ -22,10 +22,8 @@ public class SoulPumpkinGolemMixin {
 		}
 	}
 
-	@ModifyExpressionValue(
-		method = {"getOrCreateIronGolemFull", "getOrCreateCopperGolemFull"},
-		at = @At(value = "FIELD", target = "Lnet/minecraft/world/level/block/CarvedPumpkinBlock;PUMPKINS_PREDICATE:Ljava/util/function/Predicate;")
-	)
+	@ModifyExpressionValue(method = { "getOrCreateIronGolemFull",
+			"getOrCreateCopperGolemFull" }, at = @At(value = "FIELD", target = "Lnet/minecraft/world/level/block/CarvedPumpkinBlock;PUMPKINS_PREDICATE:Ljava/util/function/Predicate;"))
 	private Predicate<BlockState> patchwork$acceptSoulLantern(Predicate<BlockState> original) {
 		return original.or(state -> state.is(PumpkinLanterns.SOUL_BLOCK));
 	}

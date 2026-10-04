@@ -24,12 +24,13 @@ public abstract class WolfRendererMixin extends AgeableMobRenderer<Wolf, WolfRen
 
 	@Inject(method = "<init>", at = @At("TAIL"))
 	private void patchwork$addBannerLayer(EntityRendererProvider.Context context, CallbackInfo ci) {
-		this.addLayer(new WolfBannerLayer((WolfRenderer)(Object)this, context.getModelSet(), context.getSprites()));
+		this.addLayer(new WolfBannerLayer((WolfRenderer) (Object) this, context.getModelSet(), context.getSprites()));
 	}
 
 	@Inject(method = "extractRenderState", at = @At("TAIL"))
 	private void patchwork$extractBanner(Wolf wolf, WolfRenderState state, float partialTicks, CallbackInfo ci) {
 		ItemStack headItem = wolf.getItemBySlot(EquipmentSlot.HEAD);
-		((WolfBannerState)state).patchwork$setBanner(headItem.getItem() instanceof BannerItem ? headItem.copy() : ItemStack.EMPTY);
+		((WolfBannerState) state)
+			.patchwork$setBanner(headItem.getItem() instanceof BannerItem ? headItem.copy() : ItemStack.EMPTY);
 	}
 }

@@ -23,9 +23,9 @@ public class LoomMenuMixin {
 
 	@Inject(method = "setupResultSlot", at = @At("HEAD"), cancellable = true)
 	private void patchwork$rejectExtraPattern(Holder<BannerPattern> pattern, CallbackInfo ci) {
-		LoomMenu menu = (LoomMenu)(Object)this;
-		if (menu.getBannerSlot().getItem().getOrDefault(DataComponents.BANNER_PATTERNS,
-			BannerPatternLayers.EMPTY).layers().size() >= BannerCustomization.MAX_PATTERNS) {
+		LoomMenu menu = (LoomMenu) (Object) this;
+		if (menu.getBannerSlot().getItem().getOrDefault(DataComponents.BANNER_PATTERNS, BannerPatternLayers.EMPTY)
+			.layers().size() >= BannerCustomization.MAX_PATTERNS) {
 			menu.getResultSlot().set(ItemStack.EMPTY);
 			ci.cancel();
 		}

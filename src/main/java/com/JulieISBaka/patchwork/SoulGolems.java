@@ -25,13 +25,13 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public final class SoulGolems {
 	private static final ThreadLocal<Player> BUILDER = new ThreadLocal<>();
-	private static final ResourceKey<EntityType<?>> TYPE_KEY =
-		ResourceKey.create(Registries.ENTITY_TYPE, Patchwork.id("soul_golem"));
+	private static final ResourceKey<EntityType<?>> TYPE_KEY = ResourceKey.create(Registries.ENTITY_TYPE,
+		Patchwork.id("soul_golem"));
 	public static final EntityType<SoulGolem> TYPE = Registry.register(BuiltInRegistries.ENTITY_TYPE, TYPE_KEY,
-		EntityType.Builder.of(SoulGolem::new, MobCategory.MISC).sized(0.7F, 1.9F)
-			.eyeHeight(1.7F).clientTrackingRange(10).noLootTable().build(TYPE_KEY));
-	private static final ResourceKey<Item> EGG_KEY =
-		ResourceKey.create(Registries.ITEM, Patchwork.id("soul_golem_spawn_egg"));
+		EntityType.Builder.of(SoulGolem::new, MobCategory.MISC).sized(0.7F, 1.9F).eyeHeight(1.7F)
+			.clientTrackingRange(10).noLootTable().build(TYPE_KEY));
+	private static final ResourceKey<Item> EGG_KEY = ResourceKey.create(Registries.ITEM,
+		Patchwork.id("soul_golem_spawn_egg"));
 	public static final Item SPAWN_EGG = Registry.register(BuiltInRegistries.ITEM, EGG_KEY,
 		new SpawnEggItem(new Item.Properties().spawnEgg(TYPE).setId(EGG_KEY)));
 
@@ -39,8 +39,7 @@ public final class SoulGolems {
 	}
 
 	public static void register() {
-		FabricDefaultAttributeRegistry.register(TYPE,
-			IronGolem.createAttributes().add(Attributes.MAX_HEALTH, 50.0));
+		FabricDefaultAttributeRegistry.register(TYPE, IronGolem.createAttributes().add(Attributes.MAX_HEALTH, 50.0));
 	}
 
 	public static <T> T withBuilder(Player player, Supplier<T> placement) {
@@ -60,8 +59,7 @@ public final class SoulGolems {
 	public static boolean trySpawn(Level level, BlockPos head) {
 		BlockState lantern = level.getBlockState(head);
 		if (!(level instanceof ServerLevel serverLevel) || !lantern.is(PumpkinLanterns.SOUL_BLOCK)
-			|| !isSoulBlock(level.getBlockState(head.below()))
-			|| !isSoulBlock(level.getBlockState(head.below(2)))) {
+			|| !isSoulBlock(level.getBlockState(head.below())) || !isSoulBlock(level.getBlockState(head.below(2)))) {
 			return false;
 		}
 		SoulGolem golem = new SoulGolem(TYPE, level);

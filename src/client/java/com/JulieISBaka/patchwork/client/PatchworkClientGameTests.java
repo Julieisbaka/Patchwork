@@ -72,13 +72,20 @@ public class PatchworkClientGameTests implements FabricClientGameTest {
 					var itemState = new ItemStackRenderState();
 					client.getItemModelResolver().updateForLiving(itemState, new ItemStack(lantern.asItem()),
 						ItemDisplayContext.NONE, client.player);
-					if (itemState.isEmpty() || itemState.usesBlockLight() || itemState.getModelBoundingBox().getZsize() > 0.07) {
+					if (itemState.isEmpty() || itemState.usesBlockLight()
+						|| itemState.getModelBoundingBox().getZsize() > 0.07) {
 						throw new AssertionError("Lantern did not use a flat generated item model: " + lantern);
 					}
 				}
-				for (var collection : List.of(CopperTorches.LIT, CopperTorches.LIT_WALL,
-					CopperTorches.UNLIT, CopperTorches.UNLIT_WALL)) {
+				for (var collection : List.of(CopperTorches.LIT, CopperTorches.LIT_WALL, CopperTorches.UNLIT,
+					CopperTorches.UNLIT_WALL)) {
 					for (var torch : collection.asList()) {
+						var models = client.getModelManager().getBlockStateModelSet();
+						for (var state : torch.getStateDefinition().getPossibleStates()) {
+							if (models.get(state) == models.missingModel()) {
+								throw new AssertionError("Copper torch block model is missing: " + state);
+							}
+						}
 						var itemState = new ItemStackRenderState();
 						client.getItemModelResolver().updateForLiving(itemState, new ItemStack(torch.asItem()),
 							ItemDisplayContext.GUI, client.player);
@@ -98,7 +105,8 @@ public class PatchworkClientGameTests implements FabricClientGameTest {
 				for (var entity : client.level.entitiesForRendering()) {
 					if (entity instanceof SoulFireball projectile) {
 						foundProjectile = true;
-						if (!(client.getEntityRenderDispatcher().getRenderer(projectile) instanceof ThrownItemRenderer<?>)
+						if (!(client.getEntityRenderDispatcher()
+							.getRenderer(projectile) instanceof ThrownItemRenderer<?>)
 							|| !projectile.getItem().is(SoulFireCharges.ITEM)) {
 							throw new AssertionError("Soul Fire Charge projectile renderer or item is incorrect");
 						}
@@ -133,7 +141,8 @@ public class PatchworkClientGameTests implements FabricClientGameTest {
 			context.waitFor(client -> {
 				for (var entity : client.level.entitiesForRendering()) {
 					if (entity instanceof SoulGolem golem && !golem.hasLantern()) {
-						if (!(client.getEntityRenderDispatcher().getRenderer(golem) instanceof SoulGolemRenderer renderer)) {
+						if (!(client.getEntityRenderDispatcher()
+							.getRenderer(golem) instanceof SoulGolemRenderer renderer)) {
 							throw new AssertionError("Sheared Soul Golem renderer changed");
 						}
 						var state = renderer.createRenderState();
@@ -161,17 +170,18 @@ public class PatchworkClientGameTests implements FabricClientGameTest {
 			world.getServer().runCommand("tp @a 0.5 103 3.5 180 50");
 			world.getServer().runCommand("setblock 0 101 0 minecraft:cauldron");
 			world.getConnection().waitForChunksRender();
-			for (int color : new int[] {0xFF0000, 0x00FF00}) {
+			for (int color : new int[] { 0xFF0000, 0x00FF00 }) {
 				world.getServer().runOnServer(server -> {
 					var player = server.getPlayerList().getPlayers().getFirst();
 					var level = player.level();
 					level.setBlockAndUpdate(pos, Blocks.CAULDRON.defaultBlockState());
-					var contents = new PotionContents(Optional.of(Potions.HEALING),
-						Optional.of(color), List.of(), Optional.empty());
+					var contents = new PotionContents(Optional.of(Potions.HEALING), Optional.of(color), List.of(),
+						Optional.empty());
 					ItemStack potion = new ItemStack(Items.POTION);
 					potion.set(DataComponents.POTION_CONTENTS, contents);
 					player.setItemInHand(InteractionHand.MAIN_HAND, potion);
-					PotionCauldrons.pour(level.getBlockState(pos), level, pos, player, InteractionHand.MAIN_HAND, potion);
+					PotionCauldrons.pour(level.getBlockState(pos), level, pos, player, InteractionHand.MAIN_HAND,
+						potion);
 					player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
 				});
 				context.waitFor(client -> client.level.getBlockEntity(pos) instanceof PotionCauldronEntity cauldron
@@ -185,8 +195,8 @@ public class PatchworkClientGameTests implements FabricClientGameTest {
 				if (!(player.level().getBlockEntity(pos) instanceof PotionCauldronEntity cauldron)) {
 					throw new AssertionError("Potion cauldron disappeared before updating its contents");
 				}
-				cauldron.setPotion(new PotionContents(Optional.of(Potions.HEALING),
-					Optional.of(0xFF0000), List.of(), Optional.empty()));
+				cauldron.setPotion(new PotionContents(Optional.of(Potions.HEALING), Optional.of(0xFF0000), List.of(),
+					Optional.empty()));
 			});
 			context.waitFor(client -> client.level.getBlockEntity(pos) instanceof PotionCauldronEntity cauldron
 				&& cauldron.potion().getColor() == 0xFF0000);
@@ -216,8 +226,8 @@ public class PatchworkClientGameTests implements FabricClientGameTest {
 				}
 			}
 			if (matchingPixels < 100) {
-				throw new AssertionError("Potion mesh did not show its current tint without a reload: "
-					+ matchingPixels + " matching pixels in " + screenshot);
+				throw new AssertionError("Potion mesh did not show its current tint without a reload: " + matchingPixels
+					+ " matching pixels in " + screenshot);
 			}
 		} catch (IOException exception) {
 			throw new AssertionError("Could not read potion screenshot: " + screenshot, exception);

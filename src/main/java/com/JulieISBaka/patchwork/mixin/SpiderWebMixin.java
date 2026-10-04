@@ -18,10 +18,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class SpiderWebMixin {
 	@Inject(method = "tick", at = @At("TAIL"))
 	private void patchwork$spinWeb(CallbackInfo ci) {
-		Spider spider = (Spider)(Object)this;
+		Spider spider = (Spider) (Object) this;
 		if (!PatchworkConfig.settings().spiderWebs() || !(spider.level() instanceof ServerLevel level)
-			|| !spider.isAlive() || spider.tickCount % 100 != 0
-			|| !level.getGameRules().get(GameRules.MOB_GRIEFING)) {
+			|| !spider.isAlive() || spider.tickCount % 100 != 0 || !level.getGameRules().get(GameRules.MOB_GRIEFING)) {
 			return;
 		}
 		LivingEntity target = spider.getTarget();
@@ -30,9 +29,11 @@ public class SpiderWebMixin {
 			return;
 		}
 		BlockPos pos = target.blockPosition();
-		if (level.getBlockState(pos).isAir() && level.getBlockState(pos.below()).isFaceSturdy(level, pos.below(), Direction.UP)
+		if (level.getBlockState(pos).isAir()
+			&& level.getBlockState(pos.below()).isFaceSturdy(level, pos.below(), Direction.UP)
 			&& level.setBlockAndUpdate(pos, Blocks.COBWEB.defaultBlockState())) {
-			level.gameEvent(GameEvent.BLOCK_PLACE, pos, GameEvent.Context.of(spider, Blocks.COBWEB.defaultBlockState()));
+			level.gameEvent(GameEvent.BLOCK_PLACE, pos,
+				GameEvent.Context.of(spider, Blocks.COBWEB.defaultBlockState()));
 		}
 	}
 }

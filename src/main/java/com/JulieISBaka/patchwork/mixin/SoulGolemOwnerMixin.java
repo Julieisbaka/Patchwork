@@ -16,8 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(EntityType.class)
 public class SoulGolemOwnerMixin {
-	@Inject(method = "spawn(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/entity/EntitySpawnReason;ZZ)Lnet/minecraft/world/entity/Entity;",
-		at = @At("RETURN"))
+	@Inject(method = "spawn(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/entity/EntitySpawnReason;ZZ)Lnet/minecraft/world/entity/Entity;", at = @At("RETURN"))
 	private void patchwork$assignEggOwner(ServerLevel level, ItemStack stack, LivingEntity user, BlockPos pos,
 		EntitySpawnReason reason, boolean align, boolean invert, CallbackInfoReturnable<Entity> cir) {
 		if (cir.getReturnValue() instanceof SoulGolem golem && user instanceof Player player) {

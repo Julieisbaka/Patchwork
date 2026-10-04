@@ -11,14 +11,14 @@ All paths below are relative to
 
 ## Priority assets
 
-| Asset | Size/layout | Destination |
-| --- | --- | --- |
-| Soul Golem body | 64x64, Snow Golem UVs; exposed head also needs a finished face | `entity/soul_golem.png` |
-| Soul Golem spawn egg | 16x16, vanilla-style egg silhouette and highlights; brown/cyan identity | `item/soul_golem_spawn_egg.png` |
-| Soul Fire Charge | 16x16, vanilla-style charge silhouette, cyan soul flame | `item/soul_fire_charge.png` |
-| Six unlit lantern block textures | 16x16, vanilla lantern block UV layout; remove flame/glow only | `block/unlit_*lantern.png` |
-| Six unlit lantern item icons | 16x16, flat vanilla-style lantern icon; flame off | `item/unlit_*lantern.png` |
-| Six unlit torch textures | 16x16, vanilla torch UV layout; remove flame/glow only | `block/unlit_*torch.png` |
+| Asset                                    | Size/layout                                                             | Destination                                           |
+| ---------------------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------- |
+| Soul Golem body                          | 64x64, Snow Golem UVs; exposed head also needs a finished face          | `entity/soul_golem.png`                               |
+| Soul Golem spawn egg                     | 16x16, vanilla-style egg silhouette and highlights; brown/cyan identity | `item/soul_golem_spawn_egg.png`                       |
+| Soul Fire Charge                         | 16x16, vanilla-style charge silhouette, cyan soul flame                 | `item/soul_fire_charge.png`                           |
+| Six unlit lantern block textures         | 16x16, vanilla lantern block UV layout; remove flame/glow only          | `block/unlit_*lantern.png`                            |
+| Six unlit lantern item icons             | 16x16, flat vanilla-style lantern icon; flame off                       | `item/unlit_*lantern.png`                             |
+| Six unlit torch textures                 | 16x16, vanilla torch UV layout; remove flame/glow only                  | `block/unlit_*torch.png`                              |
 | Three lit oxidized copper torch textures | 16x16, same copper torch UV layout and green flame; age the copper only | `block/{exposed,weathered,oxidized}_copper_torch.png` |
 
 The six lantern families are `unlit_lantern`, `unlit_soul_lantern`,

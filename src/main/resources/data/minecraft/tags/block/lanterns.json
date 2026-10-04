@@ -1,15 +1,15 @@
 {
-  "replace": false,
-  "values": [
-    "patchwork:unlit_lantern",
-    "patchwork:unlit_soul_lantern",
-    "patchwork:unlit_copper_lantern",
-    "patchwork:unlit_exposed_copper_lantern",
-    "patchwork:unlit_weathered_copper_lantern",
-    "patchwork:unlit_oxidized_copper_lantern",
-    "patchwork:unlit_waxed_copper_lantern",
-    "patchwork:unlit_waxed_exposed_copper_lantern",
-    "patchwork:unlit_waxed_weathered_copper_lantern",
-    "patchwork:unlit_waxed_oxidized_copper_lantern"
-  ]
+	"replace": false,
+	"values": [
+		"patchwork:unlit_lantern",
+		"patchwork:unlit_soul_lantern",
+		"patchwork:unlit_copper_lantern",
+		"patchwork:unlit_exposed_copper_lantern",
+		"patchwork:unlit_weathered_copper_lantern",
+		"patchwork:unlit_oxidized_copper_lantern",
+		"patchwork:unlit_waxed_copper_lantern",
+		"patchwork:unlit_waxed_exposed_copper_lantern",
+		"patchwork:unlit_waxed_weathered_copper_lantern",
+		"patchwork:unlit_waxed_oxidized_copper_lantern"
+	]
 }

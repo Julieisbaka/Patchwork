@@ -40,10 +40,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class SoulGolem extends IronGolem implements OwnableEntity, RangedAttackMob, Shearable {
-	private static final EntityDataAccessor<Boolean> HAS_LANTERN =
-		SynchedEntityData.defineId(SoulGolem.class, EntityDataSerializers.BOOLEAN);
-	private static final EntityDataAccessor<Boolean> HAS_OWNER =
-		SynchedEntityData.defineId(SoulGolem.class, EntityDataSerializers.BOOLEAN);
+	private static final EntityDataAccessor<Boolean> HAS_LANTERN = SynchedEntityData.defineId(SoulGolem.class,
+		EntityDataSerializers.BOOLEAN);
+	private static final EntityDataAccessor<Boolean> HAS_OWNER = SynchedEntityData.defineId(SoulGolem.class,
+		EntityDataSerializers.BOOLEAN);
 	private EntityReference<LivingEntity> owner;
 
 	public SoulGolem(EntityType<? extends SoulGolem> type, Level level) {
@@ -163,8 +163,7 @@ public class SoulGolem extends IronGolem implements OwnableEntity, RangedAttackM
 			}
 			heal(25.0F);
 			stack.consume(1, player);
-			playSound(SoundEvents.SOUL_SOIL_PLACE, 1.0F,
-				1.0F + (random.nextFloat() - random.nextFloat()) * 0.2F);
+			playSound(SoundEvents.SOUL_SOIL_PLACE, 1.0F, 1.0F + (random.nextFloat() - random.nextFloat()) * 0.2F);
 		}
 		return InteractionResult.SUCCESS;
 	}

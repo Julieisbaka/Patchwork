@@ -36,15 +36,16 @@ public final class UnlitLanterns {
 	private static final Map<Block, Block> UNLIT = new LinkedHashMap<>();
 	public static final Block LANTERN = create(Blocks.LANTERN);
 	public static final Block SOUL_LANTERN = create(Blocks.SOUL_LANTERN);
-	public static final WeatheringCopperCollection<Block> COPPER_LANTERN = Blocks.COPPER_LANTERN.map(UnlitLanterns::create);
+	public static final WeatheringCopperCollection<Block> COPPER_LANTERN = Blocks.COPPER_LANTERN
+		.map(UnlitLanterns::create);
 
 	private UnlitLanterns() {
 	}
 
 	public static void register() {
 		OxidizableBlocksRegistry.registerWeatheringCopperBlocks(COPPER_LANTERN);
-		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register(output ->
-			UNLIT.forEach((lit, unlit) -> output.insertAfter(lit.asItem(), unlit.asItem())));
+		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS)
+			.register(output -> UNLIT.forEach((lit, unlit) -> output.insertAfter(lit.asItem(), unlit.asItem())));
 	}
 
 	public static BlockState extinguish(BlockState lit) {
@@ -55,11 +56,10 @@ public final class UnlitLanterns {
 	private static Block create(Block lit) {
 		String name = "unlit_" + BuiltInRegistries.BLOCK.getKey(lit).getPath();
 		ResourceKey<Block> blockKey = ResourceKey.create(Registries.BLOCK, Patchwork.id(name));
-		BlockBehaviour.Properties properties = BlockBehaviour.Properties.ofLegacyCopy(lit)
-			.lightLevel(state -> 0).setId(blockKey);
+		BlockBehaviour.Properties properties = BlockBehaviour.Properties.ofLegacyCopy(lit).lightLevel(state -> 0)
+			.setId(blockKey);
 		Block block = Registry.register(BuiltInRegistries.BLOCK, blockKey,
-			lit instanceof WeatheringCopper copper
-				? new UnlitWeatheringLanternBlock(lit, copper.getAge(), properties)
+			lit instanceof WeatheringCopper copper ? new UnlitWeatheringLanternBlock(lit, copper.getAge(), properties)
 				: new UnlitLanternBlock(lit, properties));
 		ResourceKey<Item> itemKey = ResourceKey.create(Registries.ITEM, Patchwork.id(name));
 		Item item = Registry.register(BuiltInRegistries.ITEM, itemKey,

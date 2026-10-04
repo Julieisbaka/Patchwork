@@ -34,32 +34,29 @@ public abstract class WitherBossMixin {
 		}
 	}
 
-	@Redirect(
-		method = "customServerAiStep",
-		at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;explode(Lnet/minecraft/world/entity/Entity;DDDFZLnet/minecraft/world/level/Level$ExplosionInteraction;)V")
-	)
-	private void patchwork$boostBirthExplosion(
-		ServerLevel level, Entity source, double x, double y, double z, float radius, boolean fire, Level.ExplosionInteraction interaction
-	) {
+	@Redirect(method = "customServerAiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;explode(Lnet/minecraft/world/entity/Entity;DDDFZLnet/minecraft/world/level/Level$ExplosionInteraction;)V"))
+	private void patchwork$boostBirthExplosion(ServerLevel level, Entity source, double x, double y, double z,
+		float radius, boolean fire, Level.ExplosionInteraction interaction) {
 		if (!PatchworkConfig.settings().witherBirthExplosion()) {
 			level.explode(source, x, y, z, radius, fire, interaction);
 			return;
 		}
-		level.explode(source, Explosion.getDefaultDamageSource(level, source), new EntityBasedExplosionDamageCalculator(source) {
-			@Override
-			public float getEntityDamageAmount(Explosion explosion, Entity entity, float exposure) {
-				return super.getEntityDamageAmount(explosion, entity, exposure) + 3.0F;
-			}
-		}, x, y, z, radius, fire, interaction);
+		level.explode(source, Explosion.getDefaultDamageSource(level, source),
+			new EntityBasedExplosionDamageCalculator(source) {
+				@Override
+				public float getEntityDamageAmount(Explosion explosion, Entity entity, float exposure) {
+					return super.getEntityDamageAmount(explosion, entity, exposure) + 3.0F;
+				}
+			}, x, y, z, radius, fire, interaction);
 	}
 
 	private void patchwork$updateHealth(Difficulty difficulty) {
-		WitherBoss wither = (WitherBoss)(Object)this;
+		WitherBoss wither = (WitherBoss) (Object) this;
 		AttributeInstance maxHealth = Objects.requireNonNull(wither.getAttribute(Attributes.MAX_HEALTH));
 		double targetHealth = switch (difficulty) {
-			case EASY, PEACEFUL -> 300.0;
-			case NORMAL -> 450.0;
-			case HARD -> 600.0;
+		case EASY, PEACEFUL -> 300.0;
+		case NORMAL -> 450.0;
+		case HARD -> 600.0;
 		};
 
 		if (maxHealth.getBaseValue() != targetHealth) {

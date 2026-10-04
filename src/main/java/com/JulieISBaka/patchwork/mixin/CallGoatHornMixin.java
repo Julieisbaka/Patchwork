@@ -21,24 +21,24 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(InstrumentItem.class)
 public class CallGoatHornMixin {
 	@Inject(method = "use", at = @At("RETURN"))
-	private void patchwork$recallPets(Level level, Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
-		if (!PatchworkConfig.settings().callHornRecall() || !(level instanceof ServerLevel serverLevel) || !cir.getReturnValue().consumesAction()) {
+	private void patchwork$recallPets(Level level, Player player, InteractionHand hand,
+		CallbackInfoReturnable<InteractionResult> cir) {
+		if (!PatchworkConfig.settings().callHornRecall() || !(level instanceof ServerLevel serverLevel)
+			|| !cir.getReturnValue().consumesAction()) {
 			return;
 		}
 
 		ItemStack stack = player.getItemInHand(hand);
 		InstrumentComponent instrument = stack.get(DataComponents.INSTRUMENT);
-		if (!stack.is(Items.GOAT_HORN) || instrument == null || !instrument.instrument().is(Instruments.CALL_GOAT_HORN)) {
+		if (!stack.is(Items.GOAT_HORN) || instrument == null
+			|| !instrument.instrument().is(Instruments.CALL_GOAT_HORN)) {
 			return;
 		}
 
 		int radius = PatchworkConfig.callHornRecallRadius();
-		for (TamableAnimal pet : serverLevel.getEntitiesOfClass(
-			TamableAnimal.class,
-			player.getBoundingBox().inflate(radius),
-			pet -> pet.isAlive() && pet.isTame() && pet.isOrderedToSit()
-				&& pet.isOwnedBy(player) && pet.distanceToSqr(player) <= (double)radius * radius
-		)) {
+		for (TamableAnimal pet : serverLevel.getEntitiesOfClass(TamableAnimal.class,
+			player.getBoundingBox().inflate(radius), pet -> pet.isAlive() && pet.isTame() && pet.isOrderedToSit()
+				&& pet.isOwnedBy(player) && pet.distanceToSqr(player) <= (double) radius * radius)) {
 			pet.tryToTeleportToOwner();
 			if (pet.distanceToSqr(player) <= 25.0) {
 				pet.setOrderedToSit(false);

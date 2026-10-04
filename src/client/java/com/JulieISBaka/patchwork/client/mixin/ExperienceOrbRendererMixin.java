@@ -16,21 +16,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ExperienceOrbRenderer.class)
 public class ExperienceOrbRendererMixin {
-	@Inject(method = "extractRenderState(Lnet/minecraft/world/entity/ExperienceOrb;Lnet/minecraft/client/renderer/entity/state/ExperienceOrbRenderState;F)V",
-		at = @At("TAIL"))
+	@Inject(method = "extractRenderState(Lnet/minecraft/world/entity/ExperienceOrb;Lnet/minecraft/client/renderer/entity/state/ExperienceOrbRenderState;F)V", at = @At("TAIL"))
 	private void patchwork$extractScale(ExperienceOrb orb, ExperienceOrbRenderState state, float partialTick,
 		CallbackInfo ci) {
-		((ExperienceOrbState)state).patchwork$setScale(
-			1.0F + Math.min(2.0F, (float)Math.log1p(Math.max(0, orb.getValue() - 1)) / 4.0F));
+		((ExperienceOrbState) state)
+			.patchwork$setScale(1.0F + Math.min(2.0F, (float) Math.log1p(Math.max(0, orb.getValue() - 1)) / 4.0F));
 	}
 
-	@ModifyArgs(method = "submit(Lnet/minecraft/client/renderer/entity/state/ExperienceOrbRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/CameraRenderState;)V",
-		at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;scale(FFF)V"))
+	@ModifyArgs(method = "submit(Lnet/minecraft/client/renderer/entity/state/ExperienceOrbRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/CameraRenderState;)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;scale(FFF)V"))
 	private void patchwork$scaleOrb(Args args, ExperienceOrbRenderState state, PoseStack poses,
 		SubmitNodeCollector collector, CameraRenderState camera) {
-		float scale = ((ExperienceOrbState)state).patchwork$scale();
+		float scale = ((ExperienceOrbState) state).patchwork$scale();
 		for (int i = 0; i < 3; i++) {
-			args.set(i, (float)args.get(i) * scale);
+			args.set(i, (float) args.get(i) * scale);
 		}
 	}
 }

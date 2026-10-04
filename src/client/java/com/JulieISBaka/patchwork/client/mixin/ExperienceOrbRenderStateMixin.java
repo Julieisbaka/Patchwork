@@ -7,7 +7,8 @@ import org.spongepowered.asm.mixin.Unique;
 
 @Mixin(ExperienceOrbRenderState.class)
 public class ExperienceOrbRenderStateMixin implements ExperienceOrbState {
-	@Unique private float patchwork$scale = 1.0F;
+	@Unique
+	private float patchwork$scale = 1.0F;
 
 	@Override
 	public float patchwork$scale() {

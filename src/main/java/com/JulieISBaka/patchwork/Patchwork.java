@@ -30,8 +30,8 @@ public class Patchwork implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 	private static final int SLIMEBALL_COOLDOWN_TICKS = 20;
 	public static final String THROWN_FIRE_CHARGE_TAG = "patchwork:thrown_fire_charge";
-	private static final ResourceConditionType<ChainmailCondition> CHAINMAIL_CONDITION =
-		ResourceConditionType.create(id("chainmail_recipes"), MapCodec.unit(new ChainmailCondition()));
+	private static final ResourceConditionType<ChainmailCondition> CHAINMAIL_CONDITION = ResourceConditionType
+		.create(id("chainmail_recipes"), MapCodec.unit(new ChainmailCondition()));
 
 	private record ChainmailCondition() implements ResourceCondition {
 		@Override
@@ -73,7 +73,8 @@ public class Patchwork implements ModInitializer {
 				output.insertAfter(Items.WIND_CHARGE, Items.SLIME_BALL);
 			}
 			if (PatchworkConfig.settings().throwableFireCharges()) {
-				output.insertAfter(PatchworkConfig.settings().throwableSlimeballs() ? Items.SLIME_BALL : Items.WIND_CHARGE,
+				output.insertAfter(
+					PatchworkConfig.settings().throwableSlimeballs() ? Items.SLIME_BALL : Items.WIND_CHARGE,
 					Items.FIRE_CHARGE);
 			}
 			output.accept(SoulFireCharges.ITEM);
@@ -87,8 +88,8 @@ public class Patchwork implements ModInitializer {
 			}
 			for (BlockPos nearby : BlockPos.betweenClosed(pos.offset(-4, -4, -4), pos.offset(4, 4, 4))) {
 				if (nearby.distSqr(pos) > 16.0 || !serverLevel.getBlockState(nearby).is(BlockTags.BEEHIVES)
-					|| !(serverLevel.getBlockEntity(nearby) instanceof BeehiveBlockEntity hive)
-					|| hive.isEmpty() || hive.isSedated()) {
+					|| !(serverLevel.getBlockEntity(nearby) instanceof BeehiveBlockEntity hive) || hive.isEmpty()
+					|| hive.isSedated()) {
 					continue;
 				}
 				hive.emptyAllLivingFromHive(player, serverLevel.getBlockState(nearby),

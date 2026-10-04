@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class SlimeballSnowballMixin {
 	@Inject(method = "onHitEntity", at = @At("HEAD"), cancellable = true)
 	private void patchwork$onSlimeballHit(EntityHitResult hit, CallbackInfo ci) {
-		Snowball projectile = (Snowball)(Object)this;
+		Snowball projectile = (Snowball) (Object) this;
 		if (!PatchworkConfig.settings().throwableSlimeballs() || !projectile.getItem().is(Items.SLIME_BALL)) {
 			return;
 		}
@@ -29,8 +29,8 @@ public class SlimeballSnowballMixin {
 			if (target instanceof Slime slime) {
 				slime.heal(1.0F);
 				slime.addEffect(new MobEffectInstance(MobEffects.SPEED, 60, 0), projectile.getOwner());
-			} else if (target.hurtServer(level, projectile.damageSources().thrown(projectile, projectile.getOwner()), 1.0F)
-				&& target instanceof LivingEntity living) {
+			} else if (target.hurtServer(level, projectile.damageSources().thrown(projectile, projectile.getOwner()),
+				1.0F) && target instanceof LivingEntity living) {
 				living.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 60, 0), projectile.getOwner());
 			}
 		}

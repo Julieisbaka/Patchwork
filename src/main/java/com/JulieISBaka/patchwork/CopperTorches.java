@@ -87,9 +87,10 @@ public final class CopperTorches {
 	}
 
 	private static WeatheringCopperCollection<Block> createCollection(boolean unlit, boolean wall) {
-		var names = WeatheringCopperCollection.prefixWithState(
-			WeatheringCopperCollection.create(wall ? "copper_wall_torch" : "copper_torch"));
-		var ages = new WeatheringCopperCollection<>(WeatheringCopperCollection.STATES, WeatheringCopperCollection.STATES);
+		var names = WeatheringCopperCollection
+			.prefixWithState(WeatheringCopperCollection.create(wall ? "copper_wall_torch" : "copper_torch"));
+		var ages = new WeatheringCopperCollection<>(WeatheringCopperCollection.STATES,
+			WeatheringCopperCollection.STATES);
 		return WeatheringCopperCollection.zipMap(names, ages, (name, age) -> {
 			if (!unlit && name.equals("copper_torch")) {
 				return Blocks.COPPER_TORCH;
@@ -99,8 +100,9 @@ public final class CopperTorches {
 			}
 			String id = (unlit ? "unlit_" : "") + name;
 			ResourceKey<Block> key = ResourceKey.create(Registries.BLOCK, Patchwork.id(id));
-			var properties = BlockBehaviour.Properties.ofLegacyCopy(wall ? Blocks.COPPER_WALL_TORCH : Blocks.COPPER_TORCH)
-				.lightLevel(state -> unlit ? 0 : 14).setId(key);
+			var properties = BlockBehaviour.Properties
+				.ofLegacyCopy(wall ? Blocks.COPPER_WALL_TORCH : Blocks.COPPER_TORCH).lightLevel(state -> unlit ? 0 : 14)
+				.setId(key);
 			if (wall) {
 				ResourceKey<LootTable> loot = ResourceKey.create(Registries.LOOT_TABLE,
 					Patchwork.id(id.replace("_wall_torch", "_torch")));
@@ -111,7 +113,8 @@ public final class CopperTorches {
 				properties.randomTicks();
 			}
 			Block block = wall
-				? (waxed ? new CopperWallTorchBlock(unlit, properties) : new WeatheringWallTorchBlock(age, unlit, properties))
+				? (waxed ? new CopperWallTorchBlock(unlit, properties)
+					: new WeatheringWallTorchBlock(age, unlit, properties))
 				: (waxed ? new CopperTorchBlock(unlit, properties) : new WeatheringTorchBlock(age, unlit, properties));
 			return Registry.register(BuiltInRegistries.BLOCK, key, block);
 		});
@@ -122,9 +125,8 @@ public final class CopperTorches {
 			return;
 		}
 		ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, BuiltInRegistries.BLOCK.getKey(standing));
-		Item item = Registry.register(BuiltInRegistries.ITEM, key,
-			new StandingAndWallBlockItem(standing, wall, Direction.DOWN,
-				new Item.Properties().setId(key).useBlockDescriptionPrefix()));
+		Item item = Registry.register(BuiltInRegistries.ITEM, key, new StandingAndWallBlockItem(standing, wall,
+			Direction.DOWN, new Item.Properties().setId(key).useBlockDescriptionPrefix()));
 		Item.BY_BLOCK.put(standing, item);
 		Item.BY_BLOCK.put(wall, item);
 	}

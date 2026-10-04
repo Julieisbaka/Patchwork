@@ -1,10 +1,7 @@
 {
 	"type": "minecraft:crafting_shapeless",
 	"category": "misc",
-	"ingredients": [
-		"patchwork:oxidized_copper_torch",
-		"minecraft:honeycomb"
-	],
+	"ingredients": ["patchwork:oxidized_copper_torch", "minecraft:honeycomb"],
 	"result": {
 		"id": "patchwork:waxed_oxidized_copper_torch",
 		"count": 1

@@ -14,8 +14,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class HoglinMovementMixin {
 	@Inject(method = "move", at = @At("RETURN"))
 	private void patchwork$impact(MoverType moverType, Vec3 movement, CallbackInfo ci) {
-		if ((Object)this instanceof ServerPlayer player) {
-			((HoglinLaunchTarget)player).patchwork$checkHoglinImpact();
+		if ((Object) this instanceof ServerPlayer player) {
+			((HoglinLaunchTarget) player).patchwork$checkHoglinImpact();
 		}
 	}
 }

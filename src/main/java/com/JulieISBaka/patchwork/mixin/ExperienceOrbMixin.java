@@ -16,11 +16,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ExperienceOrb.class)
 public abstract class ExperienceOrbMixin {
-	@Shadow private int count;
-	@Shadow private int age;
-	@Shadow public abstract int getValue();
-	@Shadow protected abstract void setValue(int value);
-	@Unique private long patchwork$nextMergeTick;
+	@Shadow
+	private int count;
+	@Shadow
+	private int age;
+
+	@Shadow
+	public abstract int getValue();
+
+	@Shadow
+	protected abstract void setValue(int value);
+
+	@Unique
+	private long patchwork$nextMergeTick;
 
 	@Inject(method = "awardWithDirection", at = @At("HEAD"), cancellable = true)
 	private static void patchwork$awardSingleOrb(ServerLevel level, Vec3 pos, Vec3 direction, int amount,
@@ -42,20 +50,18 @@ public abstract class ExperienceOrbMixin {
 
 	@Inject(method = "tick", at = @At("TAIL"))
 	private void patchwork$clump(CallbackInfo ci) {
-		ExperienceOrb self = (ExperienceOrb)(Object)this;
+		ExperienceOrb self = (ExperienceOrb) (Object) this;
 		if (!PatchworkConfig.settings().experienceClumping() || self.isRemoved()
-			|| !(self.level() instanceof ServerLevel level)
-			|| level.getGameTime() < patchwork$nextMergeTick) {
+			|| !(self.level() instanceof ServerLevel level) || level.getGameTime() < patchwork$nextMergeTick) {
 			return;
 		}
 		patchwork$nextMergeTick = level.getGameTime() + 20;
-		for (ExperienceOrb other : level.getEntitiesOfClass(ExperienceOrb.class,
-			self.getBoundingBox().inflate(2.0),
+		for (ExperienceOrb other : level.getEntitiesOfClass(ExperienceOrb.class, self.getBoundingBox().inflate(2.0),
 			orb -> orb != self && !orb.isRemoved() && self.distanceToSqr(orb) <= 4.0)) {
-			ExperienceOrbAccessor otherData = (ExperienceOrbAccessor)other;
-			long total = (long)getValue() * count + (long)other.getValue() * otherData.patchwork$count();
+			ExperienceOrbAccessor otherData = (ExperienceOrbAccessor) other;
+			long total = (long) getValue() * count + (long) other.getValue() * otherData.patchwork$count();
 			if (total > 0 && total <= Integer.MAX_VALUE) {
-				setValue((int)total);
+				setValue((int) total);
 				count = 1;
 				age = Math.min(age, otherData.patchwork$age());
 				other.discard();
@@ -66,9 +72,9 @@ public abstract class ExperienceOrbMixin {
 	@Inject(method = "playerTouch", at = @At("HEAD"))
 	private void patchwork$collectAll(Player player, CallbackInfo ci) {
 		if (PatchworkConfig.settings().experienceClumping()) {
-			long total = (long)getValue() * count;
+			long total = (long) getValue() * count;
 			if (total > 0 && total <= Integer.MAX_VALUE) {
-				setValue((int)total);
+				setValue((int) total);
 				count = 1;
 			}
 		}

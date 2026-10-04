@@ -18,8 +18,8 @@ public class HoglinImpactMixin implements HoglinLaunchTarget {
 	@Unique
 	private int patchwork$impactTicks;
 	@Unique
-	private static final ResourceKey<DamageType> PATCHWORK$IMPACT = ResourceKey.create(
-		Registries.DAMAGE_TYPE, Patchwork.id("hoglin_impact"));
+	private static final ResourceKey<DamageType> PATCHWORK$IMPACT = ResourceKey.create(Registries.DAMAGE_TYPE,
+		Patchwork.id("hoglin_impact"));
 
 	@Override
 	public void patchwork$trackHoglinLaunch() {
@@ -31,7 +31,7 @@ public class HoglinImpactMixin implements HoglinLaunchTarget {
 		if (this.patchwork$impactTicks <= 0) {
 			return;
 		}
-		ServerPlayer player = (ServerPlayer)(Object)this;
+		ServerPlayer player = (ServerPlayer) (Object) this;
 		if (!PatchworkConfig.settings().hoglinCharge() || !player.isAlive() || player.onGround()) {
 			this.patchwork$impactTicks = 0;
 		} else if (player.horizontalCollision || (player.verticalCollision && !player.verticalCollisionBelow)) {

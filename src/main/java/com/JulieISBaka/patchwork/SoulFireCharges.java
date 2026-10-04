@@ -39,7 +39,8 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 public final class SoulFireCharges {
-	private static final ResourceKey<Item> ITEM_KEY = ResourceKey.create(Registries.ITEM, Patchwork.id("soul_fire_charge"));
+	private static final ResourceKey<Item> ITEM_KEY = ResourceKey.create(Registries.ITEM,
+		Patchwork.id("soul_fire_charge"));
 	public static final Item ITEM = Registry.register(BuiltInRegistries.ITEM, ITEM_KEY,
 		new FireChargeItem(new Item.Properties().setId(ITEM_KEY)) {
 			@Override
@@ -48,7 +49,8 @@ public final class SoulFireCharges {
 				projectile.setPos(pos.x(), pos.y(), pos.z());
 				projectile.setItem(stack);
 				projectile.accelerationPower = 0.03;
-				projectile.setDeltaMovement(new Vec3(direction.getStepX(), direction.getStepY(), direction.getStepZ()).scale(0.65));
+				projectile.setDeltaMovement(
+					new Vec3(direction.getStepX(), direction.getStepY(), direction.getStepZ()).scale(0.65));
 				return projectile;
 			}
 
@@ -56,7 +58,8 @@ public final class SoulFireCharges {
 			public InteractionResult useOn(UseOnContext context) {
 				BlockPos pos = context.getClickedPos();
 				BlockState state = context.getLevel().getBlockState(pos);
-				boolean light = CampfireBlock.canLight(state) || CandleBlock.canLight(state) || CandleCakeBlock.canLight(state);
+				boolean light = CampfireBlock.canLight(state) || CandleBlock.canLight(state)
+					|| CandleCakeBlock.canLight(state);
 				BlockPos firePos = pos.relative(context.getClickedFace());
 				if (!light && !canPlaceFire(context.getLevel(), firePos)) {
 					return InteractionResult.FAIL;
@@ -74,10 +77,10 @@ public final class SoulFireCharges {
 				return InteractionResult.SUCCESS;
 			}
 		});
-	private static final ResourceKey<EntityType<?>> PROJECTILE_KEY =
-		ResourceKey.create(Registries.ENTITY_TYPE, Patchwork.id("soul_fireball"));
-	public static final EntityType<SoulFireball> PROJECTILE = Registry.register(BuiltInRegistries.ENTITY_TYPE, PROJECTILE_KEY,
-		EntityType.Builder.<SoulFireball>of(SoulFireball::new, MobCategory.MISC).sized(0.3125F, 0.3125F)
+	private static final ResourceKey<EntityType<?>> PROJECTILE_KEY = ResourceKey.create(Registries.ENTITY_TYPE,
+		Patchwork.id("soul_fireball"));
+	public static final EntityType<SoulFireball> PROJECTILE = Registry.register(BuiltInRegistries.ENTITY_TYPE,
+		PROJECTILE_KEY, EntityType.Builder.<SoulFireball>of(SoulFireball::new, MobCategory.MISC).sized(0.3125F, 0.3125F)
 			.clientTrackingRange(4).updateInterval(10).build(PROJECTILE_KEY));
 
 	private SoulFireCharges() {
@@ -110,8 +113,8 @@ public final class SoulFireCharges {
 		}
 		Vec3 eye = player.getEyePosition();
 		Vec3 direction = player.getLookAngle();
-		if (level.clip(new ClipContext(eye, eye.add(direction.scale(5.0)),
-			ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player)).getType() != HitResult.Type.MISS) {
+		if (level.clip(new ClipContext(eye, eye.add(direction.scale(5.0)), ClipContext.Block.OUTLINE,
+			ClipContext.Fluid.NONE, player)).getType() != HitResult.Type.MISS) {
 			return InteractionResult.CONSUME;
 		}
 		if (level instanceof ServerLevel serverLevel) {
@@ -128,8 +131,8 @@ public final class SoulFireCharges {
 					throw new IllegalStateException("Could not spawn Fire Charge at " + eye);
 				}
 			}
-			serverLevel.playSound(null, player.getX(), player.getY(), player.getZ(),
-				SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1.0F, 1.0F);
+			serverLevel.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.FIRECHARGE_USE,
+				SoundSource.PLAYERS, 1.0F, 1.0F);
 		}
 		player.awardStat(Stats.ITEM_USED.get(stack.getItem()));
 		player.getCooldowns().addCooldown(stack, 30);

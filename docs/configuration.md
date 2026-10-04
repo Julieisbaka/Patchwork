@@ -10,31 +10,31 @@ discards edits. Restart the game/server to apply changes.
 
 ## Settings
 
-| Property | Controls |
-| --- | --- |
-| `witherDifficultyHealth` | Difficulty-based Wither maximum health |
-| `witherBirthExplosion` | Increased Wither birth-explosion damage |
-| `chainmailRecipes` | Chainmail recipes and recipe-book unlocks |
-| `wolfBanners` | Wolf banner interactions and local banner rendering |
-| `ownerSweepProtection` | Owned wolf/cat protection from sword sweeps |
-| `shulkerDyeing` | Shulker recoloring |
-| `throwableSlimeballs` | Slimeball throwing, effects, and cooldown |
-| `throwableFireCharges` | Player throwing of regular and Soul Fire Charges |
-| `callHornRecall` | Call goat horn pet recall |
-| `cauldronCleaning` | Washing wool, terracotta, and stained glass |
-| `beesDefendFlowers` | Bees defending nearby flowers |
-| `creeperChainReactions` | Creeper blast chain reactions; off by default |
-| `endermanDefense` | Defensive carried-block placement |
-| `spiderWebs` | Web placement during pursuit |
-| `slimeSplitClouds` | Slowing dust clouds when larger Slimes split |
-| `breezeShockwave` | Breeze melee-response gust and campfire extinguishing |
+| Property                   | Controls                                                 |
+| -------------------------- | -------------------------------------------------------- |
+| `witherDifficultyHealth`   | Difficulty-based Wither maximum health                   |
+| `witherBirthExplosion`     | Increased Wither birth-explosion damage                  |
+| `chainmailRecipes`         | Chainmail recipes and recipe-book unlocks                |
+| `wolfBanners`              | Wolf banner interactions and local banner rendering      |
+| `ownerSweepProtection`     | Owned wolf/cat protection from sword sweeps              |
+| `shulkerDyeing`            | Shulker recoloring                                       |
+| `throwableSlimeballs`      | Slimeball throwing, effects, and cooldown                |
+| `throwableFireCharges`     | Player throwing of regular and Soul Fire Charges         |
+| `callHornRecall`           | Call goat horn pet recall                                |
+| `cauldronCleaning`         | Washing wool, terracotta, and stained glass              |
+| `beesDefendFlowers`        | Bees defending nearby flowers                            |
+| `creeperChainReactions`    | Creeper blast chain reactions; off by default            |
+| `endermanDefense`          | Defensive carried-block placement                        |
+| `spiderWebs`               | Web placement during pursuit                             |
+| `slimeSplitClouds`         | Slowing dust clouds when larger Slimes split             |
+| `breezeShockwave`          | Breeze melee-response gust and campfire extinguishing    |
 | `breezeTorchExtinguishing` | Gusts extinguishing torches/lanterns; requires shockwave |
-| `hoglinCharge` | Charged launches and collision damage |
-| `skeletonCover` | Bow Skeleton corner cover while reloading |
-| `potionCauldrons` | Filling, refilling, bottle retrieval, and arrow dipping |
-| `pumpkinLanterns` | Lighting placed carved pumpkins with torches |
-| `experienceClumping` | XP clumping, full-value pickup, and larger orb rendering |
-| `callHornRecallRadius` | Integer 16-256 blocks; default 32 |
+| `hoglinCharge`             | Charged launches and collision damage                    |
+| `skeletonCover`            | Bow Skeleton corner cover while reloading                |
+| `potionCauldrons`          | Filling, refilling, bottle retrieval, and arrow dipping  |
+| `pumpkinLanterns`          | Lighting placed carved pumpkins with torches             |
+| `experienceClumping`       | XP clumping, full-value pickup, and larger orb rendering |
+| `callHornRecallRadius`     | Integer 16-256 blocks; default 32                        |
 
 ## Server authority and persistence
 

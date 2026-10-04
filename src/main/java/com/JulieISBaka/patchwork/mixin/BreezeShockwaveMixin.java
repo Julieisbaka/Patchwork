@@ -29,9 +29,10 @@ public class BreezeShockwaveMixin {
 	private long patchwork$nextShockwaveTick;
 
 	@Inject(method = "hurtServer", at = @At("RETURN"))
-	private void patchwork$shockwave(ServerLevel level, DamageSource source, float damage, CallbackInfoReturnable<Boolean> cir) {
+	private void patchwork$shockwave(ServerLevel level, DamageSource source, float damage,
+		CallbackInfoReturnable<Boolean> cir) {
 		if (!PatchworkConfig.settings().breezeShockwave() || !cir.getReturnValue()
-			|| !((Object)this instanceof Breeze breeze) || !breeze.isAlive()
+			|| !((Object) this instanceof Breeze breeze) || !breeze.isAlive()
 			|| !(source.is(DamageTypes.PLAYER_ATTACK) || source.is(DamageTypes.MOB_ATTACK)
 				|| source.is(DamageTypes.MOB_ATTACK_NO_AGGRO) || source.is(DamageTypes.SPEAR))
 			|| !(source.getDirectEntity() instanceof LivingEntity attacker) || attacker == breeze
@@ -40,9 +41,10 @@ public class BreezeShockwaveMixin {
 		}
 		this.patchwork$nextShockwaveTick = level.getGameTime() + 200;
 		Vec3 center = breeze.position();
-		level.sendParticles(ParticleTypes.GUST_EMITTER_LARGE, center.x, center.y + 0.5, center.z,
-			1, 0.0, 0.0, 0.0, 0.0);
-		level.playSound(null, breeze.blockPosition(), SoundEvents.BREEZE_WIND_CHARGE_BURST.value(), SoundSource.HOSTILE, 1.0F, 1.0F);
+		level.sendParticles(ParticleTypes.GUST_EMITTER_LARGE, center.x, center.y + 0.5, center.z, 1, 0.0, 0.0, 0.0,
+			0.0);
+		level.playSound(null, breeze.blockPosition(), SoundEvents.BREEZE_WIND_CHARGE_BURST.value(), SoundSource.HOSTILE,
+			1.0F, 1.0F);
 
 		for (Entity entity : level.getEntitiesOfClass(Entity.class, breeze.getBoundingBox().inflate(5.0))) {
 			Vec3 direction = entity.position().subtract(center);
@@ -64,7 +66,8 @@ public class BreezeShockwaveMixin {
 				continue;
 			}
 			BlockState state = level.getBlockState(pos);
-			BlockState unlit = PatchworkConfig.settings().breezeTorchExtinguishing() ? UnlitTorches.extinguish(state) : null;
+			BlockState unlit = PatchworkConfig.settings().breezeTorchExtinguishing() ? UnlitTorches.extinguish(state)
+				: null;
 			if (unlit == null && PatchworkConfig.settings().breezeTorchExtinguishing()) {
 				unlit = UnlitLanterns.extinguish(state);
 			}

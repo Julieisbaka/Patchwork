@@ -15,10 +15,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class SlimeSplitMixin {
 	@Inject(method = "remove", at = @At("HEAD"))
 	private void patchwork$spawnSplitCloud(Entity.RemovalReason reason, CallbackInfo ci) {
-		if (PatchworkConfig.settings().slimeSplitClouds() && (Object)this instanceof Slime slime
-			&& reason == Entity.RemovalReason.KILLED
-			&& !slime.isRemoved() && slime.getSize() > 1 && slime.isDeadOrDying()
-			&& slime.level() instanceof ServerLevel level) {
+		if (PatchworkConfig.settings().slimeSplitClouds() && (Object) this instanceof Slime slime
+			&& reason == Entity.RemovalReason.KILLED && !slime.isRemoved() && slime.getSize() > 1
+			&& slime.isDeadOrDying() && slime.level() instanceof ServerLevel level) {
 			SlimeSplitClouds.spawn(slime, level);
 		}
 	}

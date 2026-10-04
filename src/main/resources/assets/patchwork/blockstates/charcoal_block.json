@@ -1,7 +1,7 @@
 {
-  "variants": {
-    "": {
-      "model": "patchwork:block/charcoal_block"
-    }
-  }
+	"variants": {
+		"": {
+			"model": "patchwork:block/charcoal_block"
+		}
+	}
 }
