@@ -6,6 +6,11 @@ source set. Mod Menu 21.0.0 is included.
 
 ## Build
 
+Gradle's checked-in daemon JVM criteria select Java 25 even when the wrapper
+is launched with an older supported Java version, including Java 21 in GitHub's
+automatic dependency submission job. Linux x86-64 runners can automatically
+download Temurin 25; on other platforms, install Java 25 before building.
+
 From the repository root on Windows:
 
 ```powershell
