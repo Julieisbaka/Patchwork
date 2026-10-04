@@ -61,14 +61,10 @@ ignite blocks. Direct projectile entity damage is independent of this rule.
 
 ## Migration and errors
 
-Missing boolean switches are added automatically. Invalid boolean values
-produce a startup error. Existing files must contain a valid
-`callHornRecallRadius`; missing, non-integer, or out-of-range values fail
-explicitly. New files are initialized with the default radius.
-
-The old `unlitTorches` property migrates to `breezeTorchExtinguishing`,
-preserving its value unless the newer key already exists. Neither switch
-hides items or deletes placed blocks.
+New files are initialized with every switch's default value and the default
+radius. Existing files must contain every boolean switch and a valid
+`callHornRecallRadius`; missing or invalid values produce a startup error.
+The radius must be an integer from 16 to 256.
 
 Disabling difficulty-based Wither health restores vanilla maximum health for
 new Withers; it does not reset health saved on existing Withers.
