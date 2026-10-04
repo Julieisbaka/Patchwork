@@ -34,11 +34,12 @@ equipping or removing banners but does not delete banners already on wolves.
 | `spiderWebs` | Spiders spin cobwebs while chasing prey |
 | `slimeSplitClouds` | Five-second slowing particle cloud when larger Slimes split |
 | `breezeShockwave` | Breeze melee shockwave and extinguished torches/campfires |
-| `breezeTorchExtinguishing` | Breeze gusts extinguish torches (requires shockwave) |
+| `breezeTorchExtinguishing` | Breeze gusts extinguish torches and lanterns (requires shockwave) |
 | `hoglinCharge` | Charging Hoglins launch victims, with extra wall/ceiling impact damage |
 | `skeletonCover` | Nearby bow Skeletons take corner cover while reloading |
 | `potionCauldrons` | Pour potions into water cauldrons and tip arrows |
 | `pumpkinLanterns` | Light placed carved pumpkins using torches |
+| `experienceClumping` | Nearby XP orbs merge and their full value is collected at once |
 | `callHornRecallRadius` | Recall radius in blocks, 16–256 (default: 32) |
 
 Existing config files receive the new switches automatically; invalid values
@@ -129,13 +130,37 @@ soul torch also works when `pumpkinLanterns` is enabled. All three blocks are
 consumed to create a persistent, friendly Soul Golem.
 
 It uses an iron-golem-shaped model with a temporary original brown-and-cyan
-soul-themed texture, and inherits iron golem health, melee attacks, hostile-mob
-targeting (excluding Creepers), and iron-ingot repairs. Built Soul Golems do not
+soul-themed texture. It has 50 HP (half an iron golem's health), deals one quarter
+of an iron golem's rolled melee damage, and ignites successfully hit targets for
+two seconds. It inherits hostile-mob targeting (excluding Creepers) and
+iron-ingot repairs. Built Soul Golems do not
 attack players. Construction does not require the `pumpkinLanterns` switch
 when placing an already obtained Soul Jack o'Lantern. It has no natural spawns
 or death drops yet. The placeholder texture uses the iron golem's 128x128 UV
 layout and can be replaced with a custom texture later. Its in-game appearance
 and animations still need a manual client check.
+
+## Banner customization
+
+The loom accepts up to nine pattern layers instead of six. Its menu and client
+screen use the same limit, and a tenth pattern cannot be added. Nine-layer
+banners can also be copied in the crafting grid without losing their patterns.
+
+## Experience orb clumping
+
+With `experienceClumping` enabled (the default), each XP award creates one orb.
+Orbs check once every 20 ticks for other orbs within two blocks and combine their
+XP, even when their values differ. Existing vanilla orb stacks are included in
+the total. Collecting a combined orb grants its entire value in one pickup,
+using vanilla Mending repairs before granting the remaining XP.
+
+Orb appearance grows with its XP value, capped at three times the normal scale.
+Large values are saved as full integers rather than vanilla's short integer,
+so save/reload does not truncate them. A merge that would exceed the maximum
+integer value leaves the orbs separate without losing XP. Disabling the feature
+restores vanilla spawning, merging, and pickup; already combined values remain
+intact. This reduces orb entity counts and repeated pickup delays; no performance
+benchmark is claimed.
 
 ## Wither
 
@@ -264,7 +289,15 @@ remove already placed or collected unlit torches. Regardless of this setting,
 ordinary, soul, and copper unlit torches
 appear beside their lit counterparts in Functional Blocks; unlit redstone
 torches also appear in Redstone Blocks. There is no crafting recipe for the items.
-Lanterns remain lit because vanilla lanterns have no unlit state.
+The same gusts also extinguish regular, soul, and all eight copper lantern
+variants. Unlit lanterns preserve hanging and waterlogged states, oxidation,
+and waxing; they emit no light and drop matching placeable unlit items. A fire
+charge restores the corresponding lit lantern and consumes one charge (except
+in Creative), but waterlogged lanterns must be drained first. Copper variants
+retain oxidation, waxing, unwaxing, and axe scraping. All variants appear beside
+their lit counterparts in Functional Blocks. Their original dark, flameless
+textures are placeholders that can be replaced later. No crafting recipes are
+added; obtain them through Breeze gusts or Creative.
 
 ## Pumpkin lanterns
 

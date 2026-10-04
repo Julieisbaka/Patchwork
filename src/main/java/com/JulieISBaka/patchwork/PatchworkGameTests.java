@@ -87,8 +87,8 @@ public class PatchworkGameTests {
 				SoulGolem golem = golems.getFirst();
 				test.assertTrue(golem.isPlayerCreated() && golem.isPersistenceRequired(),
 					"Soul Golem is not a persistent player-built defender");
-				test.assertTrue(golem.getMaxHealth() == 100.0F,
-					"Soul Golem did not inherit iron golem health");
+				test.assertTrue(golem.getMaxHealth() == 50.0F,
+					"Soul Golem does not have half of an iron golem's health");
 				test.assertBlockPresent(Blocks.AIR, CENTER);
 				test.assertBlockPresent(Blocks.AIR, CENTER.above());
 				test.assertBlockPresent(Blocks.AIR, CENTER.above(2));
@@ -157,7 +157,214 @@ public class PatchworkGameTests {
 		float health = zombie.getHealth();
 		test.assertTrue(golem.doHurtTarget(test.getLevel(), zombie) && zombie.getHealth() < health,
 			"Soul Golem's melee attack did not damage its target");
+		test.assertTrue(zombie.getRemainingFireTicks() == 40, "Soul Golem did not ignite its target for two seconds");
 		test.succeed();
+	}
+
+	@GameTest
+	public void soulGolemDamageIsExactlyOneQuarter(GameTestHelper test) {
+		var iron = test.spawn(EntityTypes.IRON_GOLEM, CENTER);
+		var soul = test.spawn(SoulGolems.TYPE, CENTER);
+		for (int seed = 0; seed < 20; seed++) {
+			var ironTarget = test.spawn(EntityTypes.COW, CENTER);
+			var soulTarget = test.spawn(EntityTypes.COW, CENTER);
+			ironTarget.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(1000);
+			soulTarget.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(1000);
+			ironTarget.setHealth(1000);
+			soulTarget.setHealth(1000);
+			ironTarget.setInvulnerableTime(0);
+			soulTarget.setInvulnerableTime(0);
+			iron.getRandom().setSeed(seed);
+			soul.getRandom().setSeed(seed);
+			test.assertTrue(iron.doHurtTarget(test.getLevel(), ironTarget), "Iron golem attack failed");
+			test.assertTrue(soul.doHurtTarget(test.getLevel(), soulTarget), "Soul golem attack failed");
+			float ironDamage = 1000 - ironTarget.getHealth();
+			float soulDamage = 1000 - soulTarget.getHealth();
+			test.assertTrue(Math.abs(soulDamage - ironDamage * 0.25F) < 0.0001F,
+				"Soul Golem damage is not one quarter of the matching iron golem roll");
+			ironTarget.discard();
+			soulTarget.discard();
+		}
+		var soulTarget = test.spawn(EntityTypes.COW, CENTER);
+		soulTarget.setRemainingFireTicks(0);
+		soulTarget.setPermanentlyInvulnerable(true);
+		test.assertTrue(!soul.doHurtTarget(test.getLevel(), soulTarget), "Invulnerable target was damaged");
+		test.assertTrue(soulTarget.getRemainingFireTicks() == 0, "Failed attack ignited its target");
+		test.succeed();
+	}
+
+	@GameTest
+	public void bannerLoomAllowsNinePatternsButNotTen(GameTestHelper test) {
+		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		var menu = new net.minecraft.world.inventory.LoomMenu(1, player.getInventory());
+		var pattern = test.getLevel().registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.BANNER_PATTERN)
+			.getOrThrow(net.minecraft.world.level.block.entity.BannerPatterns.CROSS);
+		for (int layers = 6; layers <= 9; layers++) {
+			ItemStack banner = new ItemStack(Items.BANNER.white());
+			banner.set(DataComponents.BANNER_PATTERNS, new net.minecraft.world.level.block.entity.BannerPatternLayers(
+				java.util.Collections.nCopies(layers,
+					new net.minecraft.world.level.block.entity.BannerPatternLayers.Layer(pattern, DyeColor.RED))));
+			menu.getBannerSlot().set(banner);
+			menu.getDyeSlot().set(new ItemStack(Items.DYE.red()));
+			menu.clickMenuButton(player, 0);
+			ItemStack result = menu.getResultSlot().getItem();
+			if (layers < 9) {
+				test.assertTrue(!result.isEmpty()
+					&& result.get(DataComponents.BANNER_PATTERNS).layers().size() == layers + 1,
+					"Loom did not add pattern " + (layers + 1));
+			} else {
+				test.assertTrue(result.isEmpty(), "Loom allowed a tenth banner pattern");
+				var input = net.minecraft.world.item.crafting.CraftingInput.of(2, 1,
+					java.util.List.of(banner, new ItemStack(Items.BANNER.white())));
+				var recipe = test.getLevel().recipeAccess()
+					.getRecipeFor(net.minecraft.world.item.crafting.RecipeType.CRAFTING, input, test.getLevel());
+				test.assertTrue(recipe.isPresent(), "Nine-layer banner could not be copied");
+				var copy = recipe.orElseThrow().value().assemble(input);
+				test.assertTrue(copy.get(DataComponents.BANNER_PATTERNS).equals(banner.get(DataComponents.BANNER_PATTERNS)),
+					"Copied banner lost its nine layers");
+			}
+		}
+		test.succeed();
+	}
+
+	@GameTest
+	public void unlitLanternVariantsRelightAndDrop(GameTestHelper test) {
+		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		var variants = new java.util.ArrayList<net.minecraft.world.level.block.Block>();
+		variants.add(Blocks.LANTERN);
+		variants.add(Blocks.SOUL_LANTERN);
+		variants.addAll(Blocks.COPPER_LANTERN.asList());
+		test.assertTrue(variants.size() == 10, "Expected ten lantern variants");
+		test.setBlock(CENTER.below(), Blocks.STONE);
+		test.setBlock(CENTER.above(), Blocks.STONE);
+		for (var lit : variants) {
+			for (boolean hanging : new boolean[] {false, true}) {
+				var state = lit.defaultBlockState().setValue(net.minecraft.world.level.block.LanternBlock.HANGING, hanging);
+				var unlit = UnlitLanterns.extinguish(state);
+				test.assertTrue(unlit != null && unlit.getLightEmission() == 0
+					&& unlit.getValue(net.minecraft.world.level.block.LanternBlock.HANGING) == hanging,
+					"Lantern did not extinguish while preserving hanging state");
+				test.setBlock(CENTER, unlit);
+				player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.FIRE_CHARGE, 2));
+				test.useBlock(CENTER, player);
+				test.assertTrue(test.getBlockState(CENTER).equals(state), "Relighting did not restore the exact lantern variant");
+				test.assertTrue(player.getMainHandItem().getCount() == 1, "Relighting did not consume one fire charge");
+			}
+			var unlit = UnlitLanterns.extinguish(lit.defaultBlockState());
+			test.setBlock(CENTER, unlit);
+			test.getLevel().destroyBlock(test.absolutePos(CENTER), true, null, 512);
+			test.assertItemEntityPresent(unlit.getBlock().asItem(), CENTER, 2);
+		}
+		test.succeed();
+	}
+
+	@GameTest
+	public void unlitLanternWaterloggingAndCopperMappings(GameTestHelper test) {
+		var wet = Blocks.LANTERN.defaultBlockState()
+			.setValue(net.minecraft.world.level.block.LanternBlock.WATERLOGGED, true);
+		var unlit = UnlitLanterns.extinguish(wet);
+		test.assertTrue(unlit.getValue(net.minecraft.world.level.block.LanternBlock.WATERLOGGED),
+			"Extinguishing lost waterlogging");
+		test.setBlock(CENTER.below(), Blocks.STONE);
+		test.setBlock(CENTER, unlit);
+		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.FIRE_CHARGE, 2));
+		test.useBlock(CENTER, player);
+		test.assertTrue(test.getBlockState(CENTER).equals(unlit) && player.getMainHandItem().getCount() == 2,
+			"Waterlogged lantern was relit or consumed a fire charge");
+		var copper = UnlitLanterns.COPPER_LANTERN;
+		test.assertTrue(net.minecraft.world.level.block.WeatheringCopper.getNext(copper.weathering().unaffected())
+			.orElseThrow() == copper.weathering().exposed(), "Unlit copper cannot oxidize");
+		test.assertTrue(net.minecraft.world.level.block.WeatheringCopper.getPrevious(copper.weathering().weathered())
+			.orElseThrow() == copper.weathering().exposed(), "Unlit copper cannot be scraped");
+		copper.zipUnwaxedWaxed((normal, waxed) -> {
+			test.assertTrue(net.minecraft.world.item.HoneycombItem.getWaxed(normal.defaultBlockState())
+				.orElseThrow().is(waxed), "Unlit copper cannot be waxed");
+			test.assertTrue(net.minecraft.world.item.HoneycombItem.WAX_OFF_BY_BLOCK.get().get(waxed) == normal,
+				"Unlit copper cannot be unwaxed");
+			test.assertTrue(!waxed.defaultBlockState().isRandomlyTicking(), "Waxed unlit lantern can oxidize");
+		});
+		test.succeed();
+	}
+
+	@GameTest(maxTicks = 30)
+	public void experienceClumpingPreservesMixedValuesCountsAndRadius(GameTestHelper test) {
+		require(test, PatchworkConfig.settings().experienceClumping(), "experienceClumping");
+		Vec3 center = Vec3.atCenterOf(test.absolutePos(CENTER));
+		var first = new net.minecraft.world.entity.ExperienceOrb(test.getLevel(), center.x, center.y, center.z, 7);
+		((com.JulieISBaka.patchwork.mixin.ExperienceOrbAccessor)first).patchwork$setCount(3);
+		var second = new net.minecraft.world.entity.ExperienceOrb(test.getLevel(), center.x + 1.5, center.y, center.z, 11);
+		var far = new net.minecraft.world.entity.ExperienceOrb(test.getLevel(), center.x, center.y, center.z + 2.1, 5);
+		for (var orb : java.util.List.of(first, second, far)) {
+			orb.setNoGravity(true);
+			orb.setDeltaMovement(Vec3.ZERO);
+			test.getLevel().addFreshEntity(orb);
+		}
+		test.runAfterDelay(3, () -> {
+			var orbs = test.getEntities(EntityTypes.EXPERIENCE_ORB);
+			test.assertTrue(orbs.size() == 2, "Nearby orbs did not merge or distant orb merged");
+			test.assertTrue(orbs.stream().anyMatch(orb -> orb.getValue() == 32), "Merge lost XP or ignored vanilla orb counts");
+			test.assertTrue(!far.isRemoved() && far.getValue() == 5, "Orb outside two-block radius was merged");
+			test.succeed();
+		});
+	}
+
+	@GameTest(maxTicks = 30)
+	public void experienceClumpingCollectsFullValueAndRepairsMending(GameTestHelper test) {
+		require(test, PatchworkConfig.settings().experienceClumping(), "experienceClumping");
+		var player = test.makeMockServerPlayer(GameType.SURVIVAL);
+		ItemStack tool = new ItemStack(Items.DIAMOND_PICKAXE);
+		tool.enchant(test.getLevel().registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT)
+			.getOrThrow(net.minecraft.world.item.enchantment.Enchantments.MENDING), 1);
+		tool.setDamageValue(20);
+		player.setItemInHand(InteractionHand.MAIN_HAND, tool);
+		var orb = new net.minecraft.world.entity.ExperienceOrb(test.getLevel(), 0, 0, 0, 15);
+		((com.JulieISBaka.patchwork.mixin.ExperienceOrbAccessor)orb).patchwork$setCount(2);
+		test.getLevel().addFreshEntity(orb);
+		int before = player.totalExperience;
+		player.takeXpDelay = 0;
+		orb.playerTouch(player);
+		test.assertTrue(orb.isRemoved(), "Merged orb was not collected in a single pickup");
+		test.assertTrue(tool.getDamageValue() == 0, "Merged orb did not apply Mending");
+		test.assertTrue(player.totalExperience == before + 20, "Mending and pickup lost or duplicated merged XP");
+		player.discard();
+		test.succeed();
+	}
+
+	@GameTest
+	public void experienceClumpingPreservesLargeValuesAcrossSaveReload(GameTestHelper test) {
+		var orb = new net.minecraft.world.entity.ExperienceOrb(test.getLevel(), 0, 0, 0, 100000);
+		var problems = new net.minecraft.util.ProblemReporter.Collector();
+		var output = net.minecraft.world.level.storage.TagValueOutput.createWithContext(problems, test.getLevel().registryAccess());
+		test.assertTrue(orb.save(output), "XP orb could not be saved");
+		var reloaded = new net.minecraft.world.entity.ExperienceOrb(EntityTypes.EXPERIENCE_ORB, test.getLevel());
+		reloaded.load(net.minecraft.world.level.storage.TagValueInput.create(problems,
+			test.getLevel().registryAccess(), output.buildResult()));
+		test.assertTrue(reloaded.getValue() == 100000, "Saved XP was truncated to a short");
+		test.assertTrue(problems.isEmpty(), "XP save/reload reported serialization problems");
+		test.succeed();
+	}
+
+	@GameTest(maxTicks = 30)
+	public void experienceClumpingAwardSpawnsOneOrbAndAvoidsOverflow(GameTestHelper test) {
+		require(test, PatchworkConfig.settings().experienceClumping(), "experienceClumping");
+		Vec3 center = Vec3.atCenterOf(test.absolutePos(CENTER));
+		net.minecraft.world.entity.ExperienceOrb.award(test.getLevel(), center, Integer.MAX_VALUE);
+		var orbs = test.getEntities(EntityTypes.EXPERIENCE_ORB);
+		test.assertTrue(orbs.size() == 1 && orbs.getFirst().getValue() == Integer.MAX_VALUE,
+			"Award split XP into multiple entities or changed its value");
+		var other = new net.minecraft.world.entity.ExperienceOrb(test.getLevel(), center.x, center.y, center.z, 10);
+		test.getLevel().addFreshEntity(other);
+		for (var orb : test.getEntities(EntityTypes.EXPERIENCE_ORB)) {
+			orb.setNoGravity(true);
+			orb.setDeltaMovement(Vec3.ZERO);
+		}
+		test.runAfterDelay(3, () -> {
+			long total = test.getEntities(EntityTypes.EXPERIENCE_ORB).stream()
+				.mapToLong(net.minecraft.world.entity.ExperienceOrb::getValue).sum();
+			test.assertTrue(total == (long)Integer.MAX_VALUE + 10, "Merge overflow lost XP");
+			test.succeed();
+		});
 	}
 
 	@GameTest
@@ -375,14 +582,18 @@ public class PatchworkGameTests {
 		test.setBlock(CENTER.below(), Blocks.STONE);
 		BlockPos torch = CENTER.offset(1, 0, 0);
 		BlockPos campfire = CENTER.offset(0, 0, 2);
+		BlockPos lantern = CENTER.offset(-1, 0, 0);
 		test.setBlock(torch.below(), Blocks.STONE);
 		test.setBlock(campfire.below(), Blocks.STONE);
+		test.setBlock(lantern.below(), Blocks.STONE);
 		test.setBlock(torch, Blocks.TORCH);
 		test.setBlock(campfire, Blocks.CAMPFIRE);
+		test.setBlock(lantern, Blocks.COPPER_LANTERN.waxed().weathered());
 		Breeze breeze = test.spawn(EntityTypes.BREEZE, CENTER);
 		Player attacker = test.makeMockPlayer(GameType.SURVIVAL);
 		breeze.hurtServer(test.getLevel(), breeze.damageSources().playerAttack(attacker), 1.0F);
 		test.assertBlockPresent(UnlitTorches.TORCH, torch);
+		test.assertBlockPresent(UnlitLanterns.COPPER_LANTERN.waxed().weathered(), lantern);
 		test.assertTrue(!test.getBlockState(campfire).getValue(CampfireBlock.LIT), "Campfire stayed lit");
 		test.succeed();
 	}
