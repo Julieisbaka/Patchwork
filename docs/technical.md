@@ -1,5 +1,23 @@
 # Technical details
 
+## Wax block and Paeonia
+
+- `patchwork:wax_block` is a decorative full block with honeycomb-block
+  hardness and sound. Nine honeycomb in a filled 3x3 grid craft one block;
+  obtaining honeycomb unlocks the recipe. It drops itself and appears beside
+  the honeycomb block in Building Blocks. It does not add copper-waxing
+  interactions or a reverse crafting recipe.
+- `patchwork:paeonia` is a one-block flower with allium placement rules and
+  suspicious-stew effects. It drops itself, supports flower pots, composts
+  like other small flowers, feeds bees, and crafts one magenta dye.
+- Its patch is added only to flower forests and meadows during vegetal
+  decoration: a 1-in-24 chunk attempt with six nearby surface placements.
+  Actual density depends on air, terrain, and valid flower support.
+  Existing terrain is unchanged; explore new chunks to find it naturally.
+  It appears beside allium in Natural Blocks.
+- Supplied 160x160 images are normalized to 16x16 PNG using nearest-neighbor
+  sampling, preserving the pixel art and Paeonia's transparent background.
+
 ## Soul Golems and ownership
 
 - Entity ID: `patchwork:soul_golem`; 50 HP; hitbox 0.7 by 1.9 blocks,

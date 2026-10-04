@@ -41,6 +41,15 @@ directories with separate configurations.
 
 ## Automated coverage
 
+- Wax block's exact nine-honeycomb recipe, incomplete/wrong ingredient
+  rejection, and block drops.
+- Paeonia ground support, flower tags, compost component, potting and pot
+  drops, magenta dye recipe, actual feature placement, and biome registration
+  in flower forests/meadows but not plains. Select these with `patchwork:*garden*`.
+- Client garden block/item models, supplied texture dimensions/transparency,
+  all original replacement texture resources, and a placed wax/flower/pot
+  screenshot.
+
 - Soul Golem build combinations, invalid builds, torch lighting, head placement,
   spawn eggs, owner assignment, owner combat assistance/defense, ranged impact,
   no melee damage, gold-only repair, claim protection, shearing, and persistence.

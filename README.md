@@ -18,6 +18,8 @@ soul-themed additions.
   retain oxidation and wax, including when extinguished and relit.
 - **XP clumping:** nearby orbs combine for fewer entities and faster collection,
   preserving XP and Mending.
+- **Garden additions:** craft a wax block with nine honeycomb; find Paeonia
+  flowers in flower forests and meadows, pot them, or craft magenta dye.
 - **Crafting and customization:** charcoal blocks, chainmail recipes,
   nine-layer banners, shulker dyeing, and more cauldron washing.
 - **Pets:** wolf banners, safer sword sweeps, and a horn that recalls seated pets.
@@ -32,8 +34,8 @@ Build with `.\gradlew.bat build`.
 - [Configuration](docs/configuration.md)
 - [Technical details](docs/technical.md)
 - [Tests](docs/testing.md)
-- [Textures still needed](docs/textures.md)
+- [Artwork](docs/textures.md)
 - [Remaining ideas](TODO.md)
 
-The Soul Fire Charge has its own original icon. Some other artwork is still
-temporary, especially unlit lights and copper torch oxidation stages.
+Includes original soul-themed and unlit-light artwork, plus supplied wax and
+Paeonia textures.

@@ -1,6 +1,7 @@
 package com.JulieISBaka.patchwork.client;
 
 import com.JulieISBaka.patchwork.CopperTorches;
+import com.JulieISBaka.patchwork.GardenBlocks;
 import com.JulieISBaka.patchwork.Patchwork;
 import com.JulieISBaka.patchwork.PotionCauldronEntity;
 import com.JulieISBaka.patchwork.PotionCauldrons;
@@ -36,6 +37,74 @@ public class PatchworkClientGameTests implements FabricClientGameTest {
 	public void runTest(ClientGameTestContext context) {
 		testPotionFirstFillTint(context);
 		testSoulAndLightModels(context);
+		testGardenAndArtwork(context);
+	}
+
+	private static void testGardenAndArtwork(ClientGameTestContext context) {
+		try (var world = context.worldBuilder().create()) {
+			world.getServer().runCommand("fill -10 100 -10 10 100 10 minecraft:grass_block");
+			world.getServer().runCommand("time set day");
+			world.getServer().runCommand("weather clear");
+			world.getServer().runCommand("tp @a 0.5 101 5.5 180 15");
+			world.getServer().runCommand("setblock -2 101 0 patchwork:wax_block");
+			world.getServer().runCommand("setblock 0 101 0 patchwork:paeonia");
+			world.getServer().runCommand("setblock 2 101 0 patchwork:potted_paeonia");
+			world.getServer().runOnServer(server -> server.getPlayerList().getPlayers().getFirst()
+				.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(GardenBlocks.PAEONIA_ITEM)));
+			context.waitFor(client -> client.level.getBlockState(new BlockPos(0, 101, 0)).is(GardenBlocks.PAEONIA)
+				&& client.level.getBlockState(new BlockPos(-2, 101, 0)).is(GardenBlocks.WAX_BLOCK)
+				&& client.level.getBlockState(new BlockPos(2, 101, 0)).is(GardenBlocks.POTTED_PAEONIA));
+			context.runOnClient(client -> {
+				var models = client.getModelManager().getBlockStateModelSet();
+				for (var block : List.of(GardenBlocks.WAX_BLOCK, GardenBlocks.PAEONIA, GardenBlocks.POTTED_PAEONIA)) {
+					if (models.get(block.defaultBlockState()) == models.missingModel()) {
+						throw new AssertionError("Garden block model is missing: " + block);
+					}
+				}
+				for (var item : List.of(GardenBlocks.WAX_ITEM, GardenBlocks.PAEONIA_ITEM)) {
+					var itemState = new ItemStackRenderState();
+					client.getItemModelResolver().updateForLiving(itemState, new ItemStack(item),
+						ItemDisplayContext.GUI, client.player);
+					if (itemState.isEmpty()) {
+						throw new AssertionError("Garden item model is missing: " + item);
+					}
+				}
+				var textures = new ArrayList<String>();
+				textures.addAll(List.of("block/wax_block", "block/paeonia", "block/charcoal_block",
+					"block/soul_jack_o_lantern", "item/soul_golem_spawn_egg"));
+				for (String name : List.of("unlit_lantern", "unlit_soul_lantern", "unlit_copper_lantern",
+					"unlit_exposed_copper_lantern", "unlit_weathered_copper_lantern", "unlit_oxidized_copper_lantern")) {
+					textures.add("block/" + name);
+					textures.add("item/" + name);
+				}
+				for (String name : List.of("unlit_torch", "unlit_soul_torch", "unlit_copper_torch",
+					"unlit_exposed_copper_torch", "unlit_weathered_copper_torch", "unlit_oxidized_copper_torch",
+					"exposed_copper_torch", "weathered_copper_torch", "oxidized_copper_torch")) {
+					textures.add("block/" + name);
+				}
+				textures.add("entity/soul_golem");
+				for (String name : textures) {
+					var resource = client.getResourceManager().getResource(Patchwork.id("textures/" + name + ".png"))
+						.orElseThrow(() -> new AssertionError("Texture is missing: " + name));
+					try (var stream = resource.open()) {
+						var image = ImageIO.read(stream);
+						int size = name.equals("entity/soul_golem") ? 64 : 16;
+						if (image == null || image.getWidth() != size || image.getHeight() != size) {
+							throw new AssertionError("Texture has incorrect dimensions: " + name);
+						}
+						if ((name.startsWith("item/") || name.equals("block/paeonia"))
+							&& (image.getRGB(0, 0) >>> 24) != 0) {
+							throw new AssertionError("Icon/flower lost its transparent background: " + name);
+						}
+					} catch (IOException exception) {
+						throw new AssertionError("Could not decode texture: " + name, exception);
+					}
+				}
+			});
+			context.waitTicks(2);
+			world.getConnection().waitForChunksRender();
+			context.takeScreenshot("wax-block-and-paeonia");
+		}
 	}
 
 	private static void testSoulAndLightModels(ClientGameTestContext context) {
