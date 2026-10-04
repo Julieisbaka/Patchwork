@@ -5,6 +5,6 @@ Villager trade rebalance
 Fix unlit torch textures
 Add unlit lantern and variants
 Raise banner combination limit
-Add soul snow golem mob
+Add soul golem mob
 Buff ender dragon
 Fix bugs
