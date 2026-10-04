@@ -26,13 +26,7 @@ public class PotionArrowItemMixin {
 			&& item.getZ() > pos.getZ() + 0.125 && item.getZ() < pos.getZ() + 0.875
 			&& item.getY() < pos.getY() + (6 + 3 * level.getBlockState(pos)
 				.getValue(net.minecraft.world.level.block.LayeredCauldronBlock.LEVEL)) / 16.0) {
-			if (PotionCauldrons.dip(level, pos, item.getItem(), null, null)) {
-				if (item.getItem().isEmpty()) {
-					item.discard();
-				} else {
-					item.setItem(item.getItem().copy());
-				}
-			}
+			PotionCauldrons.dipDropped(level, pos, item);
 		}
 	}
 }

@@ -15,6 +15,9 @@
 		"fabric-gametest": [
 			"com.JulieISBaka.patchwork.PatchworkGameTests"
 		],
+		"fabric-client-gametest": [
+			"com.JulieISBaka.patchwork.client.PatchworkClientGameTests"
+		],
 		"client": [
 			"com.JulieISBaka.patchwork.client.PatchworkClient"
 		],

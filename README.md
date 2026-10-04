@@ -37,7 +37,7 @@ equipping or removing banners but does not delete banners already on wolves.
 | `breezeTorchExtinguishing` | Breeze gusts extinguish torches and lanterns (requires shockwave) |
 | `hoglinCharge` | Charging Hoglins launch victims, with extra wall/ceiling impact damage |
 | `skeletonCover` | Nearby bow Skeletons take corner cover while reloading |
-| `potionCauldrons` | Pour potions into water cauldrons and tip arrows |
+| `potionCauldrons` | Fill empty cauldrons with potions, retrieve them with bottles, and tip arrows |
 | `pumpkinLanterns` | Light placed carved pumpkins using torches |
 | `experienceClumping` | Nearby XP orbs merge and their full value is collected at once |
 | `callHornRecallRadius` | Recall radius in blocks, 16–256 (default: 32) |
@@ -65,10 +65,13 @@ using one cauldron level each, shulker dyeing, difficulty-based Wither
 health, the Breeze extinguishing a torch and campfire, a charging Hoglin
 launch, slimeballs healing/speeding a Slime and damaging/slowing a non-Slime,
 and a thrown fire charge igniting the top of a solid block after a side impact.
-They also check potion transfer replacing water with one level, matching-potion
-refills, offhand arrow dipping, dropped-arrow dipping, and lighting both kinds
+They also check potion filling of empty cauldrons, rejection of water cauldrons,
+matching-potion refills, bottle retrieval, offhand arrow dipping, in-place
+dropped-arrow dipping and stack conservation, and lighting both kinds
 of carved pumpkin with the correct facing, torch consumption, and soul variant
-drop, plus Soul Jack o'Lantern Snow Golem and Soul Golem construction,
+drop, plus rejection of Soul Jack o'Lantern Snow Golem construction,
+preservation of vanilla Snow Golem construction, Soul Golem construction,
+gold repairs and spawn eggs,
 Soul Golem player safety, 50 HP, exact quarter-damage rolls and two-second fire,
 and a charcoal block's 16,000-tick furnace burn duration. Additional tests cover
 the nine-layer loom limit and banner copying, all ten unlit lantern variants'
@@ -109,17 +112,23 @@ looks for a reachable adjacent corner with a solid obstruction between it and
 the player. It retreats there while reloading, then returns to its former
 position to draw and fire. Without suitable cover it uses vanilla movement.
 
-Use a drinkable non-water potion on a water cauldron to replace the water
-with one level of that potion, regardless of the original water level. Up to
-two matching potions refill it to three levels; different contents do not mix.
+Use a drinkable non-water potion on an empty cauldron to fill it with one level
+of that potion. Water cauldrons cannot accept potions. Up to two matching
+potions refill it to three levels; different contents do not mix. Use a glass
+bottle in either hand to retrieve one level with its exact potion contents.
+Removing the last level leaves an empty cauldron. Water bottles keep their
+vanilla filling and retrieval behavior.
 Right-click the potion cauldron with ordinary arrows in either hand, or drop
 them inside it, to convert one arrow into a tipped arrow carrying the potion's
 contents. Each arrow consumes one level. Dropped stacks can use up the remaining
-levels, one arrow at a time; a full cauldron produces at most three tipped arrows.
+levels, with one level per arrow; a full cauldron produces at most three tipped
+arrows. The converted dropped item stays in place, keeping its entity identity,
+motion, age, and pickup timer; any unused arrows split off at the same location.
+Conversion does not emit a sound or pickup animation.
 Already tipped arrows are unaffected. Potion
 cauldrons tint their liquid surface to match the potion;
 breaking one drops a normal empty cauldron. Disabling `potionCauldrons`
-prevents new transfers/refills and dipping but does not remove existing
+prevents filling, refills, retrieval, and dipping but does not remove existing
 potion cauldrons from saved worlds.
 
 ## Charcoal blocks
@@ -135,15 +144,22 @@ a Soul Jack o'Lantern on top. Lighting a carved pumpkin on that stack with a
 soul torch also works when `pumpkinLanterns` is enabled. All three blocks are
 consumed to create a persistent, friendly Soul Golem.
 
-It uses an iron-golem-shaped model with a temporary original brown-and-cyan
-soul-themed texture. It has 50 HP (half an iron golem's health), deals one quarter
+It uses the Snow Golem model with an original brown-and-cyan soul-themed body
+texture and a Soul Jack o'Lantern on its head, with a smaller matching hitbox.
+It has 50 HP (half an iron golem's health), deals one quarter
 of an iron golem's rolled melee damage, and ignites successfully hit targets for
 two seconds. It inherits hostile-mob targeting (excluding Creepers) and
-iron-ingot repairs. Built Soul Golems do not
+gold-ingot repairs (25 HP per ingot; iron does not work). It uses soul-soil
+footsteps and repair sounds, soul-sand hurt/damage sounds, soul escape on death,
+and a fire-charge attack sound, rather than iron-golem sounds.
+Built and spawn-egg-created Soul Golems do not
 attack players. Construction does not require the `pumpkinLanterns` switch
 when placing an already obtained Soul Jack o'Lantern. It has no natural spawns
-or death drops yet. The placeholder texture uses the iron golem's 128x128 UV
-layout and can be replaced with a custom texture later. Its in-game appearance
+or death drops yet. A Soul Golem Spawn Egg is available in the Spawn Eggs
+Creative tab. Soul Jack o'Lanterns cannot construct Snow Golems; ordinary
+carved pumpkins and Jack o'Lanterns still can. The body texture uses the Snow
+Golem's 64x64 UV layout and can be replaced with a custom texture later.
+Its in-game appearance
 and animations still need a manual client check.
 
 ## Banner customization

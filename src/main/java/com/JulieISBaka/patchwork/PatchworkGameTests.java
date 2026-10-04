@@ -6,6 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.cauldron.CauldronInteractions;
+import com.JulieISBaka.patchwork.mixin.PotionArrowItemAccessor;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.InteractionHand;
@@ -22,6 +23,8 @@ import net.minecraft.world.entity.projectile.throwableitemprojectile.Snowball;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.GameType;
@@ -65,12 +68,80 @@ public class PatchworkGameTests {
 	}
 
 	@GameTest
-	public void soulJackOLanternCreatesSnowGolem(GameTestHelper test) {
+	public void soulJackOLanternCannotCreateSnowGolem(GameTestHelper test) {
 		test.setBlock(CENTER.below(), Blocks.STONE);
 		test.setBlock(CENTER, Blocks.SNOW_BLOCK);
 		test.setBlock(CENTER.above(), Blocks.SNOW_BLOCK);
 		test.setBlock(CENTER.above(2), PumpkinLanterns.SOUL_BLOCK);
-		test.assertEntityPresent(EntityTypes.SNOW_GOLEM);
+		test.assertTrue(test.getEntities(EntityTypes.SNOW_GOLEM).isEmpty(), "Soul lantern created a Snow Golem");
+		test.assertBlockPresent(Blocks.SNOW_BLOCK, CENTER);
+		test.assertBlockPresent(Blocks.SNOW_BLOCK, CENTER.above());
+		test.assertBlockPresent(PumpkinLanterns.SOUL_BLOCK, CENTER.above(2));
+		for (var pumpkin : new net.minecraft.world.level.block.Block[] {Blocks.CARVED_PUMPKIN, Blocks.JACK_O_LANTERN}) {
+			test.setBlock(CENTER.above(2), Blocks.AIR);
+			test.setBlock(CENTER, Blocks.SNOW_BLOCK);
+			test.setBlock(CENTER.above(), Blocks.SNOW_BLOCK);
+			test.setBlock(CENTER.above(2), pumpkin);
+			test.assertTrue(test.getEntities(EntityTypes.SNOW_GOLEM).size() == 1,
+				"Vanilla pumpkin no longer creates a Snow Golem");
+			test.getEntities(EntityTypes.SNOW_GOLEM).getFirst().discard();
+		}
+		test.succeed();
+	}
+
+	@GameTest
+	public void soulGolemRepairsWithGoldOnly(GameTestHelper test) {
+		SoulGolem golem = test.spawn(SoulGolems.TYPE, CENTER);
+		golem.setNoAi(true);
+		golem.setHealth(10.0F);
+		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.IRON_INGOT, 2));
+		golem.interact(player, InteractionHand.MAIN_HAND, Vec3.ZERO);
+		test.assertTrue(golem.getHealth() == 10.0F && player.getMainHandItem().getCount() == 2,
+			"Iron repaired the Soul Golem or was consumed");
+		player.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.GOLD_INGOT, 3));
+		golem.interact(player, InteractionHand.OFF_HAND, Vec3.ZERO);
+		test.assertTrue(golem.getHealth() == 35.0F && player.getOffhandItem().getCount() == 2,
+			"Gold did not heal 25 HP and consume exactly one ingot");
+		golem.interact(player, InteractionHand.OFF_HAND, Vec3.ZERO);
+		golem.interact(player, InteractionHand.OFF_HAND, Vec3.ZERO);
+		test.assertTrue(golem.getHealth() == 50.0F && player.getOffhandItem().getCount() == 1,
+			"Repairing full health consumed an ingot or exceeded max health");
+		Player creative = test.makeMockPlayer(GameType.CREATIVE);
+		creative.getAbilities().instabuild = true;
+		creative.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.GOLD_INGOT));
+		golem.setHealth(25.0F);
+		golem.interact(creative, InteractionHand.MAIN_HAND, Vec3.ZERO);
+		test.assertTrue(golem.getHealth() == 50.0F && creative.getMainHandItem().getCount() == 1,
+			"Creative gold repair consumed the ingot");
+		var iron = test.spawn(EntityTypes.IRON_GOLEM, CENTER.offset(2, 0, 0));
+		iron.setHealth(50.0F);
+		player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.IRON_INGOT, 2));
+		iron.interact(player, InteractionHand.MAIN_HAND, Vec3.ZERO);
+		test.assertTrue(iron.getHealth() == 75.0F && player.getMainHandItem().getCount() == 1,
+			"Vanilla iron golem repairs changed");
+		test.assertTrue(golem.getHurtSound(golem.damageSources().generic()) != net.minecraft.sounds.SoundEvents.IRON_GOLEM_HURT
+			&& golem.getDeathSound() != net.minecraft.sounds.SoundEvents.IRON_GOLEM_DEATH,
+			"Soul Golem still uses iron golem hurt/death sounds");
+		test.succeed();
+	}
+
+	@GameTest
+	public void soulGolemSpawnEggCreatesFriendlyDefender(GameTestHelper test) {
+		test.setBlock(CENTER.below(), Blocks.STONE);
+		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(SoulGolems.SPAWN_EGG, 2));
+		test.assertTrue(SpawnEggItem.getType(player.getMainHandItem()) == SoulGolems.TYPE,
+			"Spawn egg does not reference the Soul Golem");
+		BlockPos floor = test.absolutePos(CENTER.below());
+		SoulGolems.SPAWN_EGG.useOn(new UseOnContext(player, InteractionHand.MAIN_HAND,
+			new BlockHitResult(Vec3.atCenterOf(floor), Direction.UP, floor, false)));
+		test.assertTrue(test.getEntities(SoulGolems.TYPE).size() == 1, "Spawn egg did not spawn one Soul Golem");
+		var golem = test.getEntities(SoulGolems.TYPE).getFirst();
+		test.assertTrue(golem.getMaxHealth() == 50.0F && !golem.canAttack(player)
+			&& golem.isPlayerCreated() && golem.isPersistenceRequired(),
+			"Egg-created Soul Golem did not keep balanced, friendly behavior");
+		test.assertTrue(player.getMainHandItem().getCount() == 1, "Spawn egg did not consume one egg");
 		test.succeed();
 	}
 
@@ -477,16 +548,16 @@ public class PatchworkGameTests {
 	@GameTest
 	public void potionPourRefillAndDipOffhand(GameTestHelper test) {
 		require(test, PatchworkConfig.settings().potionCauldrons(), "potionCauldrons");
-		test.setBlock(CENTER, Blocks.WATER_CAULDRON.defaultBlockState().setValue(LayeredCauldronBlock.LEVEL, 3));
+		test.setBlock(CENTER, Blocks.CAULDRON);
 		Player player = test.makeMockPlayer(GameType.SURVIVAL);
 		ItemStack potion = PotionContents.createItemStack(Items.POTION, Potions.SWIFTNESS);
 		PotionContents contents = potion.get(DataComponents.POTION_CONTENTS);
 		player.setItemInHand(InteractionHand.MAIN_HAND, potion);
-		CauldronInteractions.WATER.get(potion).interact(test.getBlockState(CENTER),
+		CauldronInteractions.EMPTY.get(potion).interact(test.getBlockState(CENTER),
 			test.getLevel(), test.absolutePos(CENTER), player, InteractionHand.MAIN_HAND, potion);
 		test.assertBlockPresent(PotionCauldrons.BLOCK, CENTER);
 		test.assertTrue(test.getBlockState(CENTER).getValue(LayeredCauldronBlock.LEVEL) == 1,
-			"Potion did not replace water with one level");
+			"Potion did not fill the empty cauldron with one level");
 		test.assertTrue(((PotionCauldronEntity)test.getLevel().getBlockEntity(test.absolutePos(CENTER)))
 			.potion().equals(contents), "Potion contents were not retained");
 		test.assertTrue(player.getMainHandItem().is(Items.GLASS_BOTTLE), "Pouring did not return a glass bottle");
@@ -523,6 +594,72 @@ public class PatchworkGameTests {
 		test.succeed();
 	}
 
+	@GameTest
+	public void potionRejectsWaterCauldronsAndPreservesWaterBottles(GameTestHelper test) {
+		require(test, PatchworkConfig.settings().potionCauldrons(), "potionCauldrons");
+		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		for (int fill = 1; fill <= 3; fill++) {
+			test.setBlock(CENTER, Blocks.WATER_CAULDRON.defaultBlockState().setValue(LayeredCauldronBlock.LEVEL, fill));
+			ItemStack potion = PotionContents.createItemStack(Items.POTION, Potions.HEALING);
+			player.setItemInHand(InteractionHand.MAIN_HAND, potion);
+			CauldronInteractions.WATER.get(potion).interact(test.getBlockState(CENTER), test.getLevel(),
+				test.absolutePos(CENTER), player, InteractionHand.MAIN_HAND, potion);
+			test.assertBlockPresent(Blocks.WATER_CAULDRON, CENTER);
+			test.assertTrue(test.getBlockState(CENTER).getValue(LayeredCauldronBlock.LEVEL) == fill
+				&& player.getMainHandItem().is(Items.POTION), "Potion replaced water or was consumed");
+		}
+		test.setBlock(CENTER, Blocks.CAULDRON);
+		ItemStack water = PotionContents.createItemStack(Items.POTION, Potions.WATER);
+		player.setItemInHand(InteractionHand.MAIN_HAND, water);
+		CauldronInteractions.EMPTY.get(water).interact(test.getBlockState(CENTER), test.getLevel(),
+			test.absolutePos(CENTER), player, InteractionHand.MAIN_HAND, water);
+		test.assertBlockPresent(Blocks.WATER_CAULDRON, CENTER);
+		test.assertTrue(player.getMainHandItem().is(Items.GLASS_BOTTLE), "Vanilla water pouring changed");
+		test.useBlock(CENTER, player);
+		test.assertBlockPresent(Blocks.CAULDRON, CENTER);
+		test.assertTrue(player.getMainHandItem().get(DataComponents.POTION_CONTENTS).is(Potions.WATER),
+			"Vanilla water retrieval changed");
+		test.succeed();
+	}
+
+	@GameTest
+	public void potionBottlesRetrieveExactContentsAndOneLevel(GameTestHelper test) {
+		require(test, PatchworkConfig.settings().potionCauldrons(), "potionCauldrons");
+		test.setBlock(CENTER, PotionCauldrons.BLOCK.defaultBlockState().setValue(LayeredCauldronBlock.LEVEL, 3));
+		PotionContents contents = PotionContents.createItemStack(Items.POTION, Potions.LONG_SWIFTNESS)
+			.get(DataComponents.POTION_CONTENTS);
+		((PotionCauldronEntity)test.getLevel().getBlockEntity(test.absolutePos(CENTER))).setPotion(contents);
+		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.GLASS_BOTTLE, 2));
+		test.useBlock(CENTER, player);
+		test.assertTrue(player.getMainHandItem().is(Items.GLASS_BOTTLE) && player.getMainHandItem().getCount() == 1,
+			"Extraction did not consume one bottle from the stack");
+		test.assertTrue(player.getInventory().countItem(Items.POTION) == 1,
+			"Extraction did not put one potion in inventory");
+		for (ItemStack item : player.getInventory().getNonEquipmentItems()) {
+			if (item.is(Items.POTION)) {
+				test.assertTrue(contents.equals(item.get(DataComponents.POTION_CONTENTS)),
+					"Bottled potion lost its exact contents");
+			}
+		}
+		test.assertTrue(test.getBlockState(CENTER).getValue(LayeredCauldronBlock.LEVEL) == 2,
+			"Bottling used more than one potion level");
+		test.useBlock(CENTER, player);
+		test.assertTrue(player.getMainHandItem().is(Items.POTION)
+			&& contents.equals(player.getMainHandItem().get(DataComponents.POTION_CONTENTS)),
+			"Single bottle was not replaced with the correct potion");
+		player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+		player.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.GLASS_BOTTLE));
+		test.getBlockState(CENTER).useItemOn(player.getOffhandItem(), test.getLevel(), player,
+			InteractionHand.OFF_HAND, new BlockHitResult(Vec3.atCenterOf(test.absolutePos(CENTER)),
+				Direction.NORTH, test.absolutePos(CENTER), false));
+		test.assertBlockPresent(Blocks.CAULDRON, CENTER);
+		test.assertTrue(player.getOffhandItem().is(Items.POTION)
+			&& contents.equals(player.getOffhandItem().get(DataComponents.POTION_CONTENTS)),
+			"Offhand extraction lost the last potion level");
+		test.succeed();
+	}
+
 	@GameTest(maxTicks = 10)
 	public void charcoalBlockBurnsFor16000Ticks(GameTestHelper test) {
 		var coalFuel = Items.COAL_BLOCK.getDefaultInstance().get(DataComponents.COOKING_FUEL);
@@ -554,9 +691,15 @@ public class PatchworkGameTests {
 		ItemEntity arrows = new ItemEntity(test.getLevel(), center.x, center.y, center.z,
 			new ItemStack(Items.ARROW));
 		arrows.setDeltaMovement(Vec3.ZERO);
+		arrows.setPickUpDelay(40);
 		test.getLevel().addFreshEntity(arrows);
 		test.runAfterDelay(5, () -> {
-			test.assertTrue(arrows.isRemoved(), "Dropped single arrow was not consumed");
+			test.assertTrue(!arrows.isRemoved() && arrows.getItem().is(Items.TIPPED_ARROW),
+				"Dropped single arrow was respawned instead of converted in place");
+			test.assertTrue(arrows.getItem().getCount() == 1 && arrows.hasPickUpDelay(),
+				"Dipping changed the arrow count or reset its pickup delay");
+			test.assertTrue(test.getEntities(EntityTypes.ITEM).size() == 1,
+				"Dipping a single arrow spawned another item entity");
 			test.assertTrue(test.getBlockState(CENTER).getValue(LayeredCauldronBlock.LEVEL) == 1,
 				"Dropped arrows did not use one potion level");
 			test.assertItemEntityPresent(Items.TIPPED_ARROW, CENTER, 2);
@@ -575,21 +718,37 @@ public class PatchworkGameTests {
 		ItemEntity arrows = new ItemEntity(test.getLevel(), center.x, center.y, center.z,
 			new ItemStack(Items.ARROW, 8));
 		arrows.setDeltaMovement(Vec3.ZERO);
+		arrows.setPickUpDelay(40);
+		arrows.setTarget(playerUuidForArrowTest());
+		((PotionArrowItemAccessor)arrows).patchwork$setAge(1000);
 		test.getLevel().addFreshEntity(arrows);
 		test.runAfterDelay(5, () -> {
-			test.assertTrue(arrows.getItem().getCount() == 5, "Full cauldron did not consume exactly three arrows");
+			test.assertTrue(!arrows.isRemoved() && arrows.getItem().is(Items.TIPPED_ARROW)
+				&& arrows.getItem().getCount() == 3, "Full cauldron did not convert the original entity into three arrows");
 			test.assertBlockPresent(Blocks.CAULDRON, CENTER);
 			int tippedCount = 0;
+			int plainCount = 0;
 			for (ItemEntity item : test.getEntities(EntityTypes.ITEM)) {
+				test.assertTrue(item.getAge() >= 1000 && item.hasPickUpDelay(),
+					"Splitting arrows lost their age or pickup delay");
+				test.assertTrue(playerUuidForArrowTest().equals(((PotionArrowItemAccessor)item).patchwork$getTarget()),
+					"Splitting arrows lost their pickup owner");
 				if (item.getItem().is(Items.TIPPED_ARROW)) {
 					test.assertTrue(contents.equals(item.getItem().get(DataComponents.POTION_CONTENTS)),
 						"Dropped tipped arrow lost its potion contents");
 					tippedCount += item.getItem().getCount();
+				} else if (item.getItem().is(Items.ARROW)) {
+					plainCount += item.getItem().getCount();
 				}
 			}
-			test.assertTrue(tippedCount == 3, "Full cauldron did not produce exactly three tipped arrows");
+			test.assertTrue(tippedCount == 3 && plainCount == 5,
+				"Full cauldron did not conserve eight arrows with exactly three tipped");
 			test.succeed();
 		});
+	}
+
+	private static java.util.UUID playerUuidForArrowTest() {
+		return java.util.UUID.fromString("00000000-0000-0000-0000-000000000001");
 	}
 
 	@GameTest

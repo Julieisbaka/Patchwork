@@ -1,6 +1,7 @@
 package com.JulieISBaka.patchwork;
 
 import java.util.Set;
+import com.JulieISBaka.patchwork.mixin.PotionArrowItemAccessor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
@@ -19,6 +20,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
@@ -50,11 +52,12 @@ public final class PotionCauldrons {
 	public static void register() {
 	}
 
-	public static InteractionResult pourWater(BlockState state, Level level, BlockPos pos, Player player,
+	public static InteractionResult pour(BlockState state, Level level, BlockPos pos, Player player,
 		InteractionHand hand, ItemStack bottle) {
 		PotionContents contents = bottle.get(DataComponents.POTION_CONTENTS);
-		if (contents == null || contents.equals(PotionContents.EMPTY)) {
-			return InteractionResult.PASS;
+		if (!state.is(Blocks.CAULDRON) || contents == null || contents.equals(PotionContents.EMPTY)
+			|| contents.is(Potions.WATER)) {
+			return InteractionResult.TRY_WITH_EMPTY_HAND;
 		}
 		if (!level.isClientSide()) {
 			level.setBlockAndUpdate(pos, BLOCK.defaultBlockState());
@@ -81,18 +84,43 @@ public final class PotionCauldrons {
 		tipped.set(DataComponents.POTION_CONTENTS, cauldron.potion());
 		arrows.shrink(1);
 		LayeredCauldronBlock.lowerFillLevel(level.getBlockState(pos), level, pos);
-		if (player != null) {
-			if (arrows.isEmpty()) {
-				player.setItemInHand(hand, tipped);
-			} else if (!player.addItem(tipped)) {
-				player.spawnAtLocation(level, tipped);
-			}
-		} else {
-			ItemEntity result = new ItemEntity(level, pos.getX() + 0.5, pos.getY() + 0.65, pos.getZ() + 0.5, tipped);
-			result.setPickUpDelay(10);
-			level.addFreshEntity(result);
+		if (arrows.isEmpty()) {
+			player.setItemInHand(hand, tipped);
+		} else if (!player.addItem(tipped)) {
+			player.spawnAtLocation(level, tipped);
 		}
 		return true;
+	}
+
+	public static void dipDropped(ServerLevel level, BlockPos pos, ItemEntity item) {
+		BlockState state = level.getBlockState(pos);
+		PotionContents contents = entity(level, pos).potion();
+		if (contents.equals(PotionContents.EMPTY)) {
+			return;
+		}
+		int count = Math.min(item.getItem().getCount(), state.getValue(LayeredCauldronBlock.LEVEL));
+		ItemStack tipped = new ItemStack(Items.TIPPED_ARROW, count);
+		tipped.set(DataComponents.POTION_CONTENTS, contents);
+		int remaining = item.getItem().getCount() - count;
+		if (remaining > 0) {
+			ItemEntity remainder = new ItemEntity(level, item.getX(), item.getY(), item.getZ(),
+				item.getItem().copyWithCount(remaining));
+			PotionArrowItemAccessor original = (PotionArrowItemAccessor)item;
+			PotionArrowItemAccessor split = (PotionArrowItemAccessor)remainder;
+			split.patchwork$setAge(item.getAge());
+			remainder.setPickUpDelay(original.patchwork$getPickupDelay());
+			remainder.setTarget(original.patchwork$getTarget());
+			split.patchwork$setThrower(original.patchwork$getThrower());
+			remainder.setDeltaMovement(item.getDeltaMovement());
+			if (!level.addFreshEntity(remainder)) {
+				throw new IllegalStateException("Could not split dropped arrows at " + pos);
+			}
+		}
+		// Keep the converted entity's identity, motion, and pickup timer instead of respawning it.
+		item.setItem(tipped);
+		for (int i = 0; i < count; i++) {
+			LayeredCauldronBlock.lowerFillLevel(level.getBlockState(pos), level, pos);
+		}
 	}
 
 	private static PotionCauldronEntity entity(Level level, BlockPos pos) {
@@ -131,6 +159,19 @@ public final class PotionCauldrons {
 			if (stack.is(Items.ARROW)) {
 				if (level instanceof ServerLevel serverLevel) {
 					dip(serverLevel, pos, stack, player, hand);
+				}
+				return InteractionResult.SUCCESS;
+			}
+			if (stack.is(Items.GLASS_BOTTLE)) {
+				if (!level.isClientSide()) {
+					ItemStack potion = new ItemStack(Items.POTION);
+					potion.set(DataComponents.POTION_CONTENTS, entity(level, pos).potion());
+					player.setItemInHand(hand, ItemUtils.createFilledResult(stack, player, potion));
+					player.awardStat(Stats.USE_CAULDRON);
+					player.awardStat(Stats.ITEM_USED.get(Items.GLASS_BOTTLE));
+					LayeredCauldronBlock.lowerFillLevel(state, level, pos);
+					level.playSound(null, pos, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 1.0F, 1.0F);
+					level.gameEvent(player, GameEvent.FLUID_PICKUP, pos);
 				}
 				return InteractionResult.SUCCESS;
 			}

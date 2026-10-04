@@ -13,6 +13,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.animal.golem.IronGolem;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -23,8 +25,12 @@ public final class SoulGolems {
 	private static final ResourceKey<EntityType<?>> TYPE_KEY =
 		ResourceKey.create(Registries.ENTITY_TYPE, Patchwork.id("soul_golem"));
 	public static final EntityType<SoulGolem> TYPE = Registry.register(BuiltInRegistries.ENTITY_TYPE, TYPE_KEY,
-		EntityType.Builder.of(SoulGolem::new, MobCategory.MISC).sized(1.4F, 2.7F)
-			.eyeHeight(2.3F).clientTrackingRange(10).noLootTable().build(TYPE_KEY));
+		EntityType.Builder.of(SoulGolem::new, MobCategory.MISC).sized(0.7F, 1.9F)
+			.eyeHeight(1.7F).clientTrackingRange(10).noLootTable().build(TYPE_KEY));
+	private static final ResourceKey<Item> EGG_KEY =
+		ResourceKey.create(Registries.ITEM, Patchwork.id("soul_golem_spawn_egg"));
+	public static final Item SPAWN_EGG = Registry.register(BuiltInRegistries.ITEM, EGG_KEY,
+		new SpawnEggItem(new Item.Properties().spawnEgg(TYPE).setId(EGG_KEY)));
 
 	private SoulGolems() {
 	}

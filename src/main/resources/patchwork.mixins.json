@@ -16,6 +16,7 @@
 		"HoglinMovementMixin",
 		"LoomMenuMixin",
 		"PlayerSweepMixin",
+		"PotionArrowItemAccessor",
 		"PotionArrowItemMixin",
 		"ShulkerVariantAccessor",
 		"SlimeballSnowballMixin",
