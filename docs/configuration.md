@@ -59,7 +59,7 @@ spawning/merging/pickup without truncating values already saved.
 Soul Golem projectile block ignition. Player Soul Fire Charges can still
 ignite blocks. Direct projectile entity damage is independent of this rule.
 
-## Migration and errors
+## Requirements and errors
 
 New files are initialized with every switch's default value and the default
 radius. Existing files must contain every boolean switch and a valid
