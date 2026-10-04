@@ -1,347 +1,130 @@
 # Patchwork
 
-## Configuration
+A Fabric mod for Minecraft 26.3 that adds small gameplay features, friendlier
+pet interactions, new soul-themed tools, and tougher encounters.
 
-Patchwork creates `config/patchwork.properties` on startup (`run/config/` in
-the development environment). Set any feature switch to `false` to disable
-it; every switch defaults to `true` except `creeperChainReactions`, which is
-`false` by default. With Mod Menu 21.0.0 installed on the
-client, open Patchwork's Config button to edit the switches and recall radius
-in a scrolling settings screen. Hover over each option for a detailed
-description. Save writes the local config file; Cancel discards your edits.
-Restart the game/server after saving or editing the file.
-On multiplayer servers, gameplay switches are controlled by the server's
-config; the client's Mod Menu screen cannot change server settings. Clients
-use their own `wolfBanners` setting to control whether
-existing wolf banners are rendered; changing the server switch prevents
-equipping or removing banners but does not delete banners already on wolves.
+## Soul Golems
 
-| Property | Feature |
-| --- | --- |
-| `witherDifficultyHealth` | Difficulty-based Wither maximum health |
-| `witherBirthExplosion` | Increased Wither birth explosion damage |
-| `chainmailRecipes` | Chainmail crafting recipes and recipe-book unlocks |
-| `wolfBanners` | Wolf banner interactions and client-side banner rendering |
-| `ownerSweepProtection` | Owned wolf/cat protection from indirect sword sweeps |
-| `shulkerDyeing` | Recoloring shulkers with dye |
-| `throwableSlimeballs` | Slimeball throwing, hit effects, and cooldown |
-| `throwableFireCharges` | Fire-charge throwing, impact fire, and cooldown |
-| `callHornRecall` | Call goat horn pet recall |
-| `cauldronCleaning` | Wash dyed wool, terracotta, and stained glass in water cauldrons |
-| `beesDefendFlowers` | Bees defend flowers near occupied hives |
-| `creeperChainReactions` | Creeper blast chain reactions (off by default) |
-| `endermanDefense` | Endermen place carried blocks defensively |
-| `spiderWebs` | Spiders spin cobwebs while chasing prey |
-| `slimeSplitClouds` | Five-second slowing particle cloud when larger Slimes split |
-| `breezeShockwave` | Breeze melee shockwave and extinguished torches/campfires |
-| `breezeTorchExtinguishing` | Breeze gusts extinguish torches and lanterns (requires shockwave) |
-| `hoglinCharge` | Charging Hoglins launch victims, with extra wall/ceiling impact damage |
-| `skeletonCover` | Nearby bow Skeletons take corner cover while reloading |
-| `potionCauldrons` | Fill empty cauldrons with potions, retrieve them with bottles, and tip arrows |
-| `pumpkinLanterns` | Light placed carved pumpkins using torches |
-| `experienceClumping` | Nearby XP orbs merge and their full value is collected at once |
-| `callHornRecallRadius` | Recall radius in blocks, 16–256 (default: 32) |
+Stack two soul sand or soul soil blocks, then place a Soul Jack o'Lantern on
+top. Mixed stacks work too. You can also light a carved pumpkin on the stack
+with a soul torch, or use a Soul Golem Spawn Egg.
 
-Existing config files receive the new switches automatically; invalid values
-produce a startup error instead of silently changing behavior. Disabling
-`witherDifficultyHealth` restores vanilla maximum health for newly spawned
-Withers, but does not reset health already saved on existing Withers.
-The old `unlitTorches` switch is migrated to `breezeTorchExtinguishing` without
-changing its value. This switch controls Breeze behavior, not the availability
-of unlit torch items.
+The player completing the build or using the egg becomes the golem's owner.
+Give an ownerless golem a gold ingot to claim it. Gold also repairs damaged
+golems; iron does not work, and repairs cannot transfer ownership.
 
-## Game tests
+Soul Golems have half an Iron Golem's health. They shoot Soul Fire Charges
+instead of using melee attacks. They defend their owner and assist against
+the owner's targets, including hostile players. They do not deliberately
+target their owner, the owner's pets, or allies. Unprovoked players and
+Creepers are left alone.
 
-With cheats enabled (or as an operator), use `/test run
-patchwork:patchwork_game_tests_unlit_torch_variants` to run one test. Tab
-completion after `/test run patchwork:` lists the other Patchwork tests.
-`/test runfailed` reruns failures; `/test runthese` reruns nearby test
-structures. The tests use Fabric's built-in GameTest API and its empty
-structure. They run in-game, not through the Gradle unit-test task.
+They use the Snow Golem body model with a Soul Jack o'Lantern head. Shears
+remove and drop the lantern without destroying the golem or changing its
+owner. They have soul-themed sounds and no natural spawns or death drops.
 
-The automated tests cover four unlit torch conversions and wall facing,
-an unlit item drop, fire-charge relighting, washing wool/terracotta/glass
-using one cauldron level each, shulker dyeing, difficulty-based Wither
-health, the Breeze extinguishing a torch and campfire, a charging Hoglin
-launch, slimeballs healing/speeding a Slime and damaging/slowing a non-Slime,
-and a thrown fire charge igniting the top of a solid block after a side impact.
-They also check potion filling of empty cauldrons, rejection of water cauldrons,
-matching-potion refills, bottle retrieval, offhand arrow dipping, in-place
-dropped-arrow dipping and stack conservation, and lighting both kinds
-of carved pumpkin with the correct facing, torch consumption, and soul variant
-drop, plus rejection of Soul Jack o'Lantern Snow Golem construction,
-preservation of vanilla Snow Golem construction, Soul Golem construction,
-gold repairs and spawn eggs,
-Soul Golem player safety, 50 HP, exact quarter-damage rolls and two-second fire,
-and a charcoal block's 16,000-tick furnace burn duration. Additional tests cover
-the nine-layer loom limit and banner copying, all ten unlit lantern variants'
-relighting and drops, waterlogging and copper mappings, and Breeze lantern
-extinguishing. XP tests cover mixed values and vanilla counts, the two-block
-merge radius, full-value pickup with Mending, large-value persistence, and
-overflow-safe merging. Tests requiring a
-switch fail with an instruction to enable it rather than silently passing
-without exercising the feature. `breezeExtinguishesLights` also requires
-`mobGriefing=true`.
+## Soul Fire Charges
 
-The Fabric client GameTest (`fabric-client-gametest` entrypoint) creates a
-temporary world, renders a Soul Golem with its Soul Jack o'Lantern head and
-spawn egg, checks its render state, and saves a `soul-golem` screenshot.
-Enable it with the JVM flag `-Dfabric.client.gametest`; it does not run during
-normal gameplay.
+Craft one by putting a fire charge in the center of a crafting table and
+surrounding it with eight soul sand or soul soil blocks. Mixed materials work.
 
-The remaining interactions need manual in-game checks: craft and unlock all
-four chainmail recipes; compare Wither birth-explosion damage at each
-difficulty; equip/remove a wolf banner and verify a stranger
-cannot do so; confirm owned cats and wolves ignore indirect sword sweeps;
-throw slimeballs and check the hotbar cooldown;
-verify the fire-charge launch clearance, 2 HP hit, cooldown, and no
-explosion; recall seated pets with the Call horn at the configured radius;
-check bees at an occupied unsmoked hive, Enderman carried-block defense,
-Spider webs, and the optional Creeper chain reaction; verify the Slime
-cloud's Slowness II and five-second expiry; test the Breeze's knockback
-and ten-second cooldown; and collide with a wall/ceiling after a Hoglin
-launch to check its 2 HP impact. Check all four unlit items in Creative and
-verify unlit redstone torches supply no signal. Check throwable slimeballs and
-fire charges in the Combat creative tab when their respective features are
-enabled. Check the unlit lantern textures, nine-layer loom screen, and enlarged
-XP orb appearance on a client. Mod Menu switches and client banner
-rendering (including walking and sitting wolves) also require a client. Test Skeletons seeking a reachable wall
-corner and returning to their firing position against a close player, and
-verify unlike potions cannot mix and potion contents survive a save/reload.
-These behaviors are not claimed as covered
-by the automated tests.
+Throw them like regular fire charges: they deal one extra point of direct
+damage and create soul fire instead of ordinary fire, without an explosion.
+Soul fire from these charges remains lit on ordinary solid supports, not just
+soul blocks. They can also light blocks directly. Both charge types can light
+candles and campfires.
 
-## Skeletons and potion cauldrons
+## Lanterns, torches, and pumpkins
 
-When a bow-wielding Skeleton has fired and a player is within six blocks, it
-looks for a reachable adjacent corner with a solid obstruction between it and
-the player. It retreats there while reloading, then returns to its former
-position to draw and fire. Without suitable cover it uses vanilla movement.
+- Breeze gusts can extinguish ordinary, soul, copper, and lit redstone torches,
+  plus regular, soul, and all copper lantern variants.
+- Unlit variants drop placeable items. Lanterns retain hanging, waterlogging,
+  oxidation, and wax states. Unlit lantern inventory/held models use the same
+  flat generated-item style as lit lanterns.
+- Fire charges relight unlit torches and lanterns. Flint and steel also relights
+  all unlit torch variants, including wall torches. Drain a lantern before
+  relighting it.
+- Light a carved pumpkin with a torch for a Jack o'Lantern, or a soul torch for
+  a Soul Jack o'Lantern. Facing is preserved.
+- Soul Jack o'Lanterns work in Soul, Iron, and Copper Golem builds, but cannot
+  create Snow Golems.
 
-Use a drinkable non-water potion on an empty cauldron to fill it with one level
-of that potion. Water cauldrons cannot accept potions. Up to two matching
-potions refill it to three levels; different contents do not mix. Use a glass
-bottle in either hand to retrieve one level with its exact potion contents.
-Removing the last level leaves an empty cauldron. Water bottles keep their
-vanilla filling and retrieval behavior.
-Right-click the potion cauldron with ordinary arrows in either hand, or drop
-them inside it, to convert one arrow into a tipped arrow carrying the potion's
-contents. Each arrow consumes one level. Dropped stacks can use up the remaining
-levels, with one level per arrow; a full cauldron produces at most three tipped
-arrows. The converted dropped item stays in place, keeping its entity identity,
-motion, age, and pickup timer; any unused arrows split off at the same location.
-Conversion does not emit a sound or pickup animation.
-Already tipped arrows are unaffected. Potion
-cauldrons tint their liquid surface to match the potion;
-breaking one drops a normal empty cauldron. Disabling `potionCauldrons`
-prevents filling, refills, retrieval, and dipping but does not remove existing
-potion cauldrons from saved worlds.
+## Potion cauldrons
 
-## Charcoal blocks
+Pour drinkable non-water potions into empty cauldrons. Water-filled cauldrons
+reject them. Matching potions refill the cauldron; different potions cannot
+mix. Glass bottles retrieve the stored potion.
 
-Craft a Block of Charcoal from nine charcoal in a crafting grid. It burns for
-16,000 ticks in a normal furnace (800 seconds, enough to smelt 80 items), matching
-a coal block. Blast furnaces and smokers use vanilla's faster burn rate.
+Use ordinary arrows in either hand, or drop them inside, to make tipped
+arrows. Each potion level converts one arrow. Dropped arrows convert in place
+without a replacement-item pop or conversion sound. The liquid color matches
+the potion, and breaking the block drops a normal cauldron.
 
-## Soul Golem
+## Crafting and customization
 
-Stack two blocks of soul sand or soul soil (mixed stacks also work), then place
-a Soul Jack o'Lantern on top. Lighting a carved pumpkin on that stack with a
-soul torch also works when `pumpkinLanterns` is enabled. All three blocks are
-consumed to create a persistent, friendly Soul Golem.
+- **Charcoal blocks:** compact nine charcoal into a furnace fuel block.
+- **Chainmail:** craft chainmail armor using iron chains in the usual armor
+  patterns, with recipe-book unlocks.
+- **Banners:** create and copy banners with up to nine pattern layers.
+- **Shulkers:** recolor living shulkers using dyes.
+- **Cauldron washing:** wash dyed wool, terracotta, and stained glass into
+  their plain versions.
 
-It uses the Snow Golem model with an original brown-and-cyan soul-themed body
-texture and a Soul Jack o'Lantern on its head, with a smaller matching hitbox.
-It has 50 HP (half an iron golem's health), deals one quarter
-of an iron golem's rolled melee damage, and ignites successfully hit targets for
-two seconds. It inherits hostile-mob targeting (excluding Creepers) and
-gold-ingot repairs (25 HP per ingot; iron does not work). It uses soul-soil
-footsteps and repair sounds, soul-sand hurt/damage sounds, soul escape on death,
-and a fire-charge attack sound, rather than iron-golem sounds.
-Built and spawn-egg-created Soul Golems do not
-attack players. Construction does not require the `pumpkinLanterns` switch
-when placing an already obtained Soul Jack o'Lantern. It has no natural spawns
-or death drops yet. A Soul Golem Spawn Egg is available in the Spawn Eggs
-Creative tab. Soul Jack o'Lanterns cannot construct Snow Golems; ordinary
-carved pumpkins and Jack o'Lanterns still can. The body texture uses the Snow
-Golem's 64x64 UV layout and can be replaced with a custom texture later.
-Its static in-game appearance is covered by the client render test; listening
-to sounds and checking walking and melee animations still need a manual check.
+## Pets and throwable items
 
-## Banner customization
+- Equip an owned wolf with a banner, replace it, or sneak with an empty hand
+  to remove it. Its collar and armor remain intact.
+- Sword sweeps do not accidentally hit the attacker's owned cats and wolves.
+- The Call goat horn recalls nearby seated pets to safe landing spots.
+- Throw slimeballs to damage and slow enemies, or heal and speed up Slimes.
+- Throw regular fire charges for a non-explosive ranged attack that lights
+  supported surfaces.
 
-The loom accepts up to nine pattern layers instead of six. Its menu and client
-screen use the same limit, and a tenth pattern cannot be added. Nine-layer
-banners can also be copied in the crafting grid without losing their patterns.
+## Mobs and encounters
 
-## Experience orb clumping
+- Wither health scales with difficulty, and its birth explosion hits harder.
+- Bees defend flowers near occupied, unsmoked hives.
+- Endermen may place carried blocks defensively.
+- Spiders can lay webs while pursuing prey.
+- Larger Slimes leave a short-lived slowing dust cloud when they split.
+- Breezes answer melee hits with a knockback gust and can extinguish lights.
+- Charging Hoglins launch victims; collisions make the impact worse.
+- Nearby bow Skeletons look for corner cover while reloading.
+- Optional Creeper chain reactions ignite surviving Creepers caught in
+  another Creeper's blast. This feature is off by default.
 
-With `experienceClumping` enabled (the default), each XP award creates one orb.
-Orbs check once every 20 ticks for other orbs within two blocks and combine their
-XP, even when their values differ. Existing vanilla orb stacks are included in
-the total. Collecting a combined orb grants its entire value in one pickup,
-using vanilla Mending repairs before granting the remaining XP.
+## Experience clumping
 
-Orb appearance grows with its XP value, capped at three times the normal scale.
-Large values are saved as full integers rather than vanilla's short integer,
-so save/reload does not truncate them. A merge that would exceed the maximum
-integer value leaves the orbs separate without losing XP. Disabling the feature
-restores vanilla spawning, merging, and pickup; already combined values remain
-intact. This reduces orb entity counts and repeated pickup delays; no performance
-benchmark is claimed.
+Nearby XP orbs combine into larger orbs, including orbs with different values.
+One pickup collects the combined value, with Mending applied first. This
+reduces entity counts and repeated pickup delays without intentionally losing
+XP.
 
-## Wither
+## Documentation and artwork
 
-The Wither's maximum health depends on world difficulty: Easy has 300 HP,
-Normal has 450 HP, and Hard has 600 HP. Peaceful keeps the vanilla 300 HP
-maximum (Withers cannot normally exist there). Existing Withers adjust when
-the difficulty changes, retaining the same percentage of health rather than
-healing to full.
+- [Configuration](docs/configuration.md): switches, Mod Menu, multiplayer, and
+  migration behavior.
+- [Technical details](docs/technical.md): exact balance values, persistence,
+  implementation choices, and limitations.
+- [Testing](docs/testing.md): build and GameTest instructions, coverage, and
+  manual checks.
+- [Texture handoff](docs/textures.md): requested assets and vanilla-style art
+  requirements.
 
-The birth explosion deals 3 more base damage than vanilla at any given
-distance and exposure, while retaining the vanilla radius, knockback, and
-block interaction. For the vanilla reference values, this changes unarmored
-player damage from 35.5 to 37 HP on Easy, 69 to 72 HP on Normal, and 103.5
-to 108 HP on Hard. Cover, distance, and armor still affect damage.
+Artwork is still provisional. The final vanilla-consistent texture pass is
+waiting for supplied original or licensed textures; current placeholders are
+not claimed to match vanilla faithfully. Unlit lantern item icons temporarily
+reuse their readable lit vanilla icons, including the flame; the 2D model fix
+is complete, but the final unlit artwork is pending.
 
-## Chainmail armor
+## Suggested next improvements
 
-Craft chainmail helmets, chestplates, leggings, and boots using iron chains in the
-same crafting-grid patterns as the corresponding iron armor. Each recipe uses
-the vanilla number of ingredients: 5, 8, 7, and 4 chains, respectively.
-The recipes appear in the recipe book after obtaining an iron chain.
+These are suggestions, not implemented features:
 
-## Pets
-
-Right-click a tamed wolf you own with a banner to fly its colors and patterns
-as a flag above its back. You can change the banner while keeping its wolf
-armor and collar, or sneak-right-click with an empty hand to take the banner
-back. Banners are returned when replaced or removed, and drop if the wolf
-dies. Only the owner can equip or remove a banner.
-
-Owned tamed wolves and cats are excluded from the indirect sweep of their
-owner's sword attacks, including Sweep Edge damage and knockback. Direct hits
-on a pet and other players' attacks are unchanged.
-
-Using the Call variant of the goat horn instantly recalls your sitting tamed
-pets within the configured radius to safe spaces around you. The default is
-32 blocks. Set `callHornRecallRadius` in `config/patchwork.properties` to an
-integer from 16 to 256 and restart the server
-to apply it. Invalid or missing values produce a startup error rather than
-silently using a different distance. The server controls this setting in
-multiplayer; clients do not need to configure it.
-
-Recalled pets stand up so they can follow you. Pets that cannot find a safe
-landing spot remain seated; other goat horn variants are unchanged.
-
-## Throwable slimeballs
-
-Use the existing slimeball item to throw it like a snowball. The projectile
-shows the vanilla slimeball texture, deals 1 HP on a successful hit, and gives
-living targets Slowness I for 3 seconds. On slimes, it instead restores 1 HP
-and grants Speed I for 3 seconds without dealing damage. Each throw consumes
-one slimeball (except in creative mode) and starts a 1-second (20-tick)
-cooldown shown on the hotbar. Attempts during the cooldown do not throw or
-consume another slimeball. Ordinary snowballs are unchanged.
-
-## Throwable fire charges
-
-Use a fire charge in the air to launch a Ghast-style fireball with a moderate
-initial speed, but only when no block is in your sights within five blocks.
-If a block is in the way, using the charge in the air does nothing: no charge
-is consumed and no cooldown begins. This prevents accidental launches while
-aiming at a block just outside normal placement range.
-It deals 2 HP of direct damage when it hits an entity. A block hit lights an
-unlit candle or campfire, or places fire on the impacted face if fire can
-survive there. On side hits against nonflammable blocks, it tries the top
-surface instead. Obstructed surfaces and surfaces that cannot support fire
-will not ignite. The thrown fireball does not explode. Each throw consumes
-one fire charge (except in creative mode) and starts a 1.5-second (30-tick)
-hotbar cooldown. Using a fire charge directly on a block still follows
-vanilla fire-lighting behavior.
-
-## Dye
-
-Use any dye on a living shulker to change it to that color. This uses the
-vanilla shulker colors and changes appearance only. One dye is consumed when
-the color changes (unless the player has infinite materials); using the same
-color again does not consume a dye.
-
-Right-click a water cauldron while holding dyed wool, terracotta, or stained
-glass to clean one block into white wool, plain terracotta, or plain glass.
-Each wash consumes one water level. A held stack is handled one block at a
-time; the cleaned item goes into your hand if the stack runs out, or into
-your inventory (and drops if it is full). Item components are preserved.
-Minecraft already cleans colored shulker boxes into undyed shulker boxes
-this way, including their contents, so Patchwork leaves that vanilla
-interaction unchanged. Disabling `cauldronCleaning` turns off only the
-three new block types.
-
-## Mob behavior
-
-Breaking a flower within four blocks of an occupied beehive or bee nest
-releases its bees, which attack if close enough. Smoke from a campfire keeps
-them calm.
-
-When `creeperChainReactions` is enabled, a Creeper that survives damage from
-another Creeper's explosion ignites its full fuse. This is **off by default**
-because multiple explosions may destroy more terrain.
-
-An Enderman carrying a block has a one-in-three chance to place it between
-itself and a living attacker after being hurt, if there is empty space,
-solid support, no obstructing entities, and the block can survive there.
-It respects the `mobGriefing` game rule.
-
-Spiders chasing living targets two to eight blocks away have a one-in-four
-chance every five seconds to place a cobweb at the target's feet when the
-space is empty and has solid support. This also respects `mobGriefing`.
-
-When a medium or large Slime dies and splits, it leaves a 3x3 patch of
-green slime dust and slime particles on solid ground for five seconds.
-Players standing in the cloud
-receive Slowness II while inside it, fading shortly after they leave. The
-cloud does not create or replace any blocks; gaps and uneven or unsupported
-ground are skipped.
-
-When a Breeze survives a melee hit, it immediately releases a gust that
-pushes nearby entities away by approximately three blocks. It cannot do so
-again for 10 seconds. If `mobGriefing` is enabled, the gust also extinguishes
-lit campfires within five blocks. With the separate `breezeTorchExtinguishing` setting
-enabled, it extinguishes ordinary, soul, copper, and *lit* redstone torches
-within five blocks as well. Unlit torches give off no light, flame particles,
-or redstone power. They use distinct unlit models and textures and drop
-matching unlit torch items on breaking. Each item places on floors and walls;
-fire charges relight them into their original torch variants. Disabling
-`breezeTorchExtinguishing` prevents gusts from creating more but does not
-remove already placed or collected unlit torches. Regardless of this setting,
-ordinary, soul, and copper unlit torches
-appear beside their lit counterparts in Functional Blocks; unlit redstone
-torches also appear in Redstone Blocks. There is no crafting recipe for the items.
-The same gusts also extinguish regular, soul, and all eight copper lantern
-variants. Unlit lanterns preserve hanging and waterlogged states, oxidation,
-and waxing; they emit no light and drop matching placeable unlit items. A fire
-charge restores the corresponding lit lantern and consumes one charge (except
-in Creative), but waterlogged lanterns must be drained first. Copper variants
-retain oxidation, waxing, unwaxing, and axe scraping. All variants appear beside
-their lit counterparts in Functional Blocks. Their original dark, flameless
-textures are placeholders that can be replaced later. No crafting recipes are
-added; obtain them through Breeze gusts or Creative.
-
-## Pumpkin lanterns
-
-Right-click a placed carved pumpkin with a torch to turn it into a vanilla
-Jack o'Lantern, or with a soul torch to turn it into a Soul Jack o'Lantern
-with blue flames and light level 10. The pumpkin keeps its facing and one
-torch is consumed (except in creative mode). Breaking the soul variant drops
-its own item, which also appears next to the vanilla Jack o'Lantern in the
-Functional Blocks creative tab and can be placed directly.
-Soul Jack o'Lanterns also work in Iron Golem and Copper Golem patterns, but
-not Snow Golem patterns. Two stacked soul sand/soil blocks instead create a
-Soul Golem. The `pumpkinLanterns` setting controls only the lighting interaction; it does not
-hide or delete existing items or blocks.
-
-An adult Hoglin running at least 0.18 blocks per tick (or marked sprinting)
-that lands a successful melee hit launches its target upward about three blocks
-and slightly away. A player flung into a wall or ceiling during the next
-second takes an extra 2 HP of blunt collision damage. Landing on the ground
-does not trigger this extra damage. Ordinary Hoglin hits are unaffected.
+- Owner commands for Soul Golems: follow, stay, and patrol, with a visible
+  ownership indicator.
+- Restore a sheared golem's lantern by giving it a Soul Jack o'Lantern.
+- A projectile-friendly-fire option and finer fire-placement controls for
+  multiplayer servers.
+- Complete the texture pass before expanding the unlit variants further.
+- Continue the anvil, villager-trade, and Ender Dragon work in [TODO](TODO.md).

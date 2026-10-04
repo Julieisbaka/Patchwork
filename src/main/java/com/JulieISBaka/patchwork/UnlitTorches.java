@@ -6,6 +6,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -89,13 +92,22 @@ public final class UnlitTorches {
 		return item;
 	}
 
-	private static InteractionResult relight(ItemStack stack, Level level, BlockPos pos, Player player, BlockState lit) {
-		if (!stack.is(Items.FIRE_CHARGE)) {
+	private static InteractionResult relight(ItemStack stack, Level level, BlockPos pos, Player player,
+		InteractionHand hand, BlockState lit) {
+		boolean flint = stack.is(Items.FLINT_AND_STEEL);
+		if (!flint && !stack.is(Items.FIRE_CHARGE)) {
 			return InteractionResult.TRY_WITH_EMPTY_HAND;
 		}
 		if (!level.isClientSide()) {
 			level.setBlockAndUpdate(pos, lit);
-			stack.consume(1, player);
+			if (flint) {
+				stack.hurtAndBreak(1, player, hand.asEquipmentSlot());
+			} else {
+				stack.consume(1, player);
+			}
+			level.playSound(null, pos, flint ? SoundEvents.FLINTANDSTEEL_USE : SoundEvents.FIRECHARGE_USE,
+				SoundSource.BLOCKS, 1.0F, 1.0F);
+			level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
 		}
 		return InteractionResult.SUCCESS;
 	}
@@ -115,7 +127,7 @@ public final class UnlitTorches {
 		@Override
 		protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
 			Player player, InteractionHand hand, BlockHitResult hit) {
-			return relight(stack, level, pos, player, lit.defaultBlockState());
+			return relight(stack, level, pos, player, hand, lit.defaultBlockState());
 		}
 
 		@Override
@@ -139,7 +151,7 @@ public final class UnlitTorches {
 		@Override
 		protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
 			Player player, InteractionHand hand, BlockHitResult hit) {
-			return relight(stack, level, pos, player, lit.defaultBlockState().setValue(FACING, state.getValue(FACING)));
+			return relight(stack, level, pos, player, hand, lit.defaultBlockState().setValue(FACING, state.getValue(FACING)));
 		}
 
 		@Override

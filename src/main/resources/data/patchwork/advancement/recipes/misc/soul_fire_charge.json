@@ -1,0 +1,15 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_fire_charge": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {"items": [{"items": "minecraft:fire_charge"}]}
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {"recipes": "patchwork:soul_fire_charge"}
+    }
+  },
+  "requirements": [["has_fire_charge", "has_the_recipe"]],
+  "rewards": {"recipes": ["patchwork:soul_fire_charge"]}
+}

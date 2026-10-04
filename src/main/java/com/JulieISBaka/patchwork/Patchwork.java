@@ -18,14 +18,10 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.entity.projectile.hurtingprojectile.LargeFireball;
 import net.minecraft.world.entity.projectile.throwableitemprojectile.Snowball;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,9 +29,6 @@ public class Patchwork implements ModInitializer {
 	public static final String MOD_ID = "patchwork";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 	private static final int SLIMEBALL_COOLDOWN_TICKS = 20;
-	private static final int FIRE_CHARGE_COOLDOWN_TICKS = 30;
-	private static final double FIRE_CHARGE_CLEARANCE_BLOCKS = 5.0;
-	private static final double FIRE_CHARGE_SPEED = 0.65;
 	public static final String THROWN_FIRE_CHARGE_TAG = "patchwork:thrown_fire_charge";
 	private static final ResourceConditionType<ChainmailCondition> CHAINMAIL_CONDITION =
 		ResourceConditionType.create(id("chainmail_recipes"), MapCodec.unit(new ChainmailCondition()));
@@ -59,6 +52,7 @@ public class Patchwork implements ModInitializer {
 		UnlitLanterns.register();
 		PotionCauldrons.register();
 		CharcoalBlocks.register();
+		SoulFireCharges.register();
 		SoulGolems.register();
 		PumpkinLanterns.register();
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.SPAWN_EGGS).register(output -> {
@@ -82,6 +76,7 @@ public class Patchwork implements ModInitializer {
 				output.insertAfter(PatchworkConfig.settings().throwableSlimeballs() ? Items.SLIME_BALL : Items.WIND_CHARGE,
 					Items.FIRE_CHARGE);
 			}
+			output.accept(SoulFireCharges.ITEM);
 		});
 		SlimeSplitClouds.register();
 		ResourceConditions.register(CHAINMAIL_CONDITION);
@@ -120,37 +115,7 @@ public class Patchwork implements ModInitializer {
 			stack.consume(1, player);
 			return InteractionResult.SUCCESS;
 		});
-		UseItemCallback.EVENT.register((player, level, hand) -> {
-			ItemStack stack = player.getItemInHand(hand);
-			if (!PatchworkConfig.settings().throwableFireCharges() || !stack.is(Items.FIRE_CHARGE)) {
-				return InteractionResult.PASS;
-			}
-			if (player.getCooldowns().isOnCooldown(stack)) {
-				return InteractionResult.CONSUME;
-			}
-
-			Vec3 eye = player.getEyePosition();
-			if (level.clip(new ClipContext(eye, eye.add(player.getLookAngle().scale(FIRE_CHARGE_CLEARANCE_BLOCKS)),
-				ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player)).getType() != HitResult.Type.MISS) {
-				return InteractionResult.CONSUME;
-			}
-
-			if (level instanceof ServerLevel serverLevel) {
-				LargeFireball fireball = new LargeFireball(serverLevel, player, player.getLookAngle(), 0);
-				fireball.accelerationPower = 0.03;
-				fireball.setPos(player.getEyePosition().add(player.getLookAngle().scale(1.0)));
-				fireball.setDeltaMovement(player.getLookAngle().scale(FIRE_CHARGE_SPEED));
-				fireball.addTag(THROWN_FIRE_CHARGE_TAG);
-				fireball.setItem(stack);
-				serverLevel.addFreshEntity(fireball);
-				serverLevel.playSound(null, player.getX(), player.getY(), player.getZ(),
-					SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1.0F, 1.0F);
-			}
-			player.awardStat(Stats.ITEM_USED.get(Items.FIRE_CHARGE));
-			player.getCooldowns().addCooldown(stack, FIRE_CHARGE_COOLDOWN_TICKS);
-			stack.consume(1, player);
-			return InteractionResult.SUCCESS;
-		});
+		UseItemCallback.EVENT.register(SoulFireCharges::throwCharge);
 		LOGGER.info("Patchwork initialized");
 	}
 

@@ -1,0 +1,135 @@
+# Technical details
+
+## Soul Golems and ownership
+
+- Entity ID: `patchwork:soul_golem`; 50 HP; hitbox 0.7 by 1.9 blocks,
+  eye height 1.7. No natural spawn entry or death loot table.
+- The Iron Golem superclass supplies movement and persistent defender
+  behavior. Its melee and approach goals are replaced with `RangedAttackGoal`:
+  a 16-block attack radius and a 40-tick firing interval. Direct melee attacks
+  do no damage. The former quarter-melee-damage mixin is removed.
+- Owner-defense and owner-assistance goals have priority over self-defense
+  and ordinary hostile-mob targeting. They use the owner's most recent combat
+  target and timestamp, following vanilla pet-target-goal conventions.
+- Players and Creepers are eligible only through the owner's combat history.
+  Owners, pets with the same owner, and teammates/allies are protected.
+  Creative and spectator players are not targeted.
+- The final head placement or soul-torch lighting records the builder during
+  synchronous construction, including nested placement cleanup. A spawn egg
+  records its player user. Commands and dispensers create ownerless golems.
+- Gold claims an ownerless golem, even at full health, consuming one ingot.
+  Subsequent gold repairs restore up to 25 HP per ingot. Full-health owned
+  golems consume none. Other players may repair but cannot steal ownership.
+  Creative consumes no gold.
+- Owner references are persisted as `Owner`; the synced lantern flag is saved
+  as `HasSoulLantern`. Missing fields preserve compatibility with older worlds:
+  an old golem is ownerless and has its lantern.
+- Shears drop one Soul Jack o'Lantern, damage the shears once, and clear the
+  synced head flag. Repeat shearing gives nothing. Dispenser shearing uses the
+  `Shearable` interface. The body still renders and shoots when sheared.
+- Construction supports all four soul sand/soil combinations. Soul lanterns
+  remain valid for Iron/Copper Golems, but are not added to the Snow Golem
+  pattern predicate.
+- Sounds use soul soil for steps/repairs, soul sand for damage, soul escape for
+  death, and fire-charge use for shooting. The Snow Golem shear sound is reused.
+
+## Soul Fire Charges
+
+- Item: `patchwork:soul_fire_charge`; entity: `patchwork:soul_fireball`.
+- A shaped 3x3 recipe consumes one central fire charge and eight tagged soul
+  sand/soil items. It produces one charge; mixed surrounding ingredients work.
+  Obtaining a fire charge unlocks the recipe.
+- Player throws share regular fire-charge behavior: five-block unobstructed
+  sight line, initial speed 0.65, acceleration power 0.03, 30-tick cooldown,
+  survival consumption, and no explosion.
+- Dispensers launch the soul projectile rather than vanilla's ordinary small
+  fireball. Soul projectiles use a soul-flame particle trail.
+- Regular thrown charges retain 2 HP direct damage. Soul projectiles deal
+  3 HP direct damage and apply two seconds of fire after a successful hit.
+  Armor, difficulty, immunity, and later burning can affect observed total
+  damage. Soul Golem shots use this same projectile, not randomized melee rolls.
+- The projectile carries its shooter for damage attribution and persistence.
+  Golem shots skip collision with the owner, owner-owned pets, and allies.
+  Fire placed in the world is environmental and can still hurt them.
+- Block impacts light eligible candles/campfires; otherwise they attempt the
+  hit face and then the top of a block for unsuccessful horizontal hits.
+  Occupied spaces are never replaced.
+- `patchwork:supported_soul_fire` derives from vanilla `SoulFireBlock`, using
+  vanilla soul-fire models and damage, but can survive on any sturdy top face.
+  It does not spread or time out; removing its support extinguishes it.
+  It has no obtainable block item. It belongs to the vanilla fire block tag.
+- Soul Golem ignition respects `mobGriefing`; player ignition does not.
+  Soul Fire Charge direct block use consumes one charge except in Creative.
+
+## Cauldrons, banners, and fuel
+
+- Potion cauldrons store exact `PotionContents` in a synchronized block entity.
+  Empty-cauldron insertion rejects water/empty contents; water-cauldron
+  insertion rejects non-water potions. Vanilla water bottles and dyed-block
+  washing keep their normal dispatch paths.
+- Maximum potion fill is three. One bottle extracts one level; one arrow
+  consumes one level. Matching contents refill; different contents never mix.
+  Bottle exchanges use vanilla inventory/Creative conventions.
+- Dropped stacks convert up to the available levels in one operation. The
+  tipped entity retains identity, motion, age, pickup delay, and ownership.
+  Unused plain arrows split off with the same motion and pickup state.
+  Conversion itself produces no sound or pickup event.
+- Banner pattern limit is nine in the server loom, client loom screen, and
+  copying recipe. The result-slot guard also prevents direct menu selection
+  from adding a tenth pattern.
+- A charcoal block consumes nine charcoal and fuels a normal furnace for
+  16,000 ticks: 800 seconds or 80 normal items. Smokers/blast furnaces use the
+  vanilla faster cooking fuel rate.
+
+## Unlit lights
+
+Torches include standing and wall regular, soul, copper, and redstone variants.
+They emit no light/flame particles/redstone power. Fire charges consume one
+charge to relight; flint and steel uses one durability in Survival and none in
+Creative. Wall facing and torch type are preserved.
+
+Lanterns include regular, soul, and eight copper variants. State conversion
+preserves hanging/waterlogging, weathering, and wax. Copper mappings use Fabric's
+oxidizable-block registry. Waterlogged lanterns cannot be relit.
+
+All ten lantern items use generated 2D item models, not placed block models.
+Waxed versions share models/textures with the matching unwaxed oxidation stage.
+Final matching item and block artwork is pending; see [texture handoff](textures.md).
+
+## Experience clumping
+
+XP awards create one orb. Every 20 ticks, nearby orbs within an actual two-block
+radius combine `value * count`, including pre-existing vanilla counted orbs.
+Merges reset count to one, preserve the youngest age, and discard the donor.
+Sums exceeding `Integer.MAX_VALUE` do not merge.
+
+Pickup delegates to vanilla Mending before awarding the remaining full value.
+Saving/loading uses full integers rather than vanilla's short value field.
+Rendering grows logarithmically and is capped at three times normal size.
+No performance benchmark is claimed.
+
+## Other balance and behavior
+
+| Feature | Exact behavior |
+| --- | --- |
+| Wither health | Easy/Peaceful 300 HP, Normal 450, Hard 600; difficulty changes preserve health percentage |
+| Wither birth | Adds 3 base damage; keeps radius, exposure, knockback and block interaction |
+| Chainmail | Iron-chain armor patterns: 5 helmet, 8 chestplate, 7 leggings, 4 boots |
+| Slimeball | 1 HP and Slowness I for 3s; Slimes instead heal 1 HP and gain Speed I for 3s; 20-tick cooldown |
+| Call horn | Seated owned pets within configured radius; default 32, range 16-256; safe destinations only; recalled pets stand |
+| Skeleton cover | Bow-wielding Skeletons with player within six blocks seek an adjacent reachable obstructing corner while reloading |
+| Bees | Breaking flowers within four blocks of an occupied, unsmoked hive releases defenders |
+| Enderman | One-in-three defensive placement chance; support, space, survival, and collision checked |
+| Spider | Pursuing targets two-eight blocks away: one-in-four web chance each five seconds; requires empty supported space |
+| Slime cloud | 3x3 supported-ground dust patch, five seconds; Slowness II while inside, fading after exit |
+| Breeze | Melee-response knockback around three blocks; ten-second cooldown; extinguishing range five |
+| Hoglin | Successful charged hit at speed at least 0.18 blocks/tick or while sprinting launches roughly three blocks; wall/ceiling collision adds 2 HP |
+| Creepers | Blast-damaged surviving Creepers ignite full fuse when the optional chain reaction is enabled |
+
+Wither reference unarmored birth damage changes from 35.5 to 37 on Easy, 69
+to 72 on Normal, and 103.5 to 108 on Hard; armor, exposure, and distance matter.
+Wolf banners preserve armor/collar, are owner-controlled, return on
+replacement/removal, and drop on death. Sword sweep protection does not prevent
+direct hits or another player's attacks.
+
+[Feature overview](../README.md) | [Configuration](configuration.md)

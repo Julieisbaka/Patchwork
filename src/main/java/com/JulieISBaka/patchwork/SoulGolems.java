@@ -13,6 +13,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.animal.golem.IronGolem;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
+import java.util.function.Supplier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.Level;
@@ -22,6 +24,7 @@ import net.minecraft.world.level.block.CarvedPumpkinBlock;
 import net.minecraft.world.level.block.state.BlockState;
 
 public final class SoulGolems {
+	private static final ThreadLocal<Player> BUILDER = new ThreadLocal<>();
 	private static final ResourceKey<EntityType<?>> TYPE_KEY =
 		ResourceKey.create(Registries.ENTITY_TYPE, Patchwork.id("soul_golem"));
 	public static final EntityType<SoulGolem> TYPE = Registry.register(BuiltInRegistries.ENTITY_TYPE, TYPE_KEY,
@@ -40,6 +43,20 @@ public final class SoulGolems {
 			IronGolem.createAttributes().add(Attributes.MAX_HEALTH, 50.0));
 	}
 
+	public static <T> T withBuilder(Player player, Supplier<T> placement) {
+		Player previous = BUILDER.get();
+		BUILDER.set(player);
+		try {
+			return placement.get();
+		} finally {
+			if (previous == null) {
+				BUILDER.remove();
+			} else {
+				BUILDER.set(previous);
+			}
+		}
+	}
+
 	public static boolean trySpawn(Level level, BlockPos head) {
 		BlockState lantern = level.getBlockState(head);
 		if (!(level instanceof ServerLevel serverLevel) || !lantern.is(PumpkinLanterns.SOUL_BLOCK)
@@ -48,6 +65,9 @@ public final class SoulGolems {
 			return false;
 		}
 		SoulGolem golem = new SoulGolem(TYPE, level);
+		if (BUILDER.get() != null) {
+			golem.setOwner(BUILDER.get());
+		}
 		BlockPos base = head.below(2);
 		golem.snapTo(base.getX() + 0.5, base.getY() + 0.05, base.getZ() + 0.5,
 			lantern.getValue(CarvedPumpkinBlock.FACING).toYRot(), 0.0F);

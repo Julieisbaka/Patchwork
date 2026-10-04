@@ -22,7 +22,7 @@
 		"SlimeballSnowballMixin",
 		"SlimeSplitMixin",
 		"SoulPumpkinGolemMixin",
-		"SoulGolemDamageMixin",
+		"SoulGolemOwnerMixin",
 		"SkeletonCoverMixin",
 		"SpiderWebMixin",
 		"ThrownFireChargeMixin",

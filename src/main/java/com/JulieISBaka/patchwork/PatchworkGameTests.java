@@ -141,6 +141,8 @@ public class PatchworkGameTests {
 		test.assertTrue(golem.getMaxHealth() == 50.0F && !golem.canAttack(player)
 			&& golem.isPlayerCreated() && golem.isPersistenceRequired(),
 			"Egg-created Soul Golem did not keep balanced, friendly behavior");
+		test.assertTrue(golem.getOwnerReference() != null && golem.getOwnerReference().matches(player),
+			"Spawn egg did not assign its player as owner");
 		test.assertTrue(player.getMainHandItem().getCount() == 1, "Spawn egg did not consume one egg");
 		test.succeed();
 	}
@@ -207,6 +209,8 @@ public class PatchworkGameTests {
 		UseBlockCallback.EVENT.invoker().interact(player, test.getLevel(), InteractionHand.MAIN_HAND,
 			new BlockHitResult(Vec3.atCenterOf(head), Direction.NORTH, head, false));
 		test.assertTrue(test.getEntities(SoulGolems.TYPE).size() == 1, "Lighting did not create a Soul Golem");
+		test.assertTrue(test.getEntities(SoulGolems.TYPE).getFirst().getOwnerReference().matches(player),
+			"Lighting did not assign the builder as owner");
 		test.assertTrue(player.getMainHandItem().getCount() == 1, "Lighting did not consume one soul torch");
 		test.assertBlockPresent(Blocks.AIR, CENTER);
 		test.assertBlockPresent(Blocks.AIR, CENTER.above());
@@ -214,53 +218,292 @@ public class PatchworkGameTests {
 		test.succeed();
 	}
 
-	@GameTest
-	public void soulGolemIsFriendlyAndDealsMeleeDamage(GameTestHelper test) {
+	@GameTest(maxTicks = 30)
+	public void soulGolemIsFriendlyAndShootsSoulCharges(GameTestHelper test) {
 		SoulGolem golem = test.spawn(SoulGolems.TYPE, CENTER);
+		golem.setNoAi(true);
 		Player player = test.makeMockPlayer(GameType.SURVIVAL);
 		var creeper = test.spawn(EntityTypes.CREEPER, CENTER.offset(2, 0, 0));
 		creeper.setNoAi(true);
 		test.assertTrue(!golem.canAttack(player), "Player-created Soul Golem can attack a player");
 		test.assertTrue(!golem.canAttack(creeper), "Soul Golem can target a Creeper");
-		var zombie = test.spawn(EntityTypes.ZOMBIE, CENTER.offset(0, 0, 2));
-		zombie.setNoAi(true);
-		test.assertTrue(golem.canAttack(zombie), "Soul Golem cannot attack a hostile Zombie");
-		float health = zombie.getHealth();
-		test.assertTrue(golem.doHurtTarget(test.getLevel(), zombie) && zombie.getHealth() < health,
-			"Soul Golem's melee attack did not damage its target");
-		test.assertTrue(zombie.getRemainingFireTicks() == 40, "Soul Golem did not ignite its target for two seconds");
+		var target = test.spawn(EntityTypes.COW, CENTER.offset(0, 0, 3));
+		target.setNoAi(true);
+		float health = target.getHealth();
+		test.assertTrue(!golem.doHurtTarget(test.getLevel(), target) && target.getHealth() == health,
+			"Soul Golem still deals melee damage");
+		golem.performRangedAttack(target, 1.0F);
+		var projectiles = test.getEntities(SoulFireCharges.PROJECTILE);
+		test.assertTrue(projectiles.size() == 1 && projectiles.getFirst().getOwner() == golem,
+			"Soul Golem did not launch an attributed Soul Fire Charge");
+		test.runAfterDelay(10, () -> {
+			test.assertTrue(target.getHealth() == health - 3.0F,
+				"Soul Golem projectile did not deal exactly 3 HP on impact");
+			test.assertTrue(target.getRemainingFireTicks() > 0 && target.getRemainingFireTicks() <= 40,
+				"Soul Golem projectile did not apply two-second fire");
+			test.succeed();
+		});
+	}
+
+	@GameTest
+	public void soulGolemOwnershipAndShearingPersist(GameTestHelper test) {
+		var soul = test.spawn(SoulGolems.TYPE, CENTER);
+		Player owner = test.makeMockPlayer(GameType.SURVIVAL);
+		owner.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.GOLD_INGOT, 2));
+		soul.interact(owner, InteractionHand.MAIN_HAND, Vec3.ZERO);
+		test.assertTrue(soul.getOwnerReference().matches(owner) && owner.getMainHandItem().getCount() == 1,
+			"One gold ingot did not claim the full-health ownerless golem");
+		Player stranger = test.makeMockPlayer(GameType.SURVIVAL);
+		stranger.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.GOLD_INGOT));
+		soul.setHealth(25);
+		soul.interact(stranger, InteractionHand.MAIN_HAND, Vec3.ZERO);
+		test.assertTrue(soul.getOwnerReference().matches(owner), "Repair stole ownership");
+		owner.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.SHEARS));
+		soul.interact(owner, InteractionHand.OFF_HAND, Vec3.ZERO);
+		test.assertTrue(!soul.hasLantern() && owner.getOffhandItem().getDamageValue() == 1,
+			"Shearing did not remove the lantern and use one shears durability");
+		test.assertItemEntityPresent(PumpkinLanterns.SOUL_ITEM, CENTER, 2);
+		soul.interact(owner, InteractionHand.OFF_HAND, Vec3.ZERO);
+		test.assertTrue(owner.getOffhandItem().getDamageValue() == 1, "Shearing twice duplicated the lantern");
+		var problems = new net.minecraft.util.ProblemReporter.Collector();
+		var output = net.minecraft.world.level.storage.TagValueOutput.createWithContext(problems, test.getLevel().registryAccess());
+		test.assertTrue(soul.save(output), "Soul Golem could not be saved");
+		var reloaded = new SoulGolem(SoulGolems.TYPE, test.getLevel());
+		reloaded.load(net.minecraft.world.level.storage.TagValueInput.create(problems,
+			test.getLevel().registryAccess(), output.buildResult()));
+		test.assertTrue(reloaded.getOwnerReference().matches(owner) && !reloaded.hasLantern()
+			&& reloaded.getHealth() == 50 && problems.isEmpty(), "Owner, shearing, or health failed save/reload");
+		test.assertTrue(!reloaded.canAttack(owner), "Reloaded golem can attack its owner");
 		test.succeed();
 	}
 
 	@GameTest
-	public void soulGolemDamageIsExactlyOneQuarter(GameTestHelper test) {
-		var iron = test.spawn(EntityTypes.IRON_GOLEM, CENTER);
-		var soul = test.spawn(SoulGolems.TYPE, CENTER);
-		for (int seed = 0; seed < 20; seed++) {
-			var ironTarget = test.spawn(EntityTypes.COW, CENTER);
-			var soulTarget = test.spawn(EntityTypes.COW, CENTER);
-			ironTarget.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(1000);
-			soulTarget.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(1000);
-			ironTarget.setHealth(1000);
-			soulTarget.setHealth(1000);
-			ironTarget.setInvulnerableTime(0);
-			soulTarget.setInvulnerableTime(0);
-			iron.getRandom().setSeed(seed);
-			soul.getRandom().setSeed(seed);
-			test.assertTrue(iron.doHurtTarget(test.getLevel(), ironTarget), "Iron golem attack failed");
-			test.assertTrue(soul.doHurtTarget(test.getLevel(), soulTarget), "Soul golem attack failed");
-			float ironDamage = 1000 - ironTarget.getHealth();
-			float soulDamage = 1000 - soulTarget.getHealth();
-			test.assertTrue(Math.abs(soulDamage - ironDamage * 0.25F) < 0.0001F,
-				"Soul Golem damage is not one quarter of the matching iron golem roll");
-			ironTarget.discard();
-			soulTarget.discard();
+	public void soulGolemPlacedHeadAssignsBuilder(GameTestHelper test) {
+		test.setBlock(CENTER, Blocks.SOUL_SAND);
+		test.setBlock(CENTER.above(), Blocks.SOUL_SOIL);
+		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(PumpkinLanterns.SOUL_ITEM));
+		BlockPos support = test.absolutePos(CENTER.above());
+		PumpkinLanterns.SOUL_ITEM.useOn(new UseOnContext(player, InteractionHand.MAIN_HAND,
+			new BlockHitResult(Vec3.atCenterOf(support), Direction.UP, support, false)));
+		test.assertTrue(test.getEntities(SoulGolems.TYPE).size() == 1
+			&& test.getEntities(SoulGolems.TYPE).getFirst().getOwnerReference().matches(player),
+			"Placing the Soul Lantern did not assign the builder");
+		test.succeed();
+	}
+
+	@GameTest(maxTicks = 30)
+	public void soulGolemDefendsAndAssistsOwner(GameTestHelper test) {
+		SoulGolem golem = test.spawn(SoulGolems.TYPE, CENTER);
+		Player owner = test.makeMockPlayer(GameType.SURVIVAL);
+		golem.setOwner(owner);
+		var victim = test.spawn(EntityTypes.COW, CENTER.offset(1, 0, 0));
+		victim.setNoAi(true);
+		Player attacker = test.makeMockPlayer(GameType.SURVIVAL);
+		attacker.snapTo(Vec3.atBottomCenterOf(test.absolutePos(CENTER.offset(0, 0, 2))));
+		test.getLevel().addFreshEntity(attacker);
+		owner.setLastHurtByMob(attacker);
+		test.assertTrue(golem.canAttack(attacker) && !golem.canAttack(owner),
+			"Golem cannot defend against a player or can target its owner");
+		test.runAfterDelay(5, () -> {
+			test.assertTrue(golem.getTarget() == attacker, "Golem did not target its owner's attacker");
+			attacker.discard();
+			owner.setLastHurtByMob(null);
+			owner.setLastHurtMob(victim);
+			golem.setTarget(null);
+		});
+		test.runAfterDelay(15, () -> {
+			test.assertTrue(golem.getTarget() == victim, "Golem did not assist against its owner's victim");
+			var pet = test.spawn(EntityTypes.WOLF, CENTER);
+			pet.tame(owner);
+			test.assertTrue(!golem.canAttack(pet), "Golem can attack its owner's pet");
+			test.succeed();
+		});
+	}
+
+	@GameTest
+	public void soulFireChargeRecipeAcceptsMixedSoulMaterials(GameTestHelper test) {
+		for (var material : new net.minecraft.world.item.Item[] {Items.SOUL_SAND, Items.SOUL_SOIL}) {
+			var items = new java.util.ArrayList<ItemStack>();
+			for (int i = 0; i < 9; i++) {
+				items.add(new ItemStack(i == 4 ? Items.FIRE_CHARGE : (i % 2 == 0 ? material : Items.SOUL_SOIL)));
+			}
+			var input = net.minecraft.world.item.crafting.CraftingInput.of(3, 3, items);
+			var recipe = test.getLevel().recipeAccess().getRecipeFor(
+				net.minecraft.world.item.crafting.RecipeType.CRAFTING, input, test.getLevel());
+			test.assertTrue(recipe.isPresent() && recipe.orElseThrow().value().assemble(input).is(SoulFireCharges.ITEM)
+				&& recipe.orElseThrow().value().assemble(input).getCount() == 1,
+				"Eight soul blocks around a fire charge did not craft one Soul Fire Charge");
+			items.set(0, ItemStack.EMPTY);
+			input = net.minecraft.world.item.crafting.CraftingInput.of(3, 3, items);
+			test.assertTrue(test.getLevel().recipeAccess().getRecipeFor(
+				net.minecraft.world.item.crafting.RecipeType.CRAFTING, input, test.getLevel()).isEmpty(),
+				"Incomplete soul-charge ring was accepted");
 		}
-		var soulTarget = test.spawn(EntityTypes.COW, CENTER);
-		soulTarget.setRemainingFireTicks(0);
-		soulTarget.setPermanentlyInvulnerable(true);
-		test.assertTrue(!soul.doHurtTarget(test.getLevel(), soulTarget), "Invulnerable target was damaged");
-		test.assertTrue(soulTarget.getRemainingFireTicks() == 0, "Failed attack ignited its target");
+		test.succeed();
+	}
+
+	@GameTest(maxTicks = 30)
+	public void soulFireChargeIgnitesOrdinarySupportAndDoesNotExplode(GameTestHelper test) {
+		BlockPos wall = CENTER.offset(1, 1, 0);
+		test.setBlock(wall, Blocks.STONE);
+		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		var fireball = SoulFireCharges.shoot(test.getLevel(), player,
+			Vec3.atCenterOf(test.absolutePos(CENTER)).add(0, 1, 0), new Vec3(1, 0, 0));
+		test.runAfterDelay(6, () -> {
+			test.assertBlockPresent(SoulFireCharges.FIRE, wall.above());
+			test.assertBlockPresent(Blocks.STONE, wall);
+			test.assertTrue(fireball.isRemoved(), "Soul projectile was not removed on impact");
+		});
+		test.runAfterDelay(12, () -> {
+			test.assertBlockPresent(SoulFireCharges.FIRE, wall.above());
+			test.setBlock(wall, Blocks.AIR);
+			test.assertBlockPresent(Blocks.AIR, wall.above());
+			test.succeed();
+		});
+	}
+
+	@GameTest
+	public void soulFireChargeThrowingConsumesAndRespectsCooldownAndClearance(GameTestHelper test) {
+		require(test, PatchworkConfig.settings().throwableFireCharges(), "throwableFireCharges");
+		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		player.snapTo(Vec3.atBottomCenterOf(test.absolutePos(CENTER.offset(0, 0, -2))));
+		player.setYRot(0);
+		player.setXRot(0);
+		ItemStack charges = new ItemStack(SoulFireCharges.ITEM, 3);
+		player.setItemInHand(InteractionHand.MAIN_HAND, charges);
+		test.setBlock(CENTER.offset(0, 1, 3), Blocks.STONE);
+		SoulFireCharges.throwCharge(player, test.getLevel(), InteractionHand.MAIN_HAND);
+		test.assertTrue(charges.getCount() == 3 && !player.getCooldowns().isOnCooldown(charges)
+			&& test.getEntities(SoulFireCharges.PROJECTILE).isEmpty(), "Blocked throw consumed a charge");
+		test.setBlock(CENTER.offset(0, 1, 3), Blocks.AIR);
+		SoulFireCharges.throwCharge(player, test.getLevel(), InteractionHand.MAIN_HAND);
+		test.assertTrue(charges.getCount() == 2 && player.getCooldowns().isOnCooldown(charges)
+			&& test.getEntities(SoulFireCharges.PROJECTILE).size() == 1,
+			"Throw failed: count=" + charges.getCount() + ", cooldown=" + player.getCooldowns().isOnCooldown(charges)
+				+ ", projectiles=" + test.getEntities(SoulFireCharges.PROJECTILE).size());
+		SoulFireCharges.throwCharge(player, test.getLevel(), InteractionHand.MAIN_HAND);
+		test.assertTrue(charges.getCount() == 2 && test.getEntities(SoulFireCharges.PROJECTILE).size() == 1,
+			"Cooldown allowed another throw");
+		test.succeed();
+	}
+
+	@GameTest(maxTicks = 80)
+	public void soulGolemRangedGoalFiresWithoutMelee(GameTestHelper test) {
+		SoulGolem golem = test.spawn(SoulGolems.TYPE, CENTER);
+		Player owner = test.makeMockPlayer(GameType.SURVIVAL);
+		golem.setOwner(owner);
+		var victim = test.spawn(EntityTypes.COW, CENTER.offset(0, 0, 3));
+		victim.setNoAi(true);
+		owner.setLastHurtMob(victim);
+		test.succeedWhen(() -> test.assertTrue(victim.getHealth() < victim.getMaxHealth(),
+			"Soul Golem ranged goal did not shoot its owner's target"));
+	}
+
+	@GameTest
+	public void soulFireChargeBlockUseAndDispenserKeepSoulFire(GameTestHelper test) {
+		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		for (var support : new net.minecraft.world.level.block.Block[] {Blocks.STONE, Blocks.SOUL_SAND, Blocks.SOUL_SOIL}) {
+			test.setBlock(CENTER, support);
+			test.setBlock(CENTER.above(), Blocks.AIR);
+			player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(SoulFireCharges.ITEM, 2));
+			BlockPos pos = test.absolutePos(CENTER);
+			SoulFireCharges.ITEM.useOn(new UseOnContext(player, InteractionHand.MAIN_HAND,
+				new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, false)));
+			test.assertBlockPresent(SoulFireCharges.FIRE, CENTER.above());
+			test.assertTrue(player.getMainHandItem().getCount() == 1, "Direct soul-fire placement did not use one charge");
+		}
+		var projectile = ((net.minecraft.world.item.ProjectileItem)SoulFireCharges.ITEM).asProjectile(
+			test.getLevel(), Vec3.atCenterOf(test.absolutePos(CENTER)), new ItemStack(SoulFireCharges.ITEM), Direction.EAST);
+		test.assertTrue(projectile instanceof SoulFireball && projectile.getType() == SoulFireCharges.PROJECTILE,
+			"Dispenser factory returned an ordinary fireball");
+		test.assertTrue(net.minecraft.world.level.block.DispenserBlock.DISPENSER_REGISTRY.containsKey(SoulFireCharges.ITEM),
+			"Soul Fire Charge dispenser behavior was not registered");
+		test.succeed();
+	}
+
+	@GameTest(maxTicks = 15)
+	public void soulFireChargeDoesOneMoreDamageThanRegularCharge(GameTestHelper test) {
+		var normalTarget = test.spawn(EntityTypes.COW, CENTER.offset(0, 0, 2));
+		var soulTarget = test.spawn(EntityTypes.COW, CENTER.offset(2, 0, 2));
+		normalTarget.setNoAi(true);
+		soulTarget.setNoAi(true);
+		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		LargeFireball normal = new LargeFireball(test.getLevel(), player, new Vec3(0, 0, 1), 0);
+		normal.addTag(Patchwork.THROWN_FIRE_CHARGE_TAG);
+		normal.setPos(normalTarget.getEyePosition().add(0, 0, -1));
+		normal.setDeltaMovement(0, 0, 0.65);
+		test.getLevel().addFreshEntity(normal);
+		SoulFireCharges.shoot(test.getLevel(), player, soulTarget.getEyePosition().add(0, 0, -1), new Vec3(0, 0, 1));
+		test.runAfterDelay(4, () -> {
+			test.assertTrue(normalTarget.getHealth() == normalTarget.getMaxHealth() - 2,
+				"Regular Fire Charge direct damage changed");
+			test.assertTrue(soulTarget.getHealth() == soulTarget.getMaxHealth() - 3,
+				"Soul Fire Charge did not deal exactly one additional damage");
+			test.succeed();
+		});
+	}
+
+	@GameTest(maxTicks = 20)
+	public void soulFireChargeSkipsOwnersInItsFlightPath(GameTestHelper test) {
+		SoulGolem golem = test.spawn(SoulGolems.TYPE, CENTER);
+		golem.setNoAi(true);
+		Player owner = test.makeMockPlayer(GameType.SURVIVAL);
+		owner.snapTo(Vec3.atBottomCenterOf(test.absolutePos(CENTER.offset(0, 0, 1))));
+		test.getLevel().addFreshEntity(owner);
+		golem.setOwner(owner);
+		var target = test.spawn(EntityTypes.COW, CENTER.offset(0, 0, 3));
+		target.setNoAi(true);
+		golem.performRangedAttack(target, 1);
+		test.runAfterDelay(10, () -> {
+			test.assertTrue(owner.getHealth() == owner.getMaxHealth() && owner.getRemainingFireTicks() <= 0,
+				"Soul Golem shot damaged or ignited its owner");
+			test.assertTrue(target.getHealth() < target.getMaxHealth(), "Projectile did not pass through its protected owner");
+			test.succeed();
+		});
+	}
+
+	@GameTest(maxTicks = 20)
+	public void soulGolemFireRespectsMobGriefing(GameTestHelper test) {
+		boolean original = test.getLevel().getGameRules().get(GameRules.MOB_GRIEFING);
+		test.getLevel().getGameRules().set(GameRules.MOB_GRIEFING, false, test.getLevel().getServer());
+		BlockPos wall = CENTER.offset(1, 1, 0);
+		test.setBlock(wall, Blocks.STONE);
+		SoulGolem golem = test.spawn(SoulGolems.TYPE, CENTER);
+		golem.setNoAi(true);
+		SoulFireCharges.shoot(test.getLevel(), golem,
+			Vec3.atCenterOf(test.absolutePos(CENTER)).add(0, 1, 0), new Vec3(1, 0, 0));
+		test.runAfterDelay(6, () -> {
+			test.getLevel().getGameRules().set(GameRules.MOB_GRIEFING, original, test.getLevel().getServer());
+			test.assertBlockPresent(Blocks.AIR, wall.above());
+			test.assertBlockPresent(Blocks.STONE, wall);
+			test.succeed();
+		});
+	}
+
+	@GameTest
+	public void unlitTorchesRelightWithFlintAndSteel(GameTestHelper test) {
+		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		var lit = new net.minecraft.world.level.block.Block[] {
+			Blocks.TORCH, Blocks.SOUL_TORCH, Blocks.COPPER_TORCH, Blocks.REDSTONE_TORCH,
+			Blocks.WALL_TORCH, Blocks.SOUL_WALL_TORCH, Blocks.COPPER_WALL_TORCH, Blocks.REDSTONE_WALL_TORCH
+		};
+		player.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.FLINT_AND_STEEL));
+		test.setBlock(CENTER.below(), Blocks.STONE);
+		test.setBlock(CENTER.west(), Blocks.STONE);
+		for (int i = 0; i < lit.length; i++) {
+			var state = lit[i].defaultBlockState();
+			if (state.hasProperty(WallTorchBlock.FACING)) {
+				state = state.setValue(WallTorchBlock.FACING, Direction.EAST);
+			}
+			test.setBlock(CENTER, UnlitTorches.extinguish(state));
+			test.getBlockState(CENTER).useItemOn(player.getOffhandItem(), test.getLevel(), player,
+				InteractionHand.OFF_HAND, new BlockHitResult(Vec3.atCenterOf(test.absolutePos(CENTER)),
+					Direction.NORTH, test.absolutePos(CENTER), false));
+			test.assertTrue(test.getBlockState(CENTER).equals(state), "Flint relighting lost variant or wall facing");
+			test.assertTrue(player.getOffhandItem().is(Items.FLINT_AND_STEEL)
+				&& player.getOffhandItem().getDamageValue() == i + 1, "Relighting did not use one durability");
+		}
 		test.succeed();
 	}
 

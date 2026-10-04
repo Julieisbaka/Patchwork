@@ -3,6 +3,8 @@ package com.JulieISBaka.patchwork.client;
 import com.JulieISBaka.patchwork.PotionCauldronEntity;
 import com.JulieISBaka.patchwork.PotionCauldrons;
 import com.JulieISBaka.patchwork.SoulGolems;
+import com.JulieISBaka.patchwork.SoulFireCharges;
+import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockColorRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.api.ClientModInitializer;
@@ -12,6 +14,7 @@ public class PatchworkClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		EntityRendererRegistry.register(SoulGolems.TYPE, SoulGolemRenderer::new);
+		EntityRendererRegistry.register(SoulFireCharges.PROJECTILE, context -> new ThrownItemRenderer<>(context, 0.5F, true));
 		BlockColorRegistry.register((state, world, pos, colors) -> {
 			if (world.getBlockEntity(pos) instanceof PotionCauldronEntity cauldron) {
 				colors.add(cauldron.potion().getColor());

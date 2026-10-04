@@ -13,6 +13,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CarvedPumpkinBlock;
@@ -27,7 +28,12 @@ public final class PumpkinLanterns {
 		new CarvedPumpkinBlock(BlockBehaviour.Properties.ofLegacyCopy(Blocks.JACK_O_LANTERN)
 			.lightLevel(state -> 10).setId(BLOCK_KEY)));
 	public static final Item SOUL_ITEM = Registry.register(BuiltInRegistries.ITEM, ITEM_KEY,
-		new BlockItem(SOUL_BLOCK, new Item.Properties().setId(ITEM_KEY).useBlockDescriptionPrefix()));
+		new BlockItem(SOUL_BLOCK, new Item.Properties().setId(ITEM_KEY).useBlockDescriptionPrefix()) {
+			@Override
+			public InteractionResult place(BlockPlaceContext context) {
+				return SoulGolems.withBuilder(context.getPlayer(), () -> super.place(context));
+			}
+		});
 
 	private PumpkinLanterns() {
 	}
@@ -49,8 +55,8 @@ public final class PumpkinLanterns {
 				return InteractionResult.PASS;
 			}
 			if (level instanceof ServerLevel serverLevel) {
-				serverLevel.setBlockAndUpdate(hit.getBlockPos(),
-					replacement.defaultBlockState().setValue(CarvedPumpkinBlock.FACING, state.getValue(CarvedPumpkinBlock.FACING)));
+				SoulGolems.withBuilder(player, () -> serverLevel.setBlockAndUpdate(hit.getBlockPos(),
+					replacement.defaultBlockState().setValue(CarvedPumpkinBlock.FACING, state.getValue(CarvedPumpkinBlock.FACING))));
 				serverLevel.playSound(null, hit.getBlockPos(), SoundEvents.FIRECHARGE_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
 				serverLevel.gameEvent(player, GameEvent.BLOCK_CHANGE, hit.getBlockPos());
 				held.consume(1, player);
