@@ -1,7 +1,6 @@
 # Patchwork
 
-A Fabric mod for Minecraft 26.3 with small gameplay improvements and
-soul-themed additions.
+A Fabric mod for Minecraft Java 26.3 that adds a patchwork of features.
 
 ## Highlights
 
@@ -9,8 +8,7 @@ soul-themed additions.
   o'Lantern. They defend their creator, shoot Soul Fire Charges, have 50 HP,
   repair with gold, and can have their lantern sheared off.
 - **Soul Fire Charges:** surround a fire charge with eight soul sand/soil
-  blocks to craft one. Throw it for one extra damage and real soul fire that
-  survives on solid surfaces without replacing the block beneath it.
+  blocks to craft one.
 - **Potion cauldrons:** pour into an empty cauldron, retrieve potions with
   bottles, or dip one arrow per potion level. Water and potions do not mix.
 - **Unlit lights:** Breezes extinguish torches and lanterns. Fire charges relight
