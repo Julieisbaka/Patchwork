@@ -83,6 +83,12 @@ switch fail with an instruction to enable it rather than silently passing
 without exercising the feature. `breezeExtinguishesLights` also requires
 `mobGriefing=true`.
 
+The Fabric client GameTest (`fabric-client-gametest` entrypoint) creates a
+temporary world, renders a Soul Golem with its Soul Jack o'Lantern head and
+spawn egg, checks its render state, and saves a `soul-golem` screenshot.
+Enable it with the JVM flag `-Dfabric.client.gametest`; it does not run during
+normal gameplay.
+
 The remaining interactions need manual in-game checks: craft and unlock all
 four chainmail recipes; compare Wither birth-explosion damage at each
 difficulty; equip/remove a wolf banner and verify a stranger
@@ -159,8 +165,8 @@ or death drops yet. A Soul Golem Spawn Egg is available in the Spawn Eggs
 Creative tab. Soul Jack o'Lanterns cannot construct Snow Golems; ordinary
 carved pumpkins and Jack o'Lanterns still can. The body texture uses the Snow
 Golem's 64x64 UV layout and can be replaced with a custom texture later.
-Its in-game appearance
-and animations still need a manual client check.
+Its static in-game appearance is covered by the client render test; listening
+to sounds and checking walking and melee animations still need a manual check.
 
 ## Banner customization
 
@@ -328,9 +334,10 @@ Jack o'Lantern, or with a soul torch to turn it into a Soul Jack o'Lantern
 with blue flames and light level 10. The pumpkin keeps its facing and one
 torch is consumed (except in creative mode). Breaking the soul variant drops
 its own item, which also appears next to the vanilla Jack o'Lantern in the
-Functional Blocks creative tab and can be placed directly. The
-Soul Jack o'Lanterns also work in Snow Golem, Iron Golem, and Copper Golem
-patterns. The `pumpkinLanterns` setting controls only the lighting interaction; it does not
+Functional Blocks creative tab and can be placed directly.
+Soul Jack o'Lanterns also work in Iron Golem and Copper Golem patterns, but
+not Snow Golem patterns. Two stacked soul sand/soil blocks instead create a
+Soul Golem. The `pumpkinLanterns` setting controls only the lighting interaction; it does not
 hide or delete existing items or blocks.
 
 An adult Hoglin running at least 0.18 blocks per tick (or marked sprinting)

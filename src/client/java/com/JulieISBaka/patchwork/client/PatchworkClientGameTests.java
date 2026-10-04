@@ -29,8 +29,10 @@ public class PatchworkClientGameTests implements FabricClientGameTest {
 				return false;
 			});
 			context.runOnClient(client -> {
+				boolean found = false;
 				for (var entity : client.level.entitiesForRendering()) {
 					if (entity instanceof SoulGolem golem) {
+						found = true;
 						var renderer = client.getEntityRenderDispatcher().getRenderer(golem);
 						if (!(renderer instanceof SoulGolemRenderer soulRenderer)) {
 							throw new AssertionError("Soul Golem did not use its Snow Golem renderer");
@@ -42,6 +44,9 @@ public class PatchworkClientGameTests implements FabricClientGameTest {
 							throw new AssertionError("Soul Golem head or body texture is missing");
 						}
 					}
+				}
+				if (!found) {
+					throw new AssertionError("Soul Golem disappeared before checking its render state");
 				}
 			});
 			context.waitTicks(20);
