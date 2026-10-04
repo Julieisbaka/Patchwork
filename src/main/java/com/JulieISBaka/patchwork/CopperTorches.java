@@ -87,7 +87,8 @@ public final class CopperTorches {
 	}
 
 	private static WeatheringCopperCollection<Block> createCollection(boolean unlit, boolean wall) {
-		var names = WeatheringCopperCollection.create(wall ? "copper_wall_torch" : "copper_torch");
+		var names = WeatheringCopperCollection.prefixWithState(
+			WeatheringCopperCollection.create(wall ? "copper_wall_torch" : "copper_torch"));
 		var ages = new WeatheringCopperCollection<>(WeatheringCopperCollection.STATES, WeatheringCopperCollection.STATES);
 		return WeatheringCopperCollection.zipMap(names, ages, (name, age) -> {
 			if (!unlit && name.equals("copper_torch")) {
