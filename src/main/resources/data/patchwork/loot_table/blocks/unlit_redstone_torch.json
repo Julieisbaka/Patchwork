@@ -3,8 +3,17 @@
 	"pools": [
 		{
 			"rolls": 1,
-			"entries": [{ "type": "minecraft:item", "name": "patchwork:unlit_redstone_torch" }],
-			"conditions": [{ "condition": "minecraft:survives_explosion" }]
+			"entries": [
+				{
+					"type": "minecraft:item",
+					"name": "patchwork:unlit_redstone_torch"
+				}
+			],
+			"conditions": [
+				{
+					"condition": "minecraft:survives_explosion"
+				}
+			]
 		}
 	]
 }

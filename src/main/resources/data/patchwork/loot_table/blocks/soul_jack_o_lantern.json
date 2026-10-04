@@ -3,8 +3,17 @@
 	"pools": [
 		{
 			"rolls": 1,
-			"entries": [{ "type": "minecraft:item", "name": "patchwork:soul_jack_o_lantern" }],
-			"conditions": [{ "condition": "minecraft:survives_explosion" }]
+			"entries": [
+				{
+					"type": "minecraft:item",
+					"name": "patchwork:soul_jack_o_lantern"
+				}
+			],
+			"conditions": [
+				{
+					"condition": "minecraft:survives_explosion"
+				}
+			]
 		}
 	]
 }

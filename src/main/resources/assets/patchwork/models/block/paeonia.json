@@ -1,1 +1,6 @@
-{ "parent": "minecraft:block/cross", "textures": { "cross": "patchwork:block/paeonia" } }
+{
+    "parent": "minecraft:block/cross",
+    "textures": {
+        "cross": "patchwork:block/paeonia"
+    }
+}
