@@ -102,6 +102,9 @@ directories with separate configurations.
   exercise actual seeded random weathering, honeycomb consumption, axe wax
   removal/one-stage scraping/durability, waxing recipes, and stage-preserving
   relighting/drops for lit/unlit standing/wall families.
+  Lit standing/wall and waxed copper stages emit exactly 14/12/10/8 light;
+  extinguished versions emit zero. Client checks require distinct, progressively
+  dimmer flame pixels while preserving the vanilla silhouette and wood grain.
 - All ten unlit lantern conversions, relighting/drops, waterlogging,
   weathering/waxing/scraping mappings, and Breeze extinguishing.
 - Empty potion-cauldron filling, water rejection, vanilla water bottles,

@@ -101,7 +101,12 @@ public final class CopperTorches {
 			ResourceKey<Block> key = ResourceKey.create(Registries.BLOCK, Patchwork.id(id));
 			var properties = BlockBehaviour.Properties
 					.ofFullCopy(wall ? Blocks.COPPER_WALL_TORCH : Blocks.COPPER_TORCH)
-					.lightLevel(state -> unlit ? 0 : 14)
+					.lightLevel(state -> unlit ? 0 : switch (age) {
+						case UNAFFECTED -> 14;
+						case EXPOSED -> 12;
+						case WEATHERED -> 10;
+						case OXIDIZED -> 8;
+					})
 					.overrideDescription(key.identifier().toLanguageKey("block"))
 					.setId(key);
 			if (wall) {

@@ -20,6 +20,8 @@ changes. Most gameplay features can be enabled or disabled individually.
 - **Unlit lights:** Breezes can extinguish torches and lanterns. Fire Charges
   relight them, and flint and steel can relight torches. Copper variants keep
   their oxidation and wax state through extinguishing and relighting.
+  Lit copper torches dim with oxidation: light levels 14, 12, 10, and 8.
+  Waxed torches retain their stage's brightness.
 - **Garden and building blocks:** Craft reversible wax blocks from honeycomb,
   find Paeonia in flower forests and meadows, and use it in flower pots or to
   craft magenta dye. Charcoal blocks provide a compact fuel source.

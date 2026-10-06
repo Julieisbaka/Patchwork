@@ -149,6 +149,9 @@ public class PatchworkClientGameTests implements FabricClientGameTest {
 							throw new AssertionError("Texture has incorrect dimensions: " + name);
 						}
 						verifyVanillaTextureVariant(client.getResourceManager(), name, image);
+						if (name.equals("block/exposed_copper_torch")) {
+							verifyCopperTorchOxidationTextures(client.getResourceManager());
+						}
 						if ((name.startsWith("item/") || name.equals("block/paeonia"))
 								&& (image.getRGB(0, 0) >>> 24) != 0) {
 							throw new AssertionError("Icon/flower lost its transparent background: " + name);
@@ -223,6 +226,49 @@ public class PatchworkClientGameTests implements FabricClientGameTest {
 			context.waitTicks(10);
 			world.getConnection().waitForChunksRender();
 			context.takeScreenshot("original-lantern-and-copper-torch-artwork");
+		}
+	}
+
+	private static void verifyCopperTorchOxidationTextures(
+			net.minecraft.server.packs.resources.ResourceManager resources) throws IOException {
+		var vanillaResource = resources.getResource(net.minecraft.resources.Identifier.withDefaultNamespace(
+				"textures/block/copper_torch.png")).orElseThrow();
+		java.awt.image.BufferedImage vanilla;
+		try (var stream = vanillaResource.open()) {
+			vanilla = ImageIO.read(stream);
+		}
+		if (vanilla == null) {
+			throw new AssertionError("Could not decode vanilla copper torch");
+		}
+		int previousBrightness = Integer.MAX_VALUE;
+		for (String stage : List.of("", "exposed_", "weathered_", "oxidized_")) {
+			var id = stage.isEmpty() ? net.minecraft.resources.Identifier.withDefaultNamespace(
+					"textures/block/copper_torch.png") : Patchwork.id("textures/block/" + stage + "copper_torch.png");
+			var resource = resources.getResource(id).orElseThrow();
+			try (var stream = resource.open()) {
+				var image = ImageIO.read(stream);
+				if (image == null || image.getWidth() != 16 || image.getHeight() != 16) {
+					throw new AssertionError("Invalid copper torch texture: " + id);
+				}
+				int brightness = 0;
+				for (int y = 0; y < 16; y++) {
+					for (int x = 0; x < 16; x++) {
+						int pixel = image.getRGB(x, y);
+						int original = vanilla.getRGB(x, y);
+						boolean flame = (x == 7 || x == 8) && (y == 6 || y == 7);
+						if ((pixel >>> 24) != (original >>> 24) || !flame && pixel != original) {
+							throw new AssertionError("Copper oxidation changed vanilla silhouette or wood: " + id);
+						}
+						if (flame) {
+							brightness += ((pixel >> 16) & 255) + ((pixel >> 8) & 255) + (pixel & 255);
+						}
+					}
+				}
+				if (brightness >= previousBrightness) {
+					throw new AssertionError("Copper oxidation texture is not progressively dimmer: " + id);
+				}
+				previousBrightness = brightness;
+			}
 		}
 	}
 

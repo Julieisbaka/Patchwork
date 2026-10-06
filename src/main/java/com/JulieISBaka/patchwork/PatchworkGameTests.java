@@ -1150,6 +1150,26 @@ public class PatchworkGameTests {
 	}
 
 	@GameTest
+	public void unlitTorchCopperBrightnessDecreasesWithOxidation(GameTestHelper test) {
+		for (var collection : java.util.List.of(CopperTorches.LIT, CopperTorches.LIT_WALL)) {
+			var ages = net.minecraft.world.level.block.WeatheringCopper.WeatherState.values();
+			for (int stage = 0; stage < ages.length; stage++) {
+				int expected = 14 - stage * 2;
+				for (var block : java.util.List.of(collection.weathering().pick(ages[stage]),
+						collection.waxed().pick(ages[stage]))) {
+					for (var state : block.getStateDefinition().getPossibleStates()) {
+						test.assertTrue(state.getLightEmission() == expected,
+								"Wrong copper torch brightness for stage " + stage + ": " + state);
+						test.assertTrue(CopperTorches.extinguish(state).getLightEmission() == 0,
+								"Extinguished copper torch still emits light");
+					}
+				}
+			}
+		}
+		test.succeed();
+	}
+
+	@GameTest
 	public void unlitTorchCopperWeatheringWaxingAndScraping(GameTestHelper test) {
 		Player player = test.makeMockPlayer(GameType.SURVIVAL);
 		for (var block : java.util.List.of(Blocks.TORCH, Blocks.WALL_TORCH, Blocks.SOUL_TORCH,
