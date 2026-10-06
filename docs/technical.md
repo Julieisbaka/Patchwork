@@ -1,73 +1,112 @@
-# Technical overview
+# Technical configuration details
 
-Patchwork is a Fabric mod organized around small feature modules. Common
-gameplay code and data are kept separate from client-only rendering and UI
-code.
+This guide explains how Patchwork settings are loaded, which settings apply
+in multiplayer, and what happens to existing world data when features are
+disabled. For the complete property list, see the
+[configuration guide](configuration.md).
 
-## Project layout
+## File location and format
 
-| Path | Purpose |
+Patchwork reads `config/patchwork.properties` from the game or server instance
+at startup. Each instance has its own file; changing a separate client,
+server, or launcher profile's file does not change the instance you are using.
+
+The file uses Java properties syntax, with one setting per line:
+
+```properties
+callHornRecall=true
+callHornRecallRadius=32
+creeperChainReactions=false
+```
+
+Property names are case-sensitive. Boolean values accept `true` or `false`,
+ignoring capitalization and surrounding whitespace. Values such as `yes`,
+`on`, or `1` are invalid.
+
+`callHornRecallRadius` must be a whole number from 16 through 256, inclusive.
+Its default is 32 blocks. Every boolean defaults to `true` except
+`creeperChainReactions`, which defaults to `false`.
+
+## Applying changes
+
+Restart the affected game or server after editing settings. Editing the file
+does not reload settings in a running instance.
+
+With Mod Menu installed, Patchwork's configuration screen can write the same
+file. Save writes the selected values; Cancel discards the edits. Saving does
+not remove the restart requirement.
+
+In multiplayer, gameplay changes require editing and restarting the server,
+not just the connecting client.
+
+## Client and server authority
+
+The server controls gameplay interactions, creature behavior, and recipes.
+A client's local settings cannot override the server's choices.
+
+Wolf banner rendering also uses the client's local `wolfBanners` setting.
+This allows a client to hide equipped banners without removing them from
+wolves or changing the server's banner interactions.
+
+## Dependencies and game rules
+
+| Setting or rule | Effect |
 | --- | --- |
-| `src/main/java` | Mod initialization, gameplay features, configuration, and mixins |
-| `src/client/java` | Renderers, client mixins, and the Mod Menu configuration screen |
-| `src/main/resources` | Mod metadata, mixin configuration, language strings, models, textures, recipes, and tags |
-| `src/main/resources/data/patchwork` | Patchwork recipes, advancements, and other data-driven content |
-| `docs` | Player configuration and contributor testing guidance |
+| `breezeTorchExtinguishing` | Requires `breezeShockwave` to be enabled for Breeze gusts to extinguish torches and lanterns. |
+| `callHornRecallRadius` | Controls recall distance only when `callHornRecall` is enabled. |
+| `ownerSweepProtection` | Protects the attacking owner's wolves, cats, and tamed rabbits from sword sweep damage; it does not disable direct attacks. |
+| `mobGriefing` | Governs Enderman defensive placement, Spider webs, Breeze extinguishing, and Soul Golem projectile block ignition. |
 
-The Gradle build uses separate main and client source sets. The client source
-set is packaged with the mod but is only loaded in a client environment.
+Player-thrown Soul Fire Charges can still ignite blocks when `mobGriefing` is
+disabled. Projectile damage to entities is independent of that rule.
 
-## Runtime initialization
+## Disabling features and existing world data
 
-The `Patchwork` initializer loads configuration before registering gameplay
-features. Feature classes register their blocks, items, entities, callbacks, or
-other related behavior. Mixin configurations apply targeted changes to vanilla
-gameplay where a Fabric event or extension point is not sufficient.
+Feature switches generally control behavior, not whether saved items or
+entities remain available.
 
-The client initializer registers entity renderers and block colors. The
-optional Mod Menu integration opens the configuration screen. Client-only
-render state and rendering mixins are kept under `src/client/java`.
+| Setting disabled | What remains |
+| --- | --- |
+| `wolfBanners` on the server | Banners already equipped on wolves are retained. Clients may still render them according to their local setting. |
+| `throwableFireCharges` | Regular and Soul Fire Charges remain craftable and usable directly on blocks. Soul Golem attacks and dispenser launches are not disabled by this player-throwing switch. |
+| `pumpkinLanterns` | Existing Soul Jack o'Lanterns can still be placed and used to construct Soul Golems. Only torch-lighting interactions are disabled. |
+| `potionCauldrons` | Placed potion cauldrons are preserved, but new filling, retrieval, and arrow-dipping interactions are disabled. |
+| `experienceClumping` | Vanilla orb spawning, merging, and pickup behavior is restored without truncating experience values already saved. |
+| `witherDifficultyHealth` | New Withers use vanilla maximum health. Existing Withers' saved health is not reset. |
 
-## Configuration and multiplayer
+Disabling a feature is not the same as removing the mod. Back up worlds before
+removing a mod that supplies saved blocks, items, or entities.
 
-Settings are stored in `config/patchwork.properties` and exposed as an
-immutable settings record. The server's settings govern multiplayer gameplay;
-client settings affect client-only presentation where applicable. See the
-[configuration guide](configuration.md) for defaults, dependencies between
-options, migration behavior, and error handling.
+## Features without configuration switches
 
-## Resources
+The following additions are always available:
 
-Language entries, block states, item definitions, and models use the
-`patchwork` namespace under `src/main/resources/assets`. Recipes and
-advancements are data-driven under `src/main/resources/data/patchwork`.
-Patchwork also adds selected vanilla tags for interoperability with existing
-game content.
+- Unlit block items, Soul Golems, Soul Fire Charges, and their recipes.
+- Earth, Wind, Water, and Fire paintings in Creative and normal placement.
+- One illusioner in each raid wave from wave 5 onward, including bonus waves.
+  Easy raids end before wave 5 and remain unchanged.
+- Carrot taming for ordinary adult and baby rabbits. Ownership and stay
+  commands persist after reloads; offspring are born wild. Recall and sweep
+  protection still depend on their respective settings.
 
-The vanilla `painting_variant/placeable` tag is extended, not replaced, with
-Earth, Wind, Water, and Fire. Vanilla random placement and Creative painting
-presets both read this tag. `RaidMixin` adds one illusioner after each wave
-from wave 5 onward through vanilla `joinRaid`, preserving spawn equipment,
-wave membership, health accounting, persistence, and raid completion.
+## Startup errors and upgrades
 
-Rabbits keep their vanilla entity type, variants, and breeding logic.
-`RabbitMixin` implements `OwnableEntity` through `RabbitPet`, synchronizes owner
-references and stay commands, and saves them as `PatchworkOwner` and
-`PatchworkStay`. Separate follow/stay goals are necessary because vanilla's
-pet goals require `TamableAnimal`, while rabbits extend `Animal`. Owner
-avoidance is filtered without removing predator avoidance. Teleports require
-loaded chunks, walkable ground, and collision-free space, and do not move
-leashed or mounted rabbits.
+If the file does not exist, Patchwork creates it with all default settings.
+Missing settings in an existing file are automatically added with their
+defaults, logged, and saved at startup. Existing values and unrecognized
+properties are preserved. A complete, valid file is not rewritten.
 
-Block registrations use `Properties.ofFullCopy`, with explicit overrides where
-custom wall-torch names/drops or cauldron compatibility require them. Entity
-renderers use vanilla `EntityRenderers.register`; wolf banner layers use the
-Fabric render-layer registration callback, without inheriting deprecated
-renderer classes. Java compilation enables deprecation lint and treats
-warnings as errors.
+Upgrades that add settings therefore need no manual additions. Invalid
+existing values still stop startup; they are not replaced with defaults.
+Correct the reported value using the [property list](configuration.md#settings)
+and restart. If validation fails, the file is left unchanged.
 
-## Validation
+To regenerate defaults instead, stop the instance and rename the configuration
+file to keep a backup. Start the instance to create a new file, then reapply
+your preferred values and restart again.
 
-Gameplay and rendering behavior are tested with Fabric server and client
-GameTests. See the [testing guide](testing.md) for build commands, test
-selection, automated coverage, and remaining manual checks.
+Read or write failures report the configuration path. Check that the correct
+instance's `config` folder exists and that the game or server account has
+permission to read and write it.
+
+[Configuration guide](configuration.md) | [Feature overview](../README.md)

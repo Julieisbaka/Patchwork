@@ -53,6 +53,10 @@ directories with separate configurations.
 
 ## Automated coverage
 
+- Configuration creation, empty-file initialization, automatic migration of
+  each missing setting, preservation of custom/unknown values, unchanged complete
+  files, and rejection of invalid booleans/radii without modifying the file.
+  Select with `patchwork:*configuration_automatically*`.
 - Rabbit carrot taming in either hand, baby/Creative behavior, exclusive owner
   commands, unchanged breeding, ownership/stay save-load and legacy wild saves,
   actual stay/follow movement, owner avoidance, safe/unsupported/leashed teleport

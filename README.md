@@ -73,7 +73,7 @@ On Windows, use `.\gradlew.bat build`. Gradle writes the mod jar to
 
 - [Configuration guide](docs/configuration.md) — settings, multiplayer
   authority, and config migration.
-- [Technical overview](docs/technical.md) — project structure and runtime
-  behavior.
+- [Technical configuration details](docs/technical.md) — file format, restart
+  requirements, setting dependencies, persistence, and troubleshooting.
 - [Testing guide](docs/testing.md) — builds, automated GameTests, and manual
   checks.

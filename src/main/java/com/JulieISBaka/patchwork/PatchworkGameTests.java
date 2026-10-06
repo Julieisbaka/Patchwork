@@ -49,6 +49,86 @@ public class PatchworkGameTests {
 	}
 
 	@GameTest
+	public void configurationAutomaticallyAddsMissingDefaults(GameTestHelper test) throws Exception {
+		var directory = java.nio.file.Files.createTempDirectory("patchwork-config-test-");
+		var path = directory.resolve("patchwork.properties");
+		try {
+			var defaults = PatchworkConfig.read(path);
+			var baseline = new java.util.Properties();
+			try (var reader = java.nio.file.Files.newBufferedReader(path)) {
+				baseline.load(reader);
+			}
+			for (var component : PatchworkConfig.Settings.class.getRecordComponents()) {
+				Object expected = component.getType() == boolean.class
+						? !component.getName().equals("creeperChainReactions") : 32;
+				test.assertTrue(component.getAccessor().invoke(defaults).equals(expected),
+						"Wrong default for " + component.getName());
+				test.assertTrue(baseline.getProperty(component.getName()).equals(expected.toString()),
+						"Default was not saved for " + component.getName());
+			}
+			baseline.setProperty("witherDifficultyHealth", "false");
+			baseline.setProperty("creeperChainReactions", "true");
+			baseline.setProperty("callHornRecallRadius", "64");
+			baseline.setProperty("customOption", "keep-me");
+			for (var component : PatchworkConfig.Settings.class.getRecordComponents()) {
+				var incomplete = new java.util.Properties();
+				incomplete.putAll(baseline);
+				incomplete.remove(component.getName());
+				try (var writer = java.nio.file.Files.newBufferedWriter(path)) {
+					incomplete.store(writer, "Configuration migration regression");
+				}
+				var loaded = PatchworkConfig.read(path);
+				var persisted = new java.util.Properties();
+				try (var reader = java.nio.file.Files.newBufferedReader(path)) {
+					persisted.load(reader);
+				}
+				Object expected = component.getAccessor().invoke(defaults);
+				test.assertTrue(component.getAccessor().invoke(loaded).equals(expected)
+						&& persisted.getProperty(component.getName()).equals(expected.toString()),
+						"Missing setting was not defaulted and saved: " + component.getName());
+				for (String key : incomplete.stringPropertyNames()) {
+					test.assertTrue(incomplete.getProperty(key).equals(persisted.getProperty(key)),
+							"Migration changed an existing property: " + key);
+				}
+				var before = java.nio.file.Files.readAllBytes(path);
+				var modified = java.nio.file.Files.getLastModifiedTime(path);
+				PatchworkConfig.read(path);
+				test.assertTrue(java.util.Arrays.equals(before, java.nio.file.Files.readAllBytes(path))
+						&& modified.equals(java.nio.file.Files.getLastModifiedTime(path)),
+						"Reading a complete config rewrote it");
+			}
+			java.nio.file.Files.writeString(path, "");
+			test.assertTrue(PatchworkConfig.read(path).equals(defaults), "Empty existing config did not gain defaults");
+			for (var component : PatchworkConfig.Settings.class.getRecordComponents()) {
+				var invalidValues = component.getType() == boolean.class
+						? java.util.List.of("yes", "") : java.util.List.of("15", "257", "32.5", "not-a-number", "");
+				for (String invalid : invalidValues) {
+					var properties = new java.util.Properties();
+					properties.putAll(baseline);
+					properties.remove("wolfBanners");
+					properties.setProperty(component.getName(), invalid);
+					try (var writer = java.nio.file.Files.newBufferedWriter(path)) {
+						properties.store(writer, "Invalid config must not be rewritten");
+					}
+					var before = java.nio.file.Files.readAllBytes(path);
+					boolean rejected = false;
+					try {
+						PatchworkConfig.read(path);
+					} catch (IllegalArgumentException exception) {
+						rejected = exception.getMessage().contains(component.getName());
+					}
+					test.assertTrue(rejected && java.util.Arrays.equals(before, java.nio.file.Files.readAllBytes(path)),
+							"Invalid setting was accepted or changed on disk: " + component.getName());
+				}
+			}
+			test.succeed();
+		} finally {
+			java.nio.file.Files.deleteIfExists(path);
+			java.nio.file.Files.delete(directory);
+		}
+	}
+
+	@GameTest
 	public void rabbitCarrotTamingAndOwnerCommands(GameTestHelper test) {
 		var rabbit = test.spawn(EntityTypes.RABBIT, CENTER);
 		var pet = (RabbitPet) rabbit;

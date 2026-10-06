@@ -40,14 +40,15 @@ public final class PatchworkConfig {
 	}
 
 	public static Settings read() {
-		Path path = FabricLoader.getInstance().getConfigDir().resolve("patchwork.properties");
+		return read(FabricLoader.getInstance().getConfigDir().resolve("patchwork.properties"));
+	}
+
+	static Settings read(Path path) {
 		Properties properties = new Properties();
 		boolean newConfig = Files.notExists(path);
 		try {
 			Files.createDirectories(path.getParent());
-			if (newConfig) {
-				properties.setProperty(RECALL_RADIUS_KEY, Integer.toString(DEFAULT_RECALL_RADIUS));
-			} else {
+			if (!newConfig) {
 				try (Reader reader = Files.newBufferedReader(path)) {
 					properties.load(reader);
 				}
@@ -56,9 +57,12 @@ public final class PatchworkConfig {
 			throw new IllegalStateException("Unable to read Patchwork config: " + path, e);
 		}
 
+		int originalPropertyCount = properties.size();
 		String value = properties.getProperty(RECALL_RADIUS_KEY);
 		if (value == null) {
-			throw new IllegalArgumentException("Missing " + RECALL_RADIUS_KEY + " in " + path);
+			value = Integer.toString(DEFAULT_RECALL_RADIUS);
+			properties.setProperty(RECALL_RADIUS_KEY, value);
+			Patchwork.LOGGER.info("Adding missing Patchwork setting {}={} to {}", RECALL_RADIUS_KEY, value, path);
 		}
 		int radius;
 		try {
@@ -70,30 +74,30 @@ public final class PatchworkConfig {
 			throw new IllegalArgumentException(
 					RECALL_RADIUS_KEY + " must be from 16 to 256 in " + path + ": " + radius);
 		}
-		boolean witherDifficultyHealth = enabled(properties, "witherDifficultyHealth", path, newConfig);
-		boolean witherBirthExplosion = enabled(properties, "witherBirthExplosion", path, newConfig);
-		boolean chainmailRecipes = enabled(properties, "chainmailRecipes", path, newConfig);
-		boolean wolfBanners = enabled(properties, "wolfBanners", path, newConfig);
-		boolean ownerSweepProtection = enabled(properties, "ownerSweepProtection", path, newConfig);
-		boolean shulkerDyeing = enabled(properties, "shulkerDyeing", path, newConfig);
-		boolean throwableSlimeballs = enabled(properties, "throwableSlimeballs", path, newConfig);
-		boolean callHornRecall = enabled(properties, "callHornRecall", path, newConfig);
-		boolean cauldronCleaning = enabled(properties, "cauldronCleaning", path, newConfig);
-		boolean beesDefendFlowers = enabled(properties, "beesDefendFlowers", true, path, newConfig);
-		boolean creeperChainReactions = enabled(properties, "creeperChainReactions", false, path, newConfig);
-		boolean endermanDefense = enabled(properties, "endermanDefense", path, newConfig);
-		boolean spiderWebs = enabled(properties, "spiderWebs", path, newConfig);
-		boolean throwableFireCharges = enabled(properties, "throwableFireCharges", path, newConfig);
-		boolean slimeSplitClouds = enabled(properties, "slimeSplitClouds", path, newConfig);
-		boolean breezeShockwave = enabled(properties, "breezeShockwave", path, newConfig);
-		boolean breezeTorchExtinguishing = enabled(properties, "breezeTorchExtinguishing", path, newConfig);
-		boolean hoglinCharge = enabled(properties, "hoglinCharge", path, newConfig);
-		boolean skeletonCover = enabled(properties, "skeletonCover", path, newConfig);
-		boolean potionCauldrons = enabled(properties, "potionCauldrons", path, newConfig);
-		boolean pumpkinLanterns = enabled(properties, "pumpkinLanterns", path, newConfig);
-		boolean experienceClumping = enabled(properties, "experienceClumping", path, newConfig);
+		boolean witherDifficultyHealth = enabled(properties, "witherDifficultyHealth", path);
+		boolean witherBirthExplosion = enabled(properties, "witherBirthExplosion", path);
+		boolean chainmailRecipes = enabled(properties, "chainmailRecipes", path);
+		boolean wolfBanners = enabled(properties, "wolfBanners", path);
+		boolean ownerSweepProtection = enabled(properties, "ownerSweepProtection", path);
+		boolean shulkerDyeing = enabled(properties, "shulkerDyeing", path);
+		boolean throwableSlimeballs = enabled(properties, "throwableSlimeballs", path);
+		boolean callHornRecall = enabled(properties, "callHornRecall", path);
+		boolean cauldronCleaning = enabled(properties, "cauldronCleaning", path);
+		boolean beesDefendFlowers = enabled(properties, "beesDefendFlowers", true, path);
+		boolean creeperChainReactions = enabled(properties, "creeperChainReactions", false, path);
+		boolean endermanDefense = enabled(properties, "endermanDefense", path);
+		boolean spiderWebs = enabled(properties, "spiderWebs", path);
+		boolean throwableFireCharges = enabled(properties, "throwableFireCharges", path);
+		boolean slimeSplitClouds = enabled(properties, "slimeSplitClouds", path);
+		boolean breezeShockwave = enabled(properties, "breezeShockwave", path);
+		boolean breezeTorchExtinguishing = enabled(properties, "breezeTorchExtinguishing", path);
+		boolean hoglinCharge = enabled(properties, "hoglinCharge", path);
+		boolean skeletonCover = enabled(properties, "skeletonCover", path);
+		boolean potionCauldrons = enabled(properties, "potionCauldrons", path);
+		boolean pumpkinLanterns = enabled(properties, "pumpkinLanterns", path);
+		boolean experienceClumping = enabled(properties, "experienceClumping", path);
 
-		if (newConfig) {
+		if (properties.size() != originalPropertyCount) {
 			try (Writer writer = Files.newBufferedWriter(path)) {
 				properties.store(writer,
 						"Patchwork features: true/false; callHornRecallRadius: 16-256 blocks. Restart to apply.");
@@ -154,18 +158,15 @@ public final class PatchworkConfig {
 		}
 	}
 
-	private static boolean enabled(Properties properties, String key, Path path, boolean newConfig) {
-		return enabled(properties, key, true, path, newConfig);
+	private static boolean enabled(Properties properties, String key, Path path) {
+		return enabled(properties, key, true, path);
 	}
 
-	private static boolean enabled(Properties properties, String key, boolean defaultValue, Path path,
-			boolean newConfig) {
+	private static boolean enabled(Properties properties, String key, boolean defaultValue, Path path) {
 		String value = properties.getProperty(key);
 		if (value == null) {
-			if (!newConfig) {
-				throw new IllegalArgumentException("Missing " + key + " in " + path);
-			}
 			properties.setProperty(key, Boolean.toString(defaultValue));
+			Patchwork.LOGGER.info("Adding missing Patchwork setting {}={} to {}", key, defaultValue, path);
 			return defaultValue;
 		}
 		if (value.trim().equalsIgnoreCase("true")) {

@@ -69,9 +69,10 @@ ignite blocks. Direct projectile entity damage is independent of this rule.
 ## Requirements and errors
 
 New files are initialized with every switch's default value and the default
-radius. Existing files must contain every boolean switch and a valid
-`callHornRecallRadius`; missing or invalid values produce a startup error.
-The radius must be an integer from 16 to 256.
+radius. Missing settings in existing files are automatically added with their
+defaults and saved at startup, preserving existing values and unknown properties.
+Invalid existing values still produce a startup error and leave the file
+unchanged. The radius must be an integer from 16 to 256.
 
 Disabling difficulty-based Wither health restores vanilla maximum health for
 new Withers; it does not reset health saved on existing Withers.
