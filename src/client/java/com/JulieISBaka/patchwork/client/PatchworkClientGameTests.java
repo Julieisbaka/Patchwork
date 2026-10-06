@@ -126,7 +126,7 @@ public class PatchworkClientGameTests implements FabricClientGameTest {
 				}
 				var textures = new ArrayList<String>();
 				textures.addAll(List.of("block/wax_block", "block/paeonia", "block/charcoal_block",
-						"block/soul_jack_o_lantern", "item/soul_golem_spawn_egg"));
+						"block/soul_jack_o_lantern", "item/soul_golem_spawn_egg", "item/soul_fire_charge"));
 				for (String name : List.of("unlit_lantern", "unlit_soul_lantern", "unlit_copper_lantern",
 						"unlit_exposed_copper_lantern", "unlit_weathered_copper_lantern",
 						"unlit_oxidized_copper_lantern")) {
@@ -148,6 +148,7 @@ public class PatchworkClientGameTests implements FabricClientGameTest {
 						if (image == null || image.getWidth() != size || image.getHeight() != size) {
 							throw new AssertionError("Texture has incorrect dimensions: " + name);
 						}
+						verifyVanillaTextureVariant(client.getResourceManager(), name, image);
 						if ((name.startsWith("item/") || name.equals("block/paeonia"))
 								&& (image.getRGB(0, 0) >>> 24) != 0) {
 							throw new AssertionError("Icon/flower lost its transparent background: " + name);
@@ -192,7 +193,7 @@ public class PatchworkClientGameTests implements FabricClientGameTest {
 			});
 			context.waitTicks(2);
 			world.getConnection().waitForChunksRender();
-			context.takeScreenshot("redrawn-wax-paeonia-soul-pumpkin-and-unlit-torch");
+			context.takeScreenshot("preserved-garden-artwork-and-corrected-unlit-torch");
 			world.getServer().runCommand("fill -8 101 -4 8 104 4 minecraft:air");
 			world.getServer().runCommand("fill -10 100 -10 10 100 10 minecraft:stone");
 			world.getServer().runCommand("tp @a 0.5 103 8.5 180 30");
@@ -222,6 +223,58 @@ public class PatchworkClientGameTests implements FabricClientGameTest {
 			context.waitTicks(10);
 			world.getConnection().waitForChunksRender();
 			context.takeScreenshot("original-lantern-and-copper-torch-artwork");
+		}
+	}
+
+	private static void verifyVanillaTextureVariant(net.minecraft.server.packs.resources.ResourceManager resources,
+			String name, java.awt.image.BufferedImage image) throws IOException {
+		String vanilla = null;
+		boolean lantern = name.startsWith("block/unlit_") && name.endsWith("lantern");
+		boolean lanternItem = List.of("item/unlit_lantern", "item/unlit_soul_lantern",
+				"item/unlit_copper_lantern").contains(name);
+		boolean torch = name.startsWith("block/unlit_") && name.endsWith("torch")
+				&& !name.equals("block/unlit_torch");
+		if (lantern || lanternItem) {
+			vanilla = name.replace("unlit_", "");
+		} else if (torch) {
+			vanilla = name.equals("block/unlit_soul_torch") ? "block/soul_torch" : "block/copper_torch";
+		} else if (name.equals("item/soul_fire_charge")) {
+			vanilla = "item/fire_charge";
+		} else if (name.equals("item/soul_golem_spawn_egg")) {
+			vanilla = "item/snow_golem_spawn_egg";
+		} else if (name.equals("entity/soul_golem")) {
+			vanilla = "entity/snow_golem/snow_golem";
+		}
+		if (vanilla == null) {
+			return;
+		}
+		var resource = resources.getResource(net.minecraft.resources.Identifier.withDefaultNamespace(
+				"textures/" + vanilla + ".png")).orElseThrow();
+		try (var stream = resource.open()) {
+			var original = ImageIO.read(stream);
+			if (original == null || original.getWidth() != image.getWidth()
+					|| original.getHeight() < image.getHeight()) {
+				throw new AssertionError("Vanilla reference dimensions changed: " + vanilla);
+			}
+			for (int y = 0; y < image.getHeight(); y++) {
+				for (int x = 0; x < image.getWidth(); x++) {
+					int expected = original.getRGB(x, y);
+					int actual = image.getRGB(x, y);
+					if ((expected >>> 24) != (actual >>> 24)) {
+						throw new AssertionError("Variant changed vanilla transparency: " + name);
+					}
+					boolean flame = lantern && x >= 1 && x < 5 && y >= 3 && y < 8
+							|| lanternItem && x >= 6 && x < 10 && y >= 8 && y < 13;
+					if ((lantern || lanternItem) && !flame && expected != actual
+							|| torch && y >= 8 && expected != actual) {
+						throw new AssertionError("Variant changed vanilla frame or handle pixels: " + name);
+					}
+					if (flame && (actual >>> 24) != 0
+							&& Math.max((actual >> 16) & 255, Math.max((actual >> 8) & 255, actual & 255)) >= 100) {
+						throw new AssertionError("Unlit lantern still has bright flame pixels: " + name);
+					}
+				}
+			}
 		}
 	}
 
