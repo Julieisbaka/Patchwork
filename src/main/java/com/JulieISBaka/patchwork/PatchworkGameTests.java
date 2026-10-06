@@ -1152,6 +1152,63 @@ public class PatchworkGameTests {
 	}
 
 	@GameTest
+	public void lightVariantsCampfireCookingRecipesAndDrops(GameTestHelper test) {
+		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		ItemStack silk = new ItemStack(Items.DIAMOND_AXE);
+		silk.enchant(test.getLevel().registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT)
+				.getOrThrow(net.minecraft.world.item.enchantment.Enchantments.SILK_TOUCH), 1);
+		for (var block : LightVariants.COPPER_CAMPFIRES.asList()) {
+			test.setBlock(CENTER, Blocks.AIR);
+			test.setBlock(CENTER, block);
+			var entity = (net.minecraft.world.level.block.entity.CampfireBlockEntity)
+					test.getLevel().getBlockEntity(test.absolutePos(CENTER));
+			test.assertTrue(entity != null && entity.placeFood(test.getLevel(), player, new ItemStack(Items.BEEF)),
+					"Copper campfire cannot cook food");
+			var recipeCache = net.minecraft.world.item.crafting.RecipeManager
+					.createCheck(net.minecraft.world.item.crafting.RecipeType.CAMPFIRE_COOKING);
+			for (int tick = 0; tick < 600; tick++) {
+				net.minecraft.world.level.block.entity.CampfireBlockEntity.cookTick(test.getLevel(),
+						test.absolutePos(CENTER), test.getBlockState(CENTER), entity, recipeCache);
+			}
+			test.assertTrue(entity.getItems().stream().allMatch(ItemStack::isEmpty), "Campfire food did not finish cooking");
+			test.assertItemEntityPresent(Items.COOKED_BEEF, CENTER, 2);
+			for (boolean lit : java.util.List.of(false, true)) {
+				var state = block.defaultBlockState().setValue(BlockStateProperties.LIT, lit);
+				var drops = Block.getDrops(state, test.getLevel(), test.absolutePos(CENTER), entity, player, silk);
+				var expected = lit ? block.asItem() : LightVariants.unlitItems().get(block);
+				test.assertTrue(drops.size() == 1 && drops.getFirst().is(expected),
+						"Silk Touch did not preserve copper campfire variant and lit state");
+				var ordinary = Block.getDrops(state, test.getLevel(), test.absolutePos(CENTER), entity);
+				test.assertTrue(ordinary.size() == 1 && ordinary.getFirst().is(Items.CHARCOAL)
+						&& ordinary.getFirst().getCount() == 2, "Copper campfire changed ordinary charcoal drops");
+			}
+		}
+		for (var soulBase : java.util.List.of(Items.SOUL_SAND, Items.SOUL_SOIL)) {
+			assertLightRecipe(test, 1, 3,
+					java.util.List.of(new ItemStack(Items.STRING), new ItemStack(Items.HONEYCOMB), new ItemStack(soulBase)),
+					LightVariants.SOUL_CANDLE.asItem());
+		}
+		assertLightRecipe(test, 1, 3,
+				java.util.List.of(new ItemStack(Items.STRING), new ItemStack(Items.HONEYCOMB),
+						new ItemStack(Items.COPPER_NUGGET)), LightVariants.COPPER_CANDLES.weathering().unaffected().asItem());
+		assertLightRecipe(test, 3, 3,
+				java.util.List.of(ItemStack.EMPTY, new ItemStack(Items.STICK), ItemStack.EMPTY,
+						new ItemStack(Items.STICK), new ItemStack(Items.COPPER_NUGGET), new ItemStack(Items.STICK),
+						new ItemStack(Items.OAK_LOG), new ItemStack(Items.OAK_LOG), new ItemStack(Items.OAK_LOG)),
+				LightVariants.COPPER_CAMPFIRES.weathering().unaffected().asItem());
+		test.succeed();
+	}
+
+	private static void assertLightRecipe(GameTestHelper test, int width, int height, java.util.List<ItemStack> stacks,
+			net.minecraft.world.item.Item expected) {
+		var input = net.minecraft.world.item.crafting.CraftingInput.of(width, height, stacks);
+		var recipe = test.getLevel().recipeAccess().getRecipeFor(
+				net.minecraft.world.item.crafting.RecipeType.CRAFTING, input, test.getLevel());
+		test.assertTrue(recipe.isPresent() && recipe.orElseThrow().value().assemble(input).is(expected),
+				"Missing survival recipe for " + expected);
+	}
+
+	@GameTest
 	public void lightVariantsCopperWeatheringWaxingAndBrightness(GameTestHelper test) {
 		Player player = test.makeMockPlayer(GameType.SURVIVAL);
 		test.setBlock(CENTER.below(), Blocks.HAY_BLOCK);

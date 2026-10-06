@@ -109,6 +109,8 @@ directories with separate configurations.
   exact stage light levels, seeded oxidation, waxing/scraping, property retention,
   survival recipes, and copper-torch pumpkin lighting. Copper campfire cooking
   inventories survive oxidation, waxing, and scraping.
+  Every copper campfire cooks raw beef and preserves its variant/lit state in
+  Silk Touch drops; ordinary drops remain two charcoal.
 - All 36 unlit candle/campfire items: extinguished placement, candle stacking,
   candle-on-cake placement, normal/soul ignition, waterlogged campfire ignition
   rejection, candle drop counts, and reversible crafting conversions.

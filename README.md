@@ -55,7 +55,8 @@ changes. Most gameplay features can be enabled or disabled individually.
 Place a new candle on an uneaten cake to add its matching candle. Candles
 stack up to four, including when using unlit items. Extinguished candles drop
 their unlit items; extinguished campfires do so when harvested with Silk Touch.
-Without Silk Touch, campfires keep their vanilla charcoal drop behavior.
+Without Silk Touch, copper campfires drop two charcoal, like regular campfires.
+Vanilla campfire and soul campfire drops are otherwise unchanged.
 
 ### Creatures and quality of life
 
