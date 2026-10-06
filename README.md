@@ -1,35 +1,69 @@
 # Patchwork
 
-A Fabric mod for Minecraft Java 26.3 that adds a patchwork of features.
+Patchwork is a Fabric mod for Minecraft Java Edition 26.3. It brings together
+building and crafting additions, creature behaviors, and small quality-of-life
+changes. Most gameplay features can be enabled or disabled individually.
 
-## Highlights
+## Features
 
-- **Soul Golems:** build with two soul sand/soil blocks and a Soul Jack
-  o'Lantern. They defend their creator, shoot Soul Fire Charges, have 50 HP,
-  repair with gold, and can have their lantern sheared off.
-- **Soul Fire Charges:** surround a fire charge with eight soul sand/soil
-  blocks to craft one.
-- **Potion cauldrons:** pour into an empty cauldron, retrieve potions with
-  bottles, or dip one arrow per potion level. Water and potions do not mix.
-- **Unlit lights:** Breezes extinguish torches and lanterns. Fire charges relight
-  both; flint and steel also relights torches. Copper torches and lanterns
-  retain oxidation and wax, including when extinguished and relit.
-- **XP clumping:** nearby orbs combine for fewer entities and faster collection,
-  preserving XP and Mending.
-- **Garden additions:** craft a wax block with nine honeycomb; find Paeonia
-  flowers in flower forests and meadows, pot them, or craft magenta dye.
-- **Crafting and customization:** charcoal blocks, chainmail recipes,
-  nine-layer banners, shulker dyeing, and more cauldron washing.
-- **Pets:** wolf banners, safer sword sweeps, and a horn that recalls seated pets.
-- **Mobs:** tougher Withers, defensive bees and Endermen, web-laying Spiders,
-  Slime dust clouds, Breeze gusts, Hoglin charges, and Skeleton cover.
+### Building, crafting, and utility
 
-## Setup and details
+- **Soul Golems:** Build one from two soul sand or soul soil blocks topped with
+  a Soul Jack o'Lantern. They protect their owner, attack at range with Soul
+  Fire Charges, have 50 health, can be healed with gold, and can be sheared.
+- **Soul Fire Charges:** Craft one by surrounding a regular Fire Charge with
+  eight soul sand or soul soil. Use charges to create soul fire, light
+  campfires and candles, or launch them by hand or dispenser.
+- **Potion cauldrons:** Pour a non-water potion into an empty cauldron, retrieve
+  doses with glass bottles, refill with matching potions, or dip arrows. Each
+  potion level can tip one arrow; different potions cannot be mixed.
+- **Unlit lights:** Breezes can extinguish torches and lanterns. Fire Charges
+  relight them, and flint and steel can relight torches. Copper variants keep
+  their oxidation and wax state through extinguishing and relighting.
+- **Garden and building blocks:** Craft reversible wax blocks from honeycomb,
+  find Paeonia in flower forests and meadows, and use it in flower pots or to
+  craft magenta dye. Charcoal blocks provide a compact fuel source.
+- **Crafting and decoration:** Craft chainmail armor, add up to nine banner
+  patterns, dye shulkers, and wash wool, terracotta, and stained glass in
+  cauldrons.
 
-Requires Java 25, Fabric Loader, and Fabric API. Mod Menu is optional.
-Build with `.\gradlew.bat build`.
+### Creatures and quality of life
 
-- [Configuration](docs/configuration.md)
-- [Tests](docs/testing.md)
+- **Pets:** Add banners to wolves, protect owned wolves and cats from sword
+  sweeps, and use a goat horn to recall nearby seated pets.
+- **Experience orbs:** Nearby orbs can combine to reduce entity count while
+  preserving experience values and Mending behavior.
+- **Creature behaviors:** Configure tougher Withers, flower-defending bees,
+  Enderman block defense, pursuit webs from Spiders, Slime split clouds,
+  Breeze shockwaves, Hoglin charges, Skeleton cover, and Creeper chain
+  reactions.
 
-Textures are WIP.
+## Installation
+
+Use Minecraft Java Edition 26.3 with Java 25 or newer, Fabric Loader 0.19.5 or
+newer, and the matching Fabric API. Mod Menu 21.0.0 is optional and adds an
+in-game configuration screen.
+
+Install Patchwork and its required dependencies in the Fabric `mods` folder.
+Gameplay options are controlled by the server in multiplayer; see the
+[configuration guide](docs/configuration.md) for details.
+
+## Building from source
+
+Build with the Gradle wrapper from the repository root:
+
+```sh
+./gradlew build
+```
+
+On Windows, use `.\gradlew.bat build`. Gradle writes the mod jar to
+`build/libs/`.
+
+## Project documentation
+
+- [Configuration guide](docs/configuration.md) — settings, multiplayer
+  authority, and config migration.
+- [Technical overview](docs/technical.md) — project structure and runtime
+  behavior.
+- [Testing guide](docs/testing.md) — builds, automated GameTests, and manual
+  checks.
