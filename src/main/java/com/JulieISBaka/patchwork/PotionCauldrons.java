@@ -1,8 +1,6 @@
 package com.JulieISBaka.patchwork;
 
 import com.JulieISBaka.patchwork.mixin.PotionArrowItemAccessor;
-import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
