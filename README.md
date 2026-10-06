@@ -26,6 +26,8 @@ changes. Most gameplay features can be enabled or disabled individually.
 - **Crafting and decoration:** Craft chainmail armor, add up to nine banner
   patterns, dye shulkers, and wash wool, terracotta, and stained glass in
   cauldrons.
+- **Restored paintings:** Earth, Wind, Water, and Fire are available in Creative
+  Functional Blocks and the normal random painting placement pool.
 
 ### Creatures and quality of life
 
@@ -37,6 +39,9 @@ changes. Most gameplay features can be enabled or disabled individually.
   Enderman block defense, pursuit webs from Spiders, Slime split clouds,
   Breeze shockwaves, Hoglin charges, Skeleton cover, and Creeper chain
   reactions.
+- **Illusioner raids:** One illusioner joins each raid wave from wave 5 onward,
+  including bonus waves, alongside the existing raiders. Easy raids remain
+  unchanged because they end before wave 5.
 
 ## Installation
 

@@ -51,6 +51,11 @@ directories with separate configurations.
 
 ## Automated coverage
 
+- Restored painting placement-tag membership, Creative presets, preservation of
+  vanilla paintings, and normal placement on a 2x2 wall. Illusioner counts across
+  Easy/Normal/Hard raid waves and bonus waves, unchanged pillager spawning,
+  bow equipment, live raid membership, health accounting, and removal.
+  Select these with `patchwork:*restored*`.
 - Wax block's exact nine-honeycomb recipe, recovery of nine honeycomb from one
   wax block, incomplete/wrong ingredient rejection, and block drops.
 - Paeonia ground support, flower tags, compost component, potting and pot

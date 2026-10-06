@@ -22,6 +22,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.hurtingprojectile.LargeFireball;
 import net.minecraft.world.entity.projectile.throwableitemprojectile.Snowball;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SpawnEggItem;
@@ -45,6 +46,79 @@ public class PatchworkGameTests {
 
 	private static void require(GameTestHelper test, boolean enabled, String setting) {
 		test.assertTrue(enabled, "Enable " + setting + " in config/patchwork.properties before running this test");
+	}
+
+	@GameTest
+	public void restoredPaintingsArePlaceableAndInCreative(GameTestHelper test) {
+		var paintings = test.getLevel().registryAccess()
+				.lookupOrThrow(net.minecraft.core.registries.Registries.PAINTING_VARIANT);
+		var variants = java.util.List.of(
+				net.minecraft.world.entity.decoration.painting.PaintingVariants.EARTH,
+				net.minecraft.world.entity.decoration.painting.PaintingVariants.WIND,
+				net.minecraft.world.entity.decoration.painting.PaintingVariants.WATER,
+				net.minecraft.world.entity.decoration.painting.PaintingVariants.FIRE);
+		net.minecraft.world.item.CreativeModeTabs.tryRebuildTabContents(test.getLevel().enabledFeatures(), true,
+				test.getLevel().registryAccess());
+		var functional = net.minecraft.core.registries.BuiltInRegistries.CREATIVE_MODE_TAB
+				.getValue(CreativeModeTabs.FUNCTIONAL_BLOCKS);
+		for (var key : variants) {
+			var variant = paintings.getOrThrow(key);
+			test.assertTrue(variant.is(net.minecraft.tags.PaintingVariantTags.PLACEABLE),
+					key + " is missing from the normal painting placement pool");
+			test.assertTrue(functional.getDisplayItems().stream().anyMatch(stack -> stack.is(Items.PAINTING)
+					&& variant.equals(stack.get(DataComponents.PAINTING_VARIANT))),
+					key + " is missing from Creative Functional Blocks");
+		}
+		test.assertTrue(paintings.getOrThrow(net.minecraft.world.entity.decoration.painting.PaintingVariants.KEBAB)
+				.is(net.minecraft.tags.PaintingVariantTags.PLACEABLE), "Vanilla paintings were removed from the pool");
+		for (int x = 0; x < 2; x++) {
+			for (int y = 0; y < 2; y++) {
+				test.setBlock(CENTER.offset(x, y, -1), Blocks.STONE);
+			}
+		}
+		var painting = net.minecraft.world.entity.decoration.painting.Painting
+				.create(test.getLevel(), test.absolutePos(CENTER), Direction.SOUTH);
+		test.assertTrue(painting.isPresent(), "Normal painting placement failed on a 2x2 wall");
+		test.assertTrue(painting.orElseThrow().getVariant().value().width() == 2
+				&& painting.orElseThrow().getVariant().value().height() == 2,
+				"Normal painting placement no longer chooses a fitting 2x2 painting");
+		test.succeed();
+	}
+
+	@GameTest
+	public void restoredIllusionersJoinLateRaidWaves(GameTestHelper test) {
+		for (var difficulty : java.util.List.of(net.minecraft.world.Difficulty.EASY,
+				net.minecraft.world.Difficulty.NORMAL, net.minecraft.world.Difficulty.HARD)) {
+			var raid = new net.minecraft.world.entity.raid.Raid(test.absolutePos(CENTER), difficulty);
+			raid.setRaidOmenLevel(2);
+			for (int wave = 1; wave <= raid.getNumGroups(difficulty) + 1; wave++) {
+				((com.JulieISBaka.patchwork.mixin.RaidAccessor) (Object) raid)
+						.patchwork$spawnGroup(test.getLevel(), test.absolutePos(CENTER));
+				var raiders = raid.getAllRaiders();
+				var illusioners = raiders.stream().filter(raider -> raider.getType() == EntityTypes.ILLUSIONER)
+						.toList();
+				test.assertTrue(illusioners.size() == (wave >= 5 ? 1 : 0),
+						"Wrong illusioner count for " + difficulty + " raid wave " + wave);
+				test.assertTrue(raiders.stream().anyMatch(raider -> raider.getType() == EntityTypes.PILLAGER),
+						"Illusioner spawning replaced vanilla pillagers");
+				test.assertTrue(raid.getTotalHealth() == raid.getHealthOfLivingRaiders(),
+						"Raid health does not include all spawned raiders");
+				for (var illusioner : illusioners) {
+					test.assertTrue(illusioner.getCurrentRaid() == raid && illusioner.getWave() == wave
+							&& illusioner.canJoinRaid() && illusioner.isAlive()
+							&& test.getLevel().getEntity(illusioner.getUUID()) == illusioner,
+							"Illusioner was not spawned and registered as a live wave member");
+					test.assertTrue(illusioner.getMainHandItem().is(Items.BOW),
+							"Illusioner raid spawn did not receive its bow");
+				}
+				for (var raider : raiders) {
+					raid.removeFromRaid(test.getLevel(), raider, true);
+					raider.discard();
+				}
+				test.assertTrue(raid.getTotalRaidersAlive() == 0, "Removed raiders still block wave completion");
+			}
+		}
+		test.succeed();
 	}
 
 	@GameTest

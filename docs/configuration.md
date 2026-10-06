@@ -44,7 +44,10 @@ rendering existing banners. Disabling wolf banner interactions on the server
 does not erase banners already equipped.
 
 Unlit block items, Soul Golems, Soul Fire Charges, and their recipes have no
-separate availability switch. `throwableFireCharges` gates player air throws
+separate availability switch. The four restored paintings and illusioner raid
+spawns are also always enabled. Illusioners join waves 5 and later, including
+bonus waves; Easy raids have no illusioners.
+`throwableFireCharges` gates player air throws
 of both charge types, not Soul Golem attacks, crafting, or direct block use.
 Both Fire Charge items remain available next to each other in Creative Combat
 when throwing is disabled; disabling air throws does not remove the items.

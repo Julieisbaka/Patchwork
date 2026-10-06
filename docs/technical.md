@@ -44,6 +44,12 @@ advancements are data-driven under `src/main/resources/data/patchwork`.
 Patchwork also adds selected vanilla tags for interoperability with existing
 game content.
 
+The vanilla `painting_variant/placeable` tag is extended, not replaced, with
+Earth, Wind, Water, and Fire. Vanilla random placement and Creative painting
+presets both read this tag. `RaidMixin` adds one illusioner after each wave
+from wave 5 onward through vanilla `joinRaid`, preserving spawn equipment,
+wave membership, health accounting, persistence, and raid completion.
+
 ## Validation
 
 Gameplay and rendering behavior are tested with Fabric server and client

@@ -19,6 +19,8 @@
 		"PlayerSweepMixin",
 		"PotionArrowItemAccessor",
 		"PotionArrowItemMixin",
+		"RaidAccessor",
+		"RaidMixin",
 		"ShulkerVariantAccessor",
 		"SlimeballSnowballMixin",
 		"SlimeSplitMixin",
