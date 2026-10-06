@@ -1,0 +1,10 @@
+{
+	"variants": {
+		"lit=false": {
+			"model": "patchwork:block/soul_candle_cake"
+		},
+		"lit=true": {
+			"model": "patchwork:block/soul_candle_cake_lit"
+		}
+	}
+}

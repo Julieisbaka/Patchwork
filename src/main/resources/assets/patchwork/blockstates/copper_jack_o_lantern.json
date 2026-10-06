@@ -1,0 +1,19 @@
+{
+	"variants": {
+		"facing=east": {
+			"model": "patchwork:block/copper_jack_o_lantern",
+			"y": 90
+		},
+		"facing=north": {
+			"model": "patchwork:block/copper_jack_o_lantern"
+		},
+		"facing=south": {
+			"model": "patchwork:block/copper_jack_o_lantern",
+			"y": 180
+		},
+		"facing=west": {
+			"model": "patchwork:block/copper_jack_o_lantern",
+			"y": 270
+		}
+	}
+}

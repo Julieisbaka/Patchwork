@@ -25,6 +25,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.TorchBlock;
 import net.minecraft.world.level.block.WallTorchBlock;
 import net.minecraft.world.level.block.WeatheringCopper;
+import net.minecraft.world.level.block.WeatheringCopper.WeatherState;
 import net.minecraft.world.level.block.WeatheringCopperCollection;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -43,6 +44,15 @@ public final class CopperTorches {
 	}
 
 	private CopperTorches() {
+	}
+
+	public static int lightLevel(WeatherState age) {
+		return switch (age) {
+			case UNAFFECTED -> 14;
+			case EXPOSED -> 12;
+			case WEATHERED -> 10;
+			case OXIDIZED -> 8;
+		};
 	}
 
 	public static void register() {
@@ -101,12 +111,7 @@ public final class CopperTorches {
 			ResourceKey<Block> key = ResourceKey.create(Registries.BLOCK, Patchwork.id(id));
 			var properties = BlockBehaviour.Properties
 					.ofFullCopy(wall ? Blocks.COPPER_WALL_TORCH : Blocks.COPPER_TORCH)
-					.lightLevel(state -> unlit ? 0 : switch (age) {
-						case UNAFFECTED -> 14;
-						case EXPOSED -> 12;
-						case WEATHERED -> 10;
-						case OXIDIZED -> 8;
-					})
+					.lightLevel(state -> unlit ? 0 : lightLevel(age))
 					.overrideDescription(key.identifier().toLanguageKey("block"))
 					.setId(key);
 			if (wall) {

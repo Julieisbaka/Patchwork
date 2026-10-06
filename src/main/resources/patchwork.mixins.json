@@ -33,6 +33,8 @@
 		"SkeletonCoverMixin",
 		"SpiderWebMixin",
 		"ThrownFireChargeMixin",
+		"UnlitCandleStackingMixin",
+		"UnlitLightDropsMixin",
 		"WaterCauldronCleaningMixin",
 		"WitherBossMixin",
 		"WolfBannerMixin"

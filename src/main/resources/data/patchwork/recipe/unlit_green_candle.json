@@ -1,0 +1,9 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"ingredients": [
+		"minecraft:green_candle"
+	],
+	"result": {
+		"id": "patchwork:unlit_green_candle"
+	}
+}

@@ -1,0 +1,9 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"ingredients": [
+		"patchwork:unlit_weathered_copper_campfire"
+	],
+	"result": {
+		"id": "patchwork:weathered_copper_campfire"
+	}
+}

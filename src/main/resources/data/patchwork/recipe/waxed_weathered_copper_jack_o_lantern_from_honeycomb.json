@@ -1,0 +1,10 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"ingredients": [
+		"patchwork:weathered_copper_jack_o_lantern",
+		"minecraft:honeycomb"
+	],
+	"result": {
+		"id": "patchwork:waxed_weathered_copper_jack_o_lantern"
+	}
+}

@@ -1,0 +1,15 @@
+{
+	"type": "minecraft:block",
+	"pools": [
+		{
+			"entries": [
+				{
+					"type": "minecraft:item",
+					"name": "patchwork:copper_candle"
+				}
+			],
+			"rolls": 1
+		}
+	],
+	"random_sequence": "patchwork:blocks/copper_candle_cake"
+}

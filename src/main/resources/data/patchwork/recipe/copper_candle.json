@@ -1,0 +1,16 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"S",
+		"H",
+		"C"
+	],
+	"key": {
+		"S": "minecraft:string",
+		"H": "minecraft:honeycomb",
+		"C": "minecraft:copper_nugget"
+	},
+	"result": {
+		"id": "patchwork:copper_candle"
+	}
+}

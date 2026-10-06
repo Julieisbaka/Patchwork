@@ -1,0 +1,10 @@
+{
+	"variants": {
+		"lit=false": {
+			"model": "patchwork:block/waxed_weathered_copper_candle_cake"
+		},
+		"lit=true": {
+			"model": "patchwork:block/waxed_weathered_copper_candle_cake_lit"
+		}
+	}
+}

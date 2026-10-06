@@ -1,0 +1,16 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"S",
+		"H",
+		"F"
+	],
+	"key": {
+		"S": "minecraft:string",
+		"H": "minecraft:honeycomb",
+		"F": "#patchwork:soul_fire_bases"
+	},
+	"result": {
+		"id": "patchwork:soul_candle"
+	}
+}

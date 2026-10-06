@@ -1,0 +1,14 @@
+{
+	"replace": false,
+	"values": [
+		"patchwork:soul_candle",
+		"patchwork:copper_candle",
+		"patchwork:waxed_copper_candle",
+		"patchwork:exposed_copper_candle",
+		"patchwork:waxed_exposed_copper_candle",
+		"patchwork:weathered_copper_candle",
+		"patchwork:waxed_weathered_copper_candle",
+		"patchwork:oxidized_copper_candle",
+		"patchwork:waxed_oxidized_copper_candle"
+	]
+}

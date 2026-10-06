@@ -1,0 +1,14 @@
+{
+	"replace": false,
+	"values": [
+		"patchwork:soul_candle_cake",
+		"patchwork:copper_candle_cake",
+		"patchwork:waxed_copper_candle_cake",
+		"patchwork:exposed_copper_candle_cake",
+		"patchwork:waxed_exposed_copper_candle_cake",
+		"patchwork:weathered_copper_candle_cake",
+		"patchwork:waxed_weathered_copper_candle_cake",
+		"patchwork:oxidized_copper_candle_cake",
+		"patchwork:waxed_oxidized_copper_candle_cake"
+	]
+}

@@ -1,0 +1,13 @@
+{
+	"replace": false,
+	"values": [
+		"patchwork:copper_campfire",
+		"patchwork:waxed_copper_campfire",
+		"patchwork:exposed_copper_campfire",
+		"patchwork:waxed_exposed_copper_campfire",
+		"patchwork:weathered_copper_campfire",
+		"patchwork:waxed_weathered_copper_campfire",
+		"patchwork:oxidized_copper_campfire",
+		"patchwork:waxed_oxidized_copper_campfire"
+	]
+}
