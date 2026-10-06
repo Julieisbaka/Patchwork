@@ -68,7 +68,8 @@ public final class UnlitTorches {
 	}
 
 	private static BlockBehaviour.Properties properties(Block lit, ResourceKey<Block> key) {
-		return BlockBehaviour.Properties.ofLegacyCopy(lit).lightLevel(state -> 0).setId(key);
+		return BlockBehaviour.Properties.ofFullCopy(lit).lightLevel(state -> 0)
+				.overrideDescription(key.identifier().toLanguageKey("block")).setId(key);
 	}
 
 	private static Block standing(String name, Block lit) {

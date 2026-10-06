@@ -101,12 +101,13 @@ public final class CopperTorches {
 			String id = (unlit ? "unlit_" : "") + name;
 			ResourceKey<Block> key = ResourceKey.create(Registries.BLOCK, Patchwork.id(id));
 			var properties = BlockBehaviour.Properties
-					.ofLegacyCopy(wall ? Blocks.COPPER_WALL_TORCH : Blocks.COPPER_TORCH)
+					.ofFullCopy(wall ? Blocks.COPPER_WALL_TORCH : Blocks.COPPER_TORCH)
 					.lightLevel(state -> unlit ? 0 : 14)
+					.overrideDescription(key.identifier().toLanguageKey("block"))
 					.setId(key);
 			if (wall) {
 				ResourceKey<LootTable> loot = ResourceKey.create(Registries.LOOT_TABLE,
-						Patchwork.id(id.replace("_wall_torch", "_torch")));
+						Patchwork.id("blocks/" + id.replace("_wall_torch", "_torch")));
 				properties.overrideLootTable(Optional.of(loot));
 			}
 			boolean waxed = name.startsWith("waxed_");

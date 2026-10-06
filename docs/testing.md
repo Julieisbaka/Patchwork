@@ -25,6 +25,8 @@ From the repository root, run the Gradle wrapper for your platform:
 
 The Gradle unit-test task has no conventional unit tests. Gameplay validation
 uses Fabric GameTests, not a passing empty `test` task.
+Both Java source sets compile with `-Xlint:deprecation -Werror`; deprecated
+API calls fail the build rather than being hidden or suppressed.
 
 ## Server GameTests
 
@@ -51,6 +53,14 @@ directories with separate configurations.
 
 ## Automated coverage
 
+- Rabbit carrot taming in either hand, baby/Creative behavior, exclusive owner
+  commands, unchanged breeding, ownership/stay save-load and legacy wild saves,
+  actual stay/follow movement, owner avoidance, safe/unsupported/leashed teleport
+  checks, Call horn recall, and owner-versus-wild rabbit sweep protection.
+  Select these with `patchwork:*rabbit*`.
+- Copied block loot-table and description identities across garden blocks,
+  charcoal, soul pumpkins, torches, copper families, lanterns, and cauldrons.
+  Select with `patchwork:*copied_block_properties*`.
 - Restored painting placement-tag membership, Creative presets, preservation of
   vanilla paintings, and normal placement on a 2x2 wall. Illusioner counts across
   Easy/Normal/Hard raid waves and bonus waves, unchanged pillager spawning,
@@ -114,6 +124,9 @@ Removing the client mesh invalidation makes this regression fail with a stale
 color, confirming it checks the rendered result rather than just stored data.
 In-world checks exercise model loading and client mixins; a server-only build cannot
 validate those.
+It also tames a rabbit with a real connected server player, checks client
+owner/stay synchronization, and verifies exactly one wolf banner layer plus
+banner render-state extraction after the renderer API migration.
 
 ## Remaining manual checks
 

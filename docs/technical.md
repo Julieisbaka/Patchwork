@@ -50,6 +50,22 @@ presets both read this tag. `RaidMixin` adds one illusioner after each wave
 from wave 5 onward through vanilla `joinRaid`, preserving spawn equipment,
 wave membership, health accounting, persistence, and raid completion.
 
+Rabbits keep their vanilla entity type, variants, and breeding logic.
+`RabbitMixin` implements `OwnableEntity` through `RabbitPet`, synchronizes owner
+references and stay commands, and saves them as `PatchworkOwner` and
+`PatchworkStay`. Separate follow/stay goals are necessary because vanilla's
+pet goals require `TamableAnimal`, while rabbits extend `Animal`. Owner
+avoidance is filtered without removing predator avoidance. Teleports require
+loaded chunks, walkable ground, and collision-free space, and do not move
+leashed or mounted rabbits.
+
+Block registrations use `Properties.ofFullCopy`, with explicit overrides where
+custom wall-torch names/drops or cauldron compatibility require them. Entity
+renderers use vanilla `EntityRenderers.register`; wolf banner layers use the
+Fabric render-layer registration callback, without inheriting deprecated
+renderer classes. Java compilation enables deprecation lint and treats
+warnings as errors.
+
 ## Validation
 
 Gameplay and rendering behavior are tested with Fabric server and client

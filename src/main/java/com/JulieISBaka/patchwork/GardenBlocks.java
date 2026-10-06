@@ -37,7 +37,7 @@ public final class GardenBlocks {
 			Function<BlockBehaviour.Properties, T> factory) {
 		var key = ResourceKey.create(Registries.BLOCK, Patchwork.id(name));
 		return Registry.register(BuiltInRegistries.BLOCK, key,
-				factory.apply(BlockBehaviour.Properties.ofLegacyCopy(source).setId(key)));
+				factory.apply(BlockBehaviour.Properties.ofFullCopy(source).setId(key)));
 	}
 
 	private static Item item(String name, Block block, boolean compostable) {

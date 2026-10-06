@@ -1,6 +1,7 @@
 package com.JulieISBaka.patchwork.mixin;
 
 import com.JulieISBaka.patchwork.PatchworkConfig;
+import com.JulieISBaka.patchwork.RabbitPet;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.feline.Cat;
 import net.minecraft.world.entity.animal.wolf.Wolf;
@@ -15,6 +16,7 @@ public class PlayerSweepMixin {
 	private boolean patchwork$protectOwnedPetsFromSweep(Player player, Entity nearby) {
 		return player.isAlliedTo(nearby) || PatchworkConfig.settings().ownerSweepProtection()
 				&& (nearby instanceof Wolf wolf && wolf.isTame() && wolf.isOwnedBy(player)
-						|| nearby instanceof Cat cat && cat.isTame() && cat.isOwnedBy(player));
+						|| nearby instanceof Cat cat && cat.isTame() && cat.isOwnedBy(player)
+						|| nearby instanceof RabbitPet pet && pet.patchwork$isOwnedBy(player));
 	}
 }

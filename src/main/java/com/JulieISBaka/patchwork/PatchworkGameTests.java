@@ -49,6 +49,219 @@ public class PatchworkGameTests {
 	}
 
 	@GameTest
+	public void rabbitCarrotTamingAndOwnerCommands(GameTestHelper test) {
+		var rabbit = test.spawn(EntityTypes.RABBIT, CENTER);
+		var pet = (RabbitPet) rabbit;
+		Player owner = test.makeMockPlayer(GameType.SURVIVAL);
+		owner.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.GOLDEN_CARROT, 2));
+		rabbit.interact(owner, InteractionHand.MAIN_HAND, Vec3.ZERO);
+		test.assertTrue(pet.getOwnerReference() == null, "Golden carrots unexpectedly tame rabbits");
+		rabbit.setAge(0);
+		rabbit.resetLove();
+		owner.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.CARROT, 3));
+		test.assertTrue(rabbit.interact(owner, InteractionHand.OFF_HAND, Vec3.ZERO).consumesAction(),
+				"Offhand carrot taming did not succeed");
+		test.assertTrue(pet.patchwork$isOwnedBy(owner) && owner.getOffhandItem().getCount() == 2
+				&& !rabbit.isInLove() && rabbit.isPersistenceRequired() && !pet.patchwork$isOrderedToStay(),
+				"One carrot did not tame a persistent, following rabbit without starting breeding");
+		Player stranger = test.makeMockServerPlayer(GameType.SURVIVAL);
+		stranger.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.CARROT, 2));
+		rabbit.interact(stranger, InteractionHand.MAIN_HAND, Vec3.ZERO);
+		test.assertTrue(pet.patchwork$isOwnedBy(owner) && rabbit.isInLove(),
+				"Feeding a tamed rabbit stole ownership or broke breeding");
+		stranger.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+		rabbit.interact(stranger, InteractionHand.MAIN_HAND, Vec3.ZERO);
+		test.assertTrue(!pet.patchwork$isOrderedToStay(), "A stranger ordered the rabbit to stay");
+		owner.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+		rabbit.interact(owner, InteractionHand.MAIN_HAND, Vec3.ZERO);
+		test.assertTrue(pet.patchwork$isOrderedToStay(), "Owner's empty hand did not enable staying");
+		rabbit.interact(owner, InteractionHand.MAIN_HAND, Vec3.ZERO);
+		test.assertTrue(!pet.patchwork$isOrderedToStay(), "Owner's empty hand did not resume following");
+		var baby = test.spawn(EntityTypes.RABBIT, CENTER.offset(1, 0, 0));
+		baby.setBaby(true);
+		owner.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.CARROT, 2));
+		baby.interact(owner, InteractionHand.MAIN_HAND, Vec3.ZERO);
+		test.assertTrue(((RabbitPet) baby).patchwork$isOwnedBy(owner) && baby.isBaby()
+				&& owner.getMainHandItem().getCount() == 1, "Baby carrot taming changed age or consumption");
+		var creativeRabbit = test.spawn(EntityTypes.RABBIT, CENTER.offset(2, 0, 0));
+		Player creative = test.makeMockPlayer(GameType.CREATIVE);
+		GameType.CREATIVE.updatePlayerAbilities(creative.getAbilities());
+		creative.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.CARROT, 2));
+		creativeRabbit.interact(creative, InteractionHand.MAIN_HAND, Vec3.ZERO);
+		test.assertTrue(((RabbitPet) creativeRabbit).patchwork$isOwnedBy(creative)
+				&& creative.getMainHandItem().getCount() == 2, "Creative taming consumed a carrot");
+		test.succeed();
+	}
+
+	@GameTest
+	public void rabbitOwnershipAndStayPersist(GameTestHelper test) {
+		var rabbit = test.spawn(EntityTypes.RABBIT, CENTER);
+		Player owner = test.makeMockPlayer(GameType.SURVIVAL);
+		owner.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.CARROT));
+		rabbit.interact(owner, InteractionHand.MAIN_HAND, Vec3.ZERO);
+		var pet = (RabbitPet) rabbit;
+		pet.patchwork$setOrderedToStay(true);
+		var problems = new net.minecraft.util.ProblemReporter.Collector();
+		var output = net.minecraft.world.level.storage.TagValueOutput.createWithContext(problems,
+				test.getLevel().registryAccess());
+		test.assertTrue(rabbit.save(output), "Tamed rabbit could not be saved");
+		var reloaded = new net.minecraft.world.entity.animal.rabbit.Rabbit(EntityTypes.RABBIT, test.getLevel());
+		reloaded.load(net.minecraft.world.level.storage.TagValueInput.create(problems, test.getLevel().registryAccess(),
+				output.buildResult()));
+		test.assertTrue(((RabbitPet) reloaded).patchwork$isOwnedBy(owner)
+				&& ((RabbitPet) reloaded).patchwork$isOrderedToStay() && reloaded.isPersistenceRequired()
+				&& reloaded.getVariant() == rabbit.getVariant() && problems.isEmpty(),
+				"Rabbit owner, stay command, persistence, or variant failed save/reload");
+		var wild = test.spawn(EntityTypes.RABBIT, CENTER.offset(1, 0, 0));
+		var wildOutput = net.minecraft.world.level.storage.TagValueOutput.createWithContext(problems,
+				test.getLevel().registryAccess());
+		test.assertTrue(wild.save(wildOutput), "Wild rabbit could not be saved");
+		var legacy = wildOutput.buildResult();
+		legacy.remove("PatchworkOwner");
+		legacy.remove("PatchworkStay");
+		reloaded.load(net.minecraft.world.level.storage.TagValueInput.create(problems, test.getLevel().registryAccess(),
+				legacy));
+		test.assertTrue(((RabbitPet) reloaded).getOwnerReference() == null
+				&& !((RabbitPet) reloaded).patchwork$isOrderedToStay(), "Old wild rabbit data gained pet state");
+		test.succeed();
+	}
+
+	@GameTest(maxTicks = 200)
+	public void rabbitStaysThenFollowsOwner(GameTestHelper test) {
+		for (int x = 0; x < 8; x++) {
+			for (int z = 0; z < 4; z++) {
+				test.setBlock(new BlockPos(x, 0, z), Blocks.STONE);
+			}
+		}
+		var rabbit = test.spawn(EntityTypes.RABBIT, new BlockPos(1, 1, 1));
+		Player owner = test.makeMockPlayer(GameType.SURVIVAL);
+		owner.snapTo(Vec3.atBottomCenterOf(test.absolutePos(new BlockPos(6, 1, 1))));
+		test.getLevel().addFreshEntity(owner);
+		owner.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.CARROT));
+		rabbit.interact(owner, InteractionHand.MAIN_HAND, Vec3.ZERO);
+		var pet = (RabbitPet) rabbit;
+		pet.patchwork$setOrderedToStay(true);
+		rabbit.setOnGround(true);
+		rabbit.startJumping();
+		test.assertTrue(!rabbit.isJumping(), "Staying rabbit started a jump");
+		Vec3 origin = rabbit.position();
+		test.runAfterDelay(30, () -> {
+			test.assertTrue(rabbit.position().distanceToSqr(origin) < 0.25,
+					"Staying rabbit wandered away");
+			pet.patchwork$setOrderedToStay(false);
+			var follow = new RabbitPets.FollowGoal(rabbit, pet);
+			test.assertTrue(follow.canUse(), "Rabbit cannot follow its nearby owner");
+			test.succeedWhen(() -> test.assertTrue(rabbit.distanceToSqr(owner) < 16,
+					"Rabbit did not move toward its owner"));
+		});
+	}
+
+	@GameTest
+	public void rabbitAvoidanceAndSafeTeleport(GameTestHelper test) {
+		for (int x = 0; x < 8; x++) {
+			for (int z = 0; z < 8; z++) {
+				test.setBlock(new BlockPos(x, 0, z), Blocks.STONE);
+			}
+		}
+		var rabbit = test.spawn(EntityTypes.RABBIT, new BlockPos(1, 1, 1));
+		Player owner = test.makeMockPlayer(GameType.SURVIVAL);
+		owner.snapTo(Vec3.atBottomCenterOf(test.absolutePos(new BlockPos(4, 1, 4))));
+		test.getLevel().addFreshEntity(owner);
+		owner.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.CARROT));
+		rabbit.interact(owner, InteractionHand.MAIN_HAND, Vec3.ZERO);
+		var avoid = new net.minecraft.world.entity.ai.goal.AvoidEntityGoal<>(rabbit, Player.class, 8, 2.2, 2.2);
+		test.assertTrue(!avoid.canUse(), "Tamed rabbit tries to flee from its owner");
+		rabbit.getRandom().setSeed(0);
+		test.assertTrue(RabbitPets.teleportToOwner(rabbit, owner) && rabbit.distanceToSqr(owner) < 25
+				&& test.getLevel().noCollision(rabbit), "Rabbit did not teleport to a safe owner-adjacent block");
+		Vec3 origin = rabbit.position();
+		rabbit.setLeashedTo(owner, false);
+		test.assertTrue(!RabbitPets.teleportToOwner(rabbit, owner) && rabbit.position().equals(origin),
+				"Leashed rabbit teleported");
+		rabbit.removeLeash();
+		for (int x = 1; x <= 7; x++) {
+			for (int z = 1; z <= 7; z++) {
+				for (int y = 18; y <= 22; y++) {
+					test.setBlock(new BlockPos(x, y, z), Blocks.AIR);
+				}
+			}
+		}
+		owner.snapTo(Vec3.atBottomCenterOf(test.absolutePos(new BlockPos(4, 20, 4))));
+		test.assertTrue(!RabbitPets.teleportToOwner(rabbit, owner) && rabbit.position().equals(origin),
+				"Rabbit teleported into unsupported air");
+		test.succeed();
+	}
+
+	@GameTest
+	public void rabbitPetRecallAndSweepProtection(GameTestHelper test) {
+		require(test, PatchworkConfig.settings().callHornRecall(), "callHornRecall");
+		require(test, PatchworkConfig.settings().ownerSweepProtection(), "ownerSweepProtection");
+		for (int x = 0; x < 8; x++) {
+			for (int z = 0; z < 8; z++) {
+				test.setBlock(new BlockPos(x, 0, z), Blocks.STONE);
+			}
+		}
+		var rabbit = test.spawn(EntityTypes.RABBIT, new BlockPos(1, 1, 1));
+		Player owner = test.makeMockPlayer(GameType.SURVIVAL);
+		owner.snapTo(Vec3.atBottomCenterOf(test.absolutePos(new BlockPos(4, 1, 4))));
+		test.getLevel().addFreshEntity(owner);
+		owner.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.CARROT));
+		rabbit.interact(owner, InteractionHand.MAIN_HAND, Vec3.ZERO);
+		var pet = (RabbitPet) rabbit;
+		pet.patchwork$setOrderedToStay(true);
+		var horn = new ItemStack(Items.GOAT_HORN);
+		horn.set(DataComponents.INSTRUMENT, new net.minecraft.world.item.component.InstrumentComponent(
+				test.getLevel().registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.INSTRUMENT)
+						.getOrThrow(net.minecraft.world.item.Instruments.CALL_GOAT_HORN)));
+		owner.setItemInHand(InteractionHand.MAIN_HAND, horn);
+		rabbit.getRandom().setSeed(0);
+		test.assertTrue(horn.use(test.getLevel(), owner, InteractionHand.MAIN_HAND).consumesAction()
+				&& !pet.patchwork$isOrderedToStay() && rabbit.distanceToSqr(owner) < 25,
+				"Call horn did not recall and release a staying rabbit");
+		var target = test.spawn(EntityTypes.ZOMBIE, new BlockPos(4, 1, 5));
+		rabbit.snapTo(Vec3.atBottomCenterOf(test.absolutePos(new BlockPos(5, 1, 5))));
+		var wild = test.spawn(EntityTypes.RABBIT, new BlockPos(3, 1, 5));
+		float rabbitHealth = rabbit.getHealth();
+		((com.JulieISBaka.patchwork.mixin.PlayerSweepAccessor) owner).patchwork$doSweepAttack(
+				target, 4, test.getLevel().damageSources().playerAttack(owner), 1);
+		test.assertTrue(rabbit.getHealth() == rabbitHealth, "Owner's sweep attack hurt their rabbit");
+		test.assertTrue(wild.getHealth() < wild.getMaxHealth(), "Sweep protection affected wild rabbits");
+		test.succeed();
+	}
+
+	@GameTest
+	public void copiedBlockPropertiesPreserveLootAndNames(GameTestHelper test) {
+		var blocks = new java.util.ArrayList<net.minecraft.world.level.block.Block>(java.util.List.of(
+				CharcoalBlocks.BLOCK, GardenBlocks.WAX_BLOCK, GardenBlocks.PAEONIA, GardenBlocks.POTTED_PAEONIA,
+				PumpkinLanterns.SOUL_BLOCK, UnlitTorches.TORCH, UnlitTorches.WALL_TORCH,
+				UnlitTorches.SOUL_TORCH, UnlitTorches.SOUL_WALL_TORCH,
+				UnlitTorches.REDSTONE_TORCH, UnlitTorches.REDSTONE_WALL_TORCH,
+				UnlitLanterns.LANTERN, UnlitLanterns.SOUL_LANTERN));
+		blocks.addAll(CopperTorches.LIT.asList());
+		blocks.addAll(CopperTorches.LIT_WALL.asList());
+		blocks.addAll(CopperTorches.UNLIT.asList());
+		blocks.addAll(CopperTorches.UNLIT_WALL.asList());
+		blocks.addAll(UnlitLanterns.COPPER_LANTERN.asList());
+		for (var block : blocks) {
+			var id = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(block);
+			if (!id.getNamespace().equals(Patchwork.MOD_ID)) {
+				continue;
+			}
+			String drop = id.getPath().replace("_wall_torch", "_torch");
+			var expected = net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE,
+					Patchwork.id("blocks/" + drop));
+			test.assertTrue(block.getLootTable().equals(java.util.Optional.of(expected)),
+					"Copied block inherited vanilla drops: " + id);
+			test.assertTrue(block.getDescriptionId().equals(id.toLanguageKey("block")),
+					"Copied block inherited a vanilla description: " + id);
+		}
+		test.assertTrue(PotionCauldrons.BLOCK.getLootTable().equals(Blocks.CAULDRON.getLootTable())
+				&& PotionCauldrons.BLOCK.getDescriptionId().equals(Blocks.CAULDRON.getDescriptionId()),
+				"Potion cauldron no longer preserves the vanilla cauldron's drops and name");
+		test.succeed();
+	}
+
+	@GameTest
 	public void restoredPaintingsArePlaceableAndInCreative(GameTestHelper test) {
 		var paintings = test.getLevel().registryAccess()
 				.lookupOrThrow(net.minecraft.core.registries.Registries.PAINTING_VARIANT);

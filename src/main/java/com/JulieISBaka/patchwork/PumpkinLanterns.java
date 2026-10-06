@@ -27,7 +27,7 @@ public final class PumpkinLanterns {
 	private static final ResourceKey<Item> ITEM_KEY = ResourceKey.create(Registries.ITEM,
 			Patchwork.id("soul_jack_o_lantern"));
 	public static final Block SOUL_BLOCK = Registry.register(BuiltInRegistries.BLOCK, BLOCK_KEY, new CarvedPumpkinBlock(
-			BlockBehaviour.Properties.ofLegacyCopy(Blocks.JACK_O_LANTERN).lightLevel(state -> 10).setId(BLOCK_KEY)));
+			BlockBehaviour.Properties.ofFullCopy(Blocks.JACK_O_LANTERN).lightLevel(state -> 10).setId(BLOCK_KEY)));
 	public static final Item SOUL_ITEM = Registry.register(BuiltInRegistries.ITEM, ITEM_KEY,
 			new BlockItem(SOUL_BLOCK, new Item.Properties().setId(ITEM_KEY).useBlockDescriptionPrefix()) {
 				@Override

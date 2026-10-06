@@ -16,11 +16,11 @@ discards edits. Restart the game/server to apply changes.
 | `witherBirthExplosion`     | Increased Wither birth-explosion damage                  |
 | `chainmailRecipes`         | Chainmail recipes and recipe-book unlocks                |
 | `wolfBanners`              | Wolf banner interactions and local banner rendering      |
-| `ownerSweepProtection`     | Owned wolf/cat protection from sword sweeps              |
+| `ownerSweepProtection`     | Owned wolf/cat/rabbit protection from sword sweeps       |
 | `shulkerDyeing`            | Shulker recoloring                                       |
 | `throwableSlimeballs`      | Slimeball throwing, effects, and cooldown                |
 | `throwableFireCharges`     | Player throwing of regular and Soul Fire Charges         |
-| `callHornRecall`           | Call goat horn pet recall                                |
+| `callHornRecall`           | Call goat horn recall of seated pets and staying rabbits |
 | `cauldronCleaning`         | Washing wool, terracotta, and stained glass              |
 | `beesDefendFlowers`        | Bees defending nearby flowers                            |
 | `creeperChainReactions`    | Creeper blast chain reactions; off by default            |
@@ -47,6 +47,10 @@ Unlit block items, Soul Golems, Soul Fire Charges, and their recipes have no
 separate availability switch. The four restored paintings and illusioner raid
 spawns are also always enabled. Illusioners join waves 5 and later, including
 bonus waves; Easy raids have no illusioners.
+Rabbit carrot taming is always enabled. One ordinary carrot tames an unowned
+non-killer rabbit, including babies. Only the owner can toggle staying, using
+an empty hand. Golden carrots still use vanilla feeding, and feeding already
+tamed rabbits does not transfer ownership. Offspring are born wild.
 `throwableFireCharges` gates player air throws
 of both charge types, not Soul Golem attacks, crafting, or direct block use.
 Both Fire Charge items remain available next to each other in Creative Combat

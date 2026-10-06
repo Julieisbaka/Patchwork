@@ -37,7 +37,7 @@ import net.minecraft.world.phys.BlockHitResult;
 public final class PotionCauldrons {
 	public static final Block BLOCK = Registry.register(BuiltInRegistries.BLOCK,
 			ResourceKey.create(Registries.BLOCK, Patchwork.id("potion_cauldron")),
-			new PotionCauldronBlock(BlockBehaviour.Properties.ofLegacyCopy(Blocks.WATER_CAULDRON)
+			new PotionCauldronBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.WATER_CAULDRON)
 					.overrideLootTable(Blocks.CAULDRON.getLootTable())
 					.overrideDescription(Blocks.CAULDRON.getDescriptionId())
 					.setId(ResourceKey.create(Registries.BLOCK, Patchwork.id("potion_cauldron")))));

@@ -33,6 +33,11 @@ changes. Most gameplay features can be enabled or disabled individually.
 
 - **Pets:** Add banners to wolves, protect owned wolves and cats from sword
   sweeps, and use a goat horn to recall nearby seated pets.
+- **Rabbit companions:** Tame ordinary adult or baby rabbits with one carrot.
+  They follow their owner; the owner's empty-hand right-click toggles stay.
+  Ownership and stay commands survive reloads. Call horns recall staying
+  rabbits, and owner sword sweeps spare them. Feeding tamed rabbits keeps
+  vanilla breeding and baby-growth behavior.
 - **Experience orbs:** Nearby orbs can combine to reduce entity count while
   preserving experience values and Mending behavior.
 - **Creature behaviors:** Configure tougher Withers, flower-defending bees,

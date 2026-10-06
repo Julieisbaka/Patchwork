@@ -5,6 +5,8 @@ import com.JulieISBaka.patchwork.GardenBlocks;
 import com.JulieISBaka.patchwork.Patchwork;
 import com.JulieISBaka.patchwork.PotionCauldronEntity;
 import com.JulieISBaka.patchwork.PotionCauldrons;
+import com.JulieISBaka.patchwork.RabbitPet;
+import com.JulieISBaka.patchwork.client.mixin.LivingEntityRendererAccessor;
 import com.JulieISBaka.patchwork.SoulFireCharges;
 import com.JulieISBaka.patchwork.SoulFireSupport;
 import com.JulieISBaka.patchwork.SoulFireball;
@@ -35,9 +37,60 @@ import net.minecraft.world.level.block.LayeredCauldronBlock;
 public class PatchworkClientGameTests implements FabricClientGameTest {
 	@Override
 	public void runTest(ClientGameTestContext context) {
+		testPetsAndRendererMigration(context);
 		testPotionFirstFillTint(context);
 		testSoulAndLightModels(context);
 		testGardenAndArtwork(context);
+	}
+
+	private static void testPetsAndRendererMigration(ClientGameTestContext context) {
+		try (var world = context.worldBuilder().create()) {
+			world.getServer().runCommand("fill -8 100 -8 8 100 8 minecraft:grass_block");
+			world.getServer().runCommand("time set day");
+			world.getServer().runCommand("tp @a 0.5 101 5.5 180 15");
+			var rabbitId = new java.util.concurrent.atomic.AtomicInteger();
+			var wolfId = new java.util.concurrent.atomic.AtomicInteger();
+			world.getServer().runOnServer(server -> {
+				var player = server.getPlayerList().getPlayers().getFirst();
+				var level = player.level();
+				var rabbit = java.util.Objects.requireNonNull(net.minecraft.world.entity.EntityTypes.RABBIT
+						.create(level, net.minecraft.world.entity.EntitySpawnReason.COMMAND));
+				rabbit.snapTo(-1.5, 101, 0.5, 0, 0);
+				level.addFreshEntity(rabbit);
+				player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.CARROT));
+				rabbit.interact(player, InteractionHand.MAIN_HAND, net.minecraft.world.phys.Vec3.ZERO);
+				player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+				rabbit.interact(player, InteractionHand.MAIN_HAND, net.minecraft.world.phys.Vec3.ZERO);
+				rabbitId.set(rabbit.getId());
+				var wolf = java.util.Objects.requireNonNull(net.minecraft.world.entity.EntityTypes.WOLF
+						.create(level, net.minecraft.world.entity.EntitySpawnReason.COMMAND));
+				wolf.snapTo(1.5, 101, 0.5, 0, 0);
+				wolf.tame(player);
+				wolf.setOrderedToSit(true);
+				wolf.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, new ItemStack(Items.BANNER.white()));
+				level.addFreshEntity(wolf);
+				wolfId.set(wolf.getId());
+			});
+			context.waitFor(client -> client.level.getEntity(rabbitId.get()) instanceof RabbitPet pet
+					&& pet.patchwork$isOwnedBy(client.player) && pet.patchwork$isOrderedToStay()
+					&& client.level.getEntity(wolfId.get()) instanceof net.minecraft.world.entity.animal.wolf.Wolf wolf
+					&& wolf.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.HEAD).is(Items.BANNER.white()));
+			context.runOnClient(client -> {
+				var wolf = (net.minecraft.world.entity.animal.wolf.Wolf) client.level.getEntity(wolfId.get());
+				var renderer = (net.minecraft.client.renderer.entity.WolfRenderer) client.getEntityRenderDispatcher()
+						.getRenderer(wolf);
+				if (((LivingEntityRendererAccessor) renderer).patchwork$getLayers().stream()
+						.filter(layer -> layer instanceof WolfBannerLayer).count() != 1) {
+					throw new AssertionError("Wolf banner layer was not registered exactly once");
+				}
+				var state = renderer.createRenderState(wolf, 0);
+				if (!((WolfBannerState) state).patchwork$getBanner().is(Items.BANNER.white())) {
+					throw new AssertionError("Wolf banner extraction failed after renderer migration");
+				}
+			});
+			world.getConnection().waitForChunksRender();
+			context.takeScreenshot("patchwork-tamed-rabbit-and-wolf-banner");
+		}
 	}
 
 	private static void testGardenAndArtwork(ClientGameTestContext context) {

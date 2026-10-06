@@ -56,7 +56,7 @@ public final class UnlitLanterns {
 	private static Block create(Block lit) {
 		String name = "unlit_" + BuiltInRegistries.BLOCK.getKey(lit).getPath();
 		ResourceKey<Block> blockKey = ResourceKey.create(Registries.BLOCK, Patchwork.id(name));
-		BlockBehaviour.Properties properties = BlockBehaviour.Properties.ofLegacyCopy(lit).lightLevel(state -> 0)
+		BlockBehaviour.Properties properties = BlockBehaviour.Properties.ofFullCopy(lit).lightLevel(state -> 0)
 				.setId(blockKey);
 		Block block = Registry.register(BuiltInRegistries.BLOCK, blockKey,
 				lit instanceof WeatheringCopper copper
