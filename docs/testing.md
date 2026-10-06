@@ -74,6 +74,9 @@ directories with separate configurations.
 - Client garden block/item models, supplied texture dimensions/transparency,
   all original replacement texture resources, opaque Soul Golem torso UVs,
   and placed wax/flower/pot and lantern/copper-torch screenshots.
+  Redrawn wax, Paeonia, soul pumpkin, and the losslessly reduced unlit torch
+  share an in-world screenshot. The torch must occupy exactly the two central
+  UV columns from row 6 through row 15; wax and soul pumpkin faces must be opaque.
 
 - Soul Golem build combinations, invalid builds, torch lighting, head placement,
   spawn eggs, owner assignment, owner combat assistance/defense, ranged impact,

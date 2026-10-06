@@ -98,10 +98,12 @@ public class PatchworkClientGameTests implements FabricClientGameTest {
 			world.getServer().runCommand("fill -10 100 -10 10 100 10 minecraft:grass_block");
 			world.getServer().runCommand("time set day");
 			world.getServer().runCommand("weather clear");
-			world.getServer().runCommand("tp @a 0.5 101 5.5 180 15");
+			world.getServer().runCommand("tp @a 0.5 101 7.5 180 15");
 			world.getServer().runCommand("setblock -2 101 0 patchwork:wax_block");
 			world.getServer().runCommand("setblock 0 101 0 patchwork:paeonia");
 			world.getServer().runCommand("setblock 2 101 0 patchwork:potted_paeonia");
+			world.getServer().runCommand("setblock -4 101 0 patchwork:soul_jack_o_lantern[facing=south]");
+			world.getServer().runCommand("setblock 4 101 0 patchwork:unlit_torch");
 			world.getServer().runOnServer(server -> server.getPlayerList().getPlayers().getFirst()
 					.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(GardenBlocks.PAEONIA_ITEM)));
 			context.waitFor(client -> client.level.getBlockState(new BlockPos(0, 101, 0)).is(GardenBlocks.PAEONIA)
@@ -150,6 +152,27 @@ public class PatchworkClientGameTests implements FabricClientGameTest {
 								&& (image.getRGB(0, 0) >>> 24) != 0) {
 							throw new AssertionError("Icon/flower lost its transparent background: " + name);
 						}
+						if (name.equals("block/unlit_torch")) {
+							for (int y = 0; y < 16; y++) {
+								for (int x = 0; x < 16; x++) {
+									int expectedAlpha = y >= 6 && (x == 7 || x == 8) ? 255 : 0;
+									if ((image.getRGB(x, y) >>> 24) != expectedAlpha) {
+										throw new AssertionError("Unlit torch does not fit the vanilla UVs at "
+												+ x + "," + y);
+									}
+								}
+							}
+						}
+						if (name.equals("block/wax_block") || name.equals("block/soul_jack_o_lantern")) {
+							for (int y = 0; y < 16; y++) {
+								for (int x = 0; x < 16; x++) {
+									if ((image.getRGB(x, y) >>> 24) != 255) {
+										throw new AssertionError("Solid block texture contains transparent pixels: "
+												+ name);
+									}
+								}
+							}
+						}
 						if (name.equals("entity/soul_golem")) {
 							for (int y = 16; y < 36; y++) {
 								int start = y < 26 ? 10 : 0;
@@ -169,7 +192,7 @@ public class PatchworkClientGameTests implements FabricClientGameTest {
 			});
 			context.waitTicks(2);
 			world.getConnection().waitForChunksRender();
-			context.takeScreenshot("wax-block-and-paeonia");
+			context.takeScreenshot("redrawn-wax-paeonia-soul-pumpkin-and-unlit-torch");
 			world.getServer().runCommand("fill -8 101 -4 8 104 4 minecraft:air");
 			world.getServer().runCommand("fill -10 100 -10 10 100 10 minecraft:stone");
 			world.getServer().runCommand("tp @a 0.5 103 8.5 180 30");

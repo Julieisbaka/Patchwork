@@ -51,7 +51,7 @@ public abstract class RabbitMixin extends Animal implements RabbitPet {
 	private void patchwork$registerPetGoals(CallbackInfo ci) {
 		Rabbit rabbit = (Rabbit) (Object) this;
 		goalSelector.addGoal(0, new RabbitPets.StayGoal(rabbit, this));
-		goalSelector.addGoal(4, new RabbitPets.FollowGoal(rabbit, this));
+		goalSelector.addGoal(5, new RabbitPets.FollowGoal(rabbit, this));
 	}
 
 	@Inject(method = "startJumping", at = @At("HEAD"), cancellable = true)
