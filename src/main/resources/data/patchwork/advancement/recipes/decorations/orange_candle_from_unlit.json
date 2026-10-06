@@ -14,7 +14,7 @@
 		"has_the_recipe": {
 			"trigger": "minecraft:recipe_unlocked",
 			"conditions": {
-				"recipe": "patchwork:orange_candle_from_unlit"
+				"recipes": "patchwork:orange_candle_from_unlit"
 			}
 		}
 	},

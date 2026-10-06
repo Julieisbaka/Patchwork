@@ -14,7 +14,7 @@
 		"has_the_recipe": {
 			"trigger": "minecraft:recipe_unlocked",
 			"conditions": {
-				"recipe": "patchwork:unlit_copper_candle"
+				"recipes": "patchwork:unlit_copper_candle"
 			}
 		}
 	},

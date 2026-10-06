@@ -44,7 +44,9 @@ rendering existing banners. Disabling wolf banner interactions on the server
 does not erase banners already equipped.
 
 Unlit block items, Soul Golems, Soul Fire Charges, and their recipes have no
-separate availability switch. The four restored paintings and illusioner raid
+separate availability switch. Soul Candles and copper candles/candle cakes,
+campfires, and Jack o'Lanterns are also always available, including oxidation,
+waxing, recipes, and unlit items. The four restored paintings and illusioner raid
 spawns are also always enabled. Illusioners join waves 5 and later, including
 bonus waves; Easy raids have no illusioners.
 Rabbit carrot taming is always enabled. One ordinary carrot tames an unowned
@@ -55,8 +57,9 @@ tamed rabbits does not transfer ownership. Offspring are born wild.
 of both charge types, not Soul Golem attacks, crafting, or direct block use.
 Both Fire Charge items remain available next to each other in Creative Combat
 when throwing is disabled; disabling air throws does not remove the items.
-`pumpkinLanterns` gates lighting, not placing an existing Soul Jack o'Lantern
-or constructing a golem with it.
+`pumpkinLanterns` gates torch-lighting interactions for regular, soul, and copper
+Jack o'Lanterns, not crafting or placing those blocks, or constructing a Soul
+Golem with a Soul Jack o'Lantern.
 
 Disabling `potionCauldrons` prevents new interactions but preserves placed
 potion cauldrons. Disabling `experienceClumping` restores vanilla orb

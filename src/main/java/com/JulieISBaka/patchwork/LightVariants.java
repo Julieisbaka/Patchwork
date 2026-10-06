@@ -89,7 +89,8 @@ public final class LightVariants {
 	}
 
 	public static boolean isUnlitItemFor(ItemStack stack, Block block) {
-		return stack.is(UNLIT_ITEMS.getOrDefault(block, net.minecraft.world.item.Items.AIR));
+		var item = UNLIT_ITEMS.get(block);
+		return item != null && stack.is(item);
 	}
 
 	public static Item unlitItem(BlockState state) {
@@ -176,6 +177,11 @@ public final class LightVariants {
 		var key = ResourceKey.create(Registries.ITEM, Patchwork.id(name));
 		var item = Registry.register(BuiltInRegistries.ITEM, key,
 				new BlockItem(block, new Item.Properties().setId(key)) {
+					@Override
+					public void registerBlocks(Map<Block, Item> map, Item item) {
+						map.putIfAbsent(block, item);
+					}
+
 					@Override
 					protected BlockState getPlacementState(BlockPlaceContext context) {
 						var state = super.getPlacementState(context);

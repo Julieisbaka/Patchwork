@@ -14,7 +14,7 @@
 		"has_the_recipe": {
 			"trigger": "minecraft:recipe_unlocked",
 			"conditions": {
-				"recipe": "patchwork:unlit_exposed_copper_campfire"
+				"recipes": "patchwork:unlit_exposed_copper_campfire"
 			}
 		}
 	},

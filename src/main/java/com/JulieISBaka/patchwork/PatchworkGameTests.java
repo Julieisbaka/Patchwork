@@ -31,12 +31,14 @@ import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.BaseFireBlock;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.CarvedPumpkinBlock;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.minecraft.world.level.block.RedstoneTorchBlock;
 import net.minecraft.world.level.block.WallTorchBlock;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.BlockHitResult;
@@ -1145,6 +1147,176 @@ public class PatchworkGameTests {
 					player.getOffhandItem().is(Items.FLINT_AND_STEEL)
 							&& player.getOffhandItem().getDamageValue() == i + 1,
 					"Relighting did not use one durability");
+		}
+		test.succeed();
+	}
+
+	@GameTest
+	public void lightVariantsCopperWeatheringWaxingAndBrightness(GameTestHelper test) {
+		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		test.setBlock(CENTER.below(), Blocks.HAY_BLOCK);
+		for (var family : java.util.List.of(LightVariants.COPPER_CANDLES, LightVariants.COPPER_CANDLE_CAKES,
+				LightVariants.COPPER_CAMPFIRES, LightVariants.COPPER_PUMPKINS)) {
+			var ages = net.minecraft.world.level.block.WeatheringCopper.WeatherState.values();
+			for (int stage = 0; stage < ages.length; stage++) {
+				var normal = family.weathering().pick(ages[stage]);
+				var waxed = family.waxed().pick(ages[stage]);
+				for (var block : java.util.List.of(normal, waxed)) {
+					for (var state : block.getStateDefinition().getPossibleStates()) {
+						boolean lit = !state.hasProperty(BlockStateProperties.LIT)
+								|| state.getValue(BlockStateProperties.LIT);
+						test.assertTrue(state.getLightEmission() == (lit ? 14 - stage * 2 : 0),
+								"Incorrect copper light for " + state);
+					}
+				}
+				var state = normal.defaultBlockState().trySetValue(BlockStateProperties.LIT, true)
+						.trySetValue(net.minecraft.world.level.block.CandleBlock.CANDLES, 4)
+						.trySetValue(BlockStateProperties.HORIZONTAL_FACING, Direction.EAST)
+						.trySetValue(BlockStateProperties.SIGNAL_FIRE, true);
+				test.setBlock(CENTER, Blocks.AIR);
+				test.setBlock(CENTER, state);
+				var entity = test.getLevel().getBlockEntity(test.absolutePos(CENTER));
+				if (entity instanceof net.minecraft.world.level.block.entity.CampfireBlockEntity campfire) {
+					test.assertTrue(campfire.placeFood(test.getLevel(), player, new ItemStack(Items.BEEF)),
+							"Copper campfire rejected cookable food");
+				}
+				player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.HONEYCOMB, 2));
+				useTorchItem(test, player);
+				test.assertTrue(test.getBlockState(CENTER).equals(waxed.withPropertiesOf(state)),
+						"Waxing lost light variant properties");
+				test.assertTrue(!test.getBlockState(CENTER).isRandomlyTicking(), "Waxed light still oxidizes");
+				player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.IRON_AXE));
+				useTorchItem(test, player);
+				test.assertTrue(test.getBlockState(CENTER).equals(state),
+						"Unwaxing changed " + state + " to " + test.getBlockState(CENTER));
+				if (stage > 0) {
+					useTorchItem(test, player);
+					test.assertTrue(test.getBlockState(CENTER).equals(family.weathering().pick(ages[stage - 1])
+							.withPropertiesOf(state)), "Scraping did not restore one brighter stage");
+					test.setBlock(CENTER, state);
+				}
+				if (stage < 3) {
+					var random = net.minecraft.util.RandomSource.create(42);
+					for (int tick = 0; tick < 10000 && test.getBlockState(CENTER).equals(state); tick++) {
+						state.randomTick(test.getLevel(), test.absolutePos(CENTER), random);
+					}
+					test.assertTrue(test.getBlockState(CENTER).equals(family.weathering().pick(ages[stage + 1])
+							.withPropertiesOf(state)), "Oxidation did not preserve properties and dim one stage");
+				} else {
+					test.assertTrue(!state.isRandomlyTicking(), "Fully oxidized light still ticks randomly");
+				}
+				if (entity instanceof net.minecraft.world.level.block.entity.CampfireBlockEntity campfire) {
+					test.assertTrue(test.getLevel().getBlockEntity(test.absolutePos(CENTER)) == entity
+							&& campfire.getItems().getFirst().is(Items.BEEF),
+							"Copper campfire lost its cooking inventory during oxidation/waxing/scraping");
+				}
+			}
+		}
+		test.assertTrue(LightVariants.SOUL_CANDLE.defaultBlockState().setValue(BlockStateProperties.LIT, true)
+				.getLightEmission() == 10, "Soul candle has wrong brightness");
+		test.succeed();
+	}
+
+	@GameTest
+	public void lightVariantsUnlitItemsPlacementStackingAndIgnition(GameTestHelper test) {
+		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		test.setBlock(CENTER.below(), Blocks.STONE);
+		test.assertTrue(LightVariants.unlitItems().size() == 36, "Missing unlit candle or campfire variants");
+		for (var entry : LightVariants.unlitItems().entrySet()) {
+			var block = entry.getKey();
+			var item = entry.getValue();
+			test.setBlock(CENTER, Blocks.AIR);
+			player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(item, 4));
+			var placement = new UseOnContext(player, InteractionHand.MAIN_HAND,
+					new BlockHitResult(Vec3.atCenterOf(test.absolutePos(CENTER.below())).add(0, 0.5, 0),
+							Direction.UP, test.absolutePos(CENTER.below()), false));
+			test.assertTrue(item.useOn(placement).consumesAction(), "Unlit item failed placement: " + item);
+			test.assertTrue(test.getBlockState(CENTER).is(block)
+					&& !test.getBlockState(CENTER).getValue(BlockStateProperties.LIT),
+					"Unlit item placed wrong block or a lit block: " + item);
+			if (block instanceof net.minecraft.world.level.block.CandleBlock) {
+				var hit = new BlockHitResult(Vec3.atCenterOf(test.absolutePos(CENTER)), Direction.UP,
+						test.absolutePos(CENTER), false);
+				for (int count = 2; count <= 4; count++) {
+					test.assertTrue(item.useOn(new UseOnContext(player, InteractionHand.MAIN_HAND, hit)).consumesAction(),
+							"Unlit candle failed stacking");
+					test.assertTrue(test.getBlockState(CENTER).getValue(net.minecraft.world.level.block.CandleBlock.CANDLES)
+							== count, "Wrong stacked candle count");
+				}
+				var drops = Block.getDrops(test.getBlockState(CENTER), test.getLevel(), test.absolutePos(CENTER), null);
+				test.assertTrue(drops.size() == 1 && drops.getFirst().is(item) && drops.getFirst().getCount() == 4,
+						"Unlit candle drops for " + test.getBlockState(CENTER) + " (canonical " + block.asItem()
+								+ ") were " + drops + ", expected 4 " + item);
+				test.setBlock(CENTER, Blocks.CAKE);
+				player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(item));
+				test.getBlockState(CENTER).useItemOn(player.getMainHandItem(), test.getLevel(), player,
+						InteractionHand.MAIN_HAND, hit);
+				test.assertTrue(test.getBlockState(CENTER).equals(
+						net.minecraft.world.level.block.CandleCakeBlock.byCandle((net.minecraft.world.level.block.CandleBlock) block)),
+						"Unlit candle did not add its matching candle to cake");
+			}
+			player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.FLINT_AND_STEEL));
+			useTorchItem(test, player);
+			test.assertTrue(test.getBlockState(CENTER).getValue(BlockStateProperties.LIT), "Light variant did not ignite");
+			var unlit = test.getBlockState(CENTER).setValue(BlockStateProperties.LIT, false);
+			test.setBlock(CENTER, unlit);
+			player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(SoulFireCharges.ITEM));
+			useTorchItem(test, player);
+			test.assertTrue(test.getBlockState(CENTER).getValue(BlockStateProperties.LIT), "Soul Fire Charge did not ignite variant");
+			if (block instanceof net.minecraft.world.level.block.CampfireBlock) {
+				test.setBlock(CENTER, block.defaultBlockState().setValue(BlockStateProperties.WATERLOGGED, true)
+						.setValue(BlockStateProperties.LIT, false));
+				test.assertTrue(!net.minecraft.world.level.block.CampfireBlock.canLight(test.getBlockState(CENTER)),
+						"Waterlogged copper campfire can ignite");
+			}
+			var input = net.minecraft.world.item.crafting.CraftingInput.of(1, 1, java.util.List.of(new ItemStack(block)));
+			var recipe = test.getLevel().recipeAccess().getRecipeFor(
+					net.minecraft.world.item.crafting.RecipeType.CRAFTING, input, test.getLevel());
+			test.assertTrue(recipe.isPresent() && recipe.orElseThrow().value().assemble(input).is(item),
+					"Missing normal-to-unlit conversion recipe");
+			var reverseInput = net.minecraft.world.item.crafting.CraftingInput.of(1, 1, java.util.List.of(new ItemStack(item)));
+			var reverse = test.getLevel().recipeAccess().getRecipeFor(
+					net.minecraft.world.item.crafting.RecipeType.CRAFTING, reverseInput, test.getLevel());
+			test.assertTrue(reverse.isPresent() && reverse.orElseThrow().value().assemble(reverseInput).is(block.asItem()),
+					"Missing unlit-to-normal conversion recipe");
+		}
+		test.succeed();
+	}
+
+	@GameTest
+	public void lightVariantsCopperPumpkinLightingAndRecipes(GameTestHelper test) {
+		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		for (int index = 0; index < CopperTorches.LIT.asList().size(); index++) {
+			var torch = CopperTorches.LIT.asList().get(index).asItem();
+			var pumpkin = LightVariants.COPPER_PUMPKINS.asList().get(index);
+			test.setBlock(CENTER, Blocks.CARVED_PUMPKIN.defaultBlockState()
+					.setValue(net.minecraft.world.level.block.CarvedPumpkinBlock.FACING, Direction.EAST));
+			player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(torch, 2));
+			var hit = new BlockHitResult(Vec3.atCenterOf(test.absolutePos(CENTER)), Direction.UP,
+					test.absolutePos(CENTER), false);
+			net.fabricmc.fabric.api.event.player.UseBlockCallback.EVENT.invoker()
+					.interact(player, test.getLevel(), InteractionHand.MAIN_HAND, hit);
+			test.assertTrue(test.getBlockState(CENTER).is(pumpkin)
+					&& test.getBlockState(CENTER).getValue(net.minecraft.world.level.block.CarvedPumpkinBlock.FACING)
+							== Direction.EAST && player.getMainHandItem().getCount() == 1,
+					"Copper torch pumpkin lighting lost oxidation, wax, facing, or consumption");
+			var input = net.minecraft.world.item.crafting.CraftingInput.of(2, 1,
+					java.util.List.of(new ItemStack(Items.CARVED_PUMPKIN), new ItemStack(torch)));
+			var recipe = test.getLevel().recipeAccess().getRecipeFor(
+					net.minecraft.world.item.crafting.RecipeType.CRAFTING, input, test.getLevel());
+			test.assertTrue(recipe.isPresent() && recipe.orElseThrow().value().assemble(input).is(pumpkin.asItem()),
+					"Copper pumpkin crafting lost oxidation or wax stage");
+		}
+		for (var family : java.util.List.of(LightVariants.COPPER_CANDLES, LightVariants.COPPER_CAMPFIRES,
+				LightVariants.COPPER_PUMPKINS)) {
+			family.zipUnwaxedWaxed((normal, waxed) -> {
+				var input = net.minecraft.world.item.crafting.CraftingInput.of(2, 1,
+						java.util.List.of(new ItemStack(normal), new ItemStack(Items.HONEYCOMB)));
+				var recipe = test.getLevel().recipeAccess().getRecipeFor(
+						net.minecraft.world.item.crafting.RecipeType.CRAFTING, input, test.getLevel());
+				test.assertTrue(recipe.isPresent() && recipe.orElseThrow().value().assemble(input).is(waxed.asItem()),
+						"Missing light variant waxing recipe");
+			});
 		}
 		test.succeed();
 	}

@@ -2,6 +2,7 @@ package com.JulieISBaka.patchwork.client;
 
 import com.JulieISBaka.patchwork.CopperTorches;
 import com.JulieISBaka.patchwork.GardenBlocks;
+import com.JulieISBaka.patchwork.LightVariants;
 import com.JulieISBaka.patchwork.Patchwork;
 import com.JulieISBaka.patchwork.PotionCauldronEntity;
 import com.JulieISBaka.patchwork.PotionCauldrons;
@@ -41,6 +42,90 @@ public class PatchworkClientGameTests implements FabricClientGameTest {
 		testPotionFirstFillTint(context);
 		testSoulAndLightModels(context);
 		testGardenAndArtwork(context);
+		testNewLightVariants(context);
+	}
+
+	private static void testNewLightVariants(ClientGameTestContext context) {
+		try (var world = context.worldBuilder().create()) {
+			world.getServer().runCommand("fill -10 100 -12 10 100 12 minecraft:stone");
+			world.getServer().runCommand("time set night");
+			world.getServer().runCommand("weather clear");
+			world.getServer().runCommand("tp @a 0.5 104 10.5 180 25");
+			for (int stage = 0; stage < 4; stage++) {
+				String prefix = List.of("", "exposed_", "weathered_", "oxidized_").get(stage);
+				int x = -4 + stage * 3;
+				world.getServer().runCommand("setblock " + x + " 101 0 patchwork:" + prefix
+						+ "copper_candle[candles=4,lit=true]");
+				world.getServer().runCommand("setblock " + x + " 101 -3 patchwork:" + prefix
+						+ "copper_campfire[lit=true]");
+				world.getServer().runCommand("setblock " + x + " 101 -6 patchwork:" + prefix
+						+ "copper_jack_o_lantern[facing=south]");
+				world.getServer().runCommand("setblock " + x + " 101 3 patchwork:" + prefix
+						+ "copper_candle_cake[lit=true]");
+			}
+			world.getServer().runCommand("setblock -7 101 0 patchwork:soul_candle[candles=4,lit=true]");
+			world.getServer().runCommand("setblock -7 101 3 patchwork:soul_candle_cake[lit=true]");
+			context.waitFor(client -> client.level.getBlockState(new BlockPos(-7, 101, 0)).is(LightVariants.SOUL_CANDLE));
+			context.runOnClient(client -> {
+				var models = client.getModelManager().getBlockStateModelSet();
+				for (var block : LightVariants.blocks()) {
+					for (var state : block.getStateDefinition().getPossibleStates()) {
+						if (models.get(state) == models.missingModel()) {
+							throw new AssertionError("Light variant block model missing: " + state);
+						}
+					}
+					if (block.asItem() != Items.AIR) {
+						var itemState = new ItemStackRenderState();
+						client.getItemModelResolver().updateForLiving(itemState, new ItemStack(block),
+								ItemDisplayContext.GUI, client.player);
+						if (itemState.isEmpty()) {
+							throw new AssertionError("Light variant item model missing: " + block);
+						}
+					}
+				}
+				for (var item : LightVariants.unlitItems().values()) {
+					var itemState = new ItemStackRenderState();
+					client.getItemModelResolver().updateForLiving(itemState, new ItemStack(item),
+							ItemDisplayContext.GUI, client.player);
+					if (itemState.isEmpty()) {
+						throw new AssertionError("Unlit light item model missing: " + item);
+					}
+				}
+				for (String prefix : List.of("", "exposed_", "weathered_", "oxidized_")) {
+					for (String name : List.of("copper_candle", "copper_candle_lit", "copper_campfire_fire",
+							"copper_campfire_log_lit", "copper_jack_o_lantern")) {
+						String vanilla = name.startsWith("copper_candle") ? name.replace("copper_", "")
+								: name.startsWith("copper_campfire") ? name.replace("copper_", "") : "jack_o_lantern";
+						try {
+							var resource = client.getResourceManager().getResource(
+									Patchwork.id("textures/block/" + prefix + name + ".png")).orElseThrow();
+							var reference = client.getResourceManager().getResource(
+									net.minecraft.resources.Identifier.withDefaultNamespace("textures/block/" + vanilla + ".png"))
+									.orElseThrow();
+							try (var stream = resource.open(); var vanillaStream = reference.open()) {
+								var image = ImageIO.read(stream);
+								var original = ImageIO.read(vanillaStream);
+								if (image == null || original == null || image.getWidth() != original.getWidth()
+										|| image.getHeight() != original.getHeight()) {
+									throw new AssertionError("Light variant texture dimensions differ: " + name);
+								}
+								for (int y = 0; y < image.getHeight(); y++) {
+									for (int x = 0; x < image.getWidth(); x++) {
+										if ((image.getRGB(x, y) >>> 24) != (original.getRGB(x, y) >>> 24)) {
+											throw new AssertionError("Light variant changed vanilla silhouette: " + name);
+										}
+									}
+								}
+							}
+						} catch (IOException exception) {
+							throw new AssertionError("Could not read light variant texture: " + name, exception);
+						}
+					}
+				}
+			});
+			world.getConnection().waitForChunksRender();
+			context.takeScreenshot("patchwork-soul-and-oxidizing-copper-lights");
+		}
 	}
 
 	private static void testPetsAndRendererMigration(ClientGameTestContext context) {

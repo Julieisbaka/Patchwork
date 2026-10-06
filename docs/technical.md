@@ -82,6 +82,10 @@ removing a mod that supplies saved blocks, items, or entities.
 The following additions are always available:
 
 - Unlit block items, Soul Golems, Soul Fire Charges, and their recipes.
+- Soul Candles and copper candles/candle cakes, campfires, and Jack o'Lanterns,
+  including oxidation, waxing, recipes, and unlit items. `pumpkinLanterns` only
+  gates lighting placed carved pumpkins with torches; crafting and placing
+  these lights remains available.
 - Earth, Wind, Water, and Fire paintings in Creative and normal placement.
 - One illusioner in each raid wave from wave 5 onward, including bonus waves.
   Easy raids end before wave 5 and remain unchanged.

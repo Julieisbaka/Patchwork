@@ -14,7 +14,7 @@
 		"has_the_recipe": {
 			"trigger": "minecraft:recipe_unlocked",
 			"conditions": {
-				"recipe": "patchwork:pink_candle_from_unlit"
+				"recipes": "patchwork:pink_candle_from_unlit"
 			}
 		}
 	},

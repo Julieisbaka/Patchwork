@@ -14,7 +14,7 @@
 		"has_the_recipe": {
 			"trigger": "minecraft:recipe_unlocked",
 			"conditions": {
-				"recipe": "patchwork:waxed_oxidized_copper_campfire_from_unlit"
+				"recipes": "patchwork:waxed_oxidized_copper_campfire_from_unlit"
 			}
 		}
 	},

@@ -22,6 +22,16 @@ changes. Most gameplay features can be enabled or disabled individually.
   their oxidation and wax state through extinguishing and relighting.
   Lit copper torches dim with oxidation: light levels 14, 12, 10, and 8.
   Waxed torches retain their stage's brightness.
+- **More candle and copper lights:** Soul Candles emit soul light and support
+  candle cakes. Copper Candles (including cakes), Copper Campfires, and Copper
+  Jack o'Lanterns have four oxidation stages, honeycomb waxing, and axe scraping.
+  Their light decreases from 14 to 12, 10, and 8 as they oxidize; Soul Candles
+  emit 10. Wax preserves the current stage.
+  Separate unlit items cover every candle color and regular, soul, and copper
+  campfires. Convert between normal and unlit items in a crafting grid.
+  Unlit items always place extinguished blocks and can be relit normally.
+  Unlit campfire icons reuse Minecraft's extinguished campfire model and texture.
+
 - **Garden and building blocks:** Craft reversible wax blocks from honeycomb,
   find Paeonia in flower forests and meadows, and use it in flower pots or to
   craft magenta dye. Charcoal blocks provide a compact fuel source.
@@ -30,6 +40,22 @@ changes. Most gameplay features can be enabled or disabled individually.
   cauldrons.
 - **Restored paintings:** Earth, Wind, Water, and Fire are available in Creative
   Functional Blocks and the normal random painting placement pool.
+
+#### New light recipes
+
+| Output | Ingredients |
+| --- | --- |
+| Soul Candle | String above honeycomb above soul sand or soul soil |
+| Copper Candle | String above honeycomb above a copper nugget |
+| Copper Campfire | Vanilla campfire pattern, replacing coal with a copper nugget |
+| Copper Jack o'Lantern | Carved pumpkin + matching copper torch (keeps oxidation and wax) |
+| Waxed copper light | Matching unwaxed light + honeycomb |
+| Unlit candle/campfire item | Matching normal item alone; reversible |
+
+Place a new candle on an uneaten cake to add its matching candle. Candles
+stack up to four, including when using unlit items. Extinguished candles drop
+their unlit items; extinguished campfires do so when harvested with Silk Touch.
+Without Silk Touch, campfires keep their vanilla charcoal drop behavior.
 
 ### Creatures and quality of life
 

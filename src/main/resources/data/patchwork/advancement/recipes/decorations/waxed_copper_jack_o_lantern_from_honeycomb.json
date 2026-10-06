@@ -14,7 +14,7 @@
 		"has_the_recipe": {
 			"trigger": "minecraft:recipe_unlocked",
 			"conditions": {
-				"recipe": "patchwork:waxed_copper_jack_o_lantern_from_honeycomb"
+				"recipes": "patchwork:waxed_copper_jack_o_lantern_from_honeycomb"
 			}
 		}
 	},

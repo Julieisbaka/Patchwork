@@ -105,6 +105,15 @@ directories with separate configurations.
   Lit standing/wall and waxed copper stages emit exactly 14/12/10/8 light;
   extinguished versions emit zero. Client checks require distinct, progressively
   dimmer flame pixels while preserving the vanilla silhouette and wood grain.
+- Soul/copper candles and candle cakes, copper campfires and Jack o'Lanterns:
+  exact stage light levels, seeded oxidation, waxing/scraping, property retention,
+  survival recipes, and copper-torch pumpkin lighting. Copper campfire cooking
+  inventories survive oxidation, waxing, and scraping.
+- All 36 unlit candle/campfire items: extinguished placement, candle stacking,
+  candle-on-cake placement, normal/soul ignition, waterlogged campfire ignition
+  rejection, candle drop counts, and reversible crafting conversions.
+  Client checks cover all new block states and item models, vanilla texture
+  silhouettes, animation-sheet dimensions, and an in-game light-family screenshot.
 - All ten unlit lantern conversions, relighting/drops, waterlogging,
   weathering/waxing/scraping mappings, and Breeze extinguishing.
 - Empty potion-cauldron filling, water rejection, vanilla water bottles,
