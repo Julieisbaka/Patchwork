@@ -1048,6 +1048,22 @@ public class PatchworkGameTests {
 		test.succeed();
 	}
 
+	@GameTest(maxTicks = 30)
+	public void experienceClumpingPickupSaturatesAtMaximumTotalExperience(GameTestHelper test) {
+		require(test, PatchworkConfig.settings().experienceClumping(), "experienceClumping");
+		var player = test.makeMockServerPlayer(GameType.SURVIVAL);
+		player.totalExperience = Integer.MAX_VALUE - 5;
+		player.takeXpDelay = 0;
+		var orb = new net.minecraft.world.entity.ExperienceOrb(test.getLevel(), 0, 0, 0, 100);
+		test.getLevel().addFreshEntity(orb);
+		orb.playerTouch(player);
+		test.assertTrue(orb.isRemoved(), "XP orb was not collected");
+		test.assertTrue(player.totalExperience == Integer.MAX_VALUE,
+				"XP pickup overflowed the player's total experience");
+		player.discard();
+		test.succeed();
+	}
+
 	@GameTest
 	public void experienceClumpingPreservesLargeValuesAcrossSaveReload(GameTestHelper test) {
 		var orb = new net.minecraft.world.entity.ExperienceOrb(test.getLevel(), 0, 0, 0, 100000);

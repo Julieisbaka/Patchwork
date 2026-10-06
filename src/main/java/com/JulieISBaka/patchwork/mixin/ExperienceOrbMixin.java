@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ExperienceOrb.class)
@@ -78,6 +79,15 @@ public abstract class ExperienceOrbMixin {
 				count = 1;
 			}
 		}
+	}
+
+	@Redirect(method = "playerTouch", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;giveExperiencePoints(I)V"))
+	private void patchwork$preventExperienceOverflow(Player player, int amount) {
+		if (PatchworkConfig.settings().experienceClumping() && amount > 0) {
+			long remaining = (long) Integer.MAX_VALUE - player.totalExperience;
+			amount = (int) Math.min(amount, Math.max(0L, remaining));
+		}
+		player.giveExperiencePoints(amount);
 	}
 
 	@Inject(method = "addAdditionalSaveData", at = @At("TAIL"))

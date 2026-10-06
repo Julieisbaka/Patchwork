@@ -1,5 +1,6 @@
 package com.JulieISBaka.patchwork.client.mixin;
 
+import com.JulieISBaka.patchwork.PatchworkConfig;
 import com.JulieISBaka.patchwork.client.ExperienceOrbState;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -19,8 +20,10 @@ public class ExperienceOrbRendererMixin {
 	@Inject(method = "extractRenderState(Lnet/minecraft/world/entity/ExperienceOrb;Lnet/minecraft/client/renderer/entity/state/ExperienceOrbRenderState;F)V", at = @At("TAIL"))
 	private void patchwork$extractScale(ExperienceOrb orb, ExperienceOrbRenderState state, float partialTick,
 			CallbackInfo ci) {
-		((ExperienceOrbState) state)
-				.patchwork$setScale(1.0F + Math.min(2.0F, (float) Math.log1p(Math.max(0, orb.getValue() - 1)) / 4.0F));
+		float scale = PatchworkConfig.settings().experienceClumping()
+				? 1.0F + Math.min(2.0F, (float) Math.log1p(Math.max(0, orb.getValue() - 1)) / 4.0F)
+				: 1.0F;
+		((ExperienceOrbState) state).patchwork$setScale(scale);
 	}
 
 	@ModifyArgs(method = "submit(Lnet/minecraft/client/renderer/entity/state/ExperienceOrbRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/CameraRenderState;)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;scale(FFF)V"))
