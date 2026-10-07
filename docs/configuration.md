@@ -34,6 +34,14 @@ discards edits. Restart the game/server to apply changes.
 | `potionCauldrons`          | Filling, refilling, bottle retrieval, and arrow dipping  |
 | `pumpkinLanterns`          | Lighting placed carved pumpkins with torches             |
 | `experienceClumping`       | XP clumping, full-value pickup, and larger orb rendering |
+| `sweetBerryTrades`         | Sweet-berry trades added to wandering traders            |
+| `elytraDyeing`             | Elytra dye recipe and dyeable appearance                 |
+| `stoneToolMaterials`       | Stone added as a material for stone tools                |
+| `playerHeadRecipe`         | Carved-pumpkin and leather player-head recipe            |
+| `spiderCeilingClimbing`    | Spider and cave-spider ceiling traversal                 |
+| `caveSpiderNausea`         | Cave-spider melee nausea chance                          |
+| `loyalTridentVoidReturn`   | Loyalty tridents survive falling into the void           |
+| `patchworkAdvancements`    | Patchwork-specific advancement data and awards           |
 | `callHornRecallRadius`     | Integer 16-256 blocks; default 32                        |
 
 ## Server authority and persistence
