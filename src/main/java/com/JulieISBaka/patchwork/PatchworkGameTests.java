@@ -1973,7 +1973,7 @@ public class PatchworkGameTests {
 						new ItemStack(Items.COBBLESTONE), empty, empty, new ItemStack(Items.STICK), empty, empty,
 						new ItemStack(Items.STICK), empty)),
 				new ToolRecipe(Items.STONE_SHOVEL, java.util.List.of(new ItemStack(Items.STONE), empty, empty,
-						empty, new ItemStack(Items.STICK), empty, empty, new ItemStack(Items.STICK), empty)),
+						new ItemStack(Items.STICK), empty, empty, new ItemStack(Items.STICK), empty, empty)),
 				new ToolRecipe(Items.STONE_SWORD, java.util.List.of(new ItemStack(Items.STONE), empty, empty,
 						new ItemStack(Items.COBBLESTONE), empty, empty, new ItemStack(Items.STICK), empty, empty)),
 				new ToolRecipe(Items.STONE_SPEAR, java.util.List.of(empty, empty, new ItemStack(Items.STONE), empty,
