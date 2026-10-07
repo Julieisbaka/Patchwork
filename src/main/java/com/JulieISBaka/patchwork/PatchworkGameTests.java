@@ -21,6 +21,7 @@ import net.minecraft.world.entity.monster.hoglin.Hoglin;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.hurtingprojectile.LargeFireball;
 import net.minecraft.world.entity.projectile.throwableitemprojectile.Snowball;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
@@ -2095,6 +2096,90 @@ public class PatchworkGameTests {
 		test.assertTrue(hoglin.doHurtTarget(test.getLevel(), target), "Hoglin did not land a hit");
 		test.assertTrue(target.getDeltaMovement().y >= 0.68, "Charging hit did not launch the target upward");
 		test.assertTrue(target.getDeltaMovement().x > 0.0, "Charging hit did not push away from Hoglin");
+		test.succeed();
+	}
+
+	@GameTest
+	public void shieldBlocksKnockBackMeleeAttacker(GameTestHelper test) {
+		Player defender = test.makeMockPlayer(GameType.SURVIVAL);
+		Player attacker = test.makeMockPlayer(GameType.SURVIVAL);
+		defender.setYRot(0.0F);
+		defender.setItemInHand(InteractionHand.OFF_HAND, Items.SHIELD.getDefaultInstance());
+		defender.startUsingItem(InteractionHand.OFF_HAND);
+		for (int tick = 0; tick < 10; tick++) {
+			defender.tick();
+		}
+
+		test.assertTrue(defender.hurtServer(test.getLevel(), defender.damageSources().playerAttack(attacker), 4.0F),
+				"Shielded player did not receive the melee hit");
+		test.assertTrue(attacker.getDeltaMovement().horizontalDistanceSqr() > 0.0,
+				"Blocking with a shield did not knock back the attacker");
+		test.succeed();
+	}
+
+	@GameTest
+	public void incomingDamageInterruptsFoodUse(GameTestHelper test) {
+		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		Player attacker = test.makeMockPlayer(GameType.SURVIVAL);
+		player.setItemInHand(InteractionHand.MAIN_HAND, Items.APPLE.getDefaultInstance());
+		player.startUsingItem(InteractionHand.MAIN_HAND);
+		test.assertTrue(player.isUsingItem(), "Player did not start eating before the attack");
+
+		test.assertTrue(player.hurtServer(test.getLevel(), player.damageSources().playerAttack(attacker), 1.0F),
+				"Attack did not damage the eating player");
+		test.assertTrue(!player.isUsingItem(), "Incoming damage did not interrupt food use");
+		test.succeed();
+	}
+
+	@GameTest
+	public void eggAndSnowballThrowsHaveBriefCooldown(GameTestHelper test) {
+		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.EGG, 2));
+		Items.EGG.use(test.getLevel(), player, InteractionHand.MAIN_HAND);
+		test.assertTrue(player.getCooldowns().isOnCooldown(Items.EGG.getDefaultInstance()),
+				"Throwing an egg did not start its brief cooldown");
+
+		player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.SNOWBALL, 2));
+		Items.SNOWBALL.use(test.getLevel(), player, InteractionHand.MAIN_HAND);
+		test.assertTrue(player.getCooldowns().isOnCooldown(Items.SNOWBALL.getDefaultInstance()),
+				"Throwing a snowball did not start its brief cooldown");
+		test.succeed();
+	}
+
+	@GameTest
+	public void hotbarSwapPreservesAttackStrength(GameTestHelper test) {
+		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		player.getInventory().setItem(0, Items.IRON_SWORD.getDefaultInstance());
+		player.getInventory().setItem(1, Items.DIAMOND_SWORD.getDefaultInstance());
+		player.resetAttackStrengthTicker();
+		for (int tick = 0; tick < 8; tick++) {
+			player.tick();
+		}
+		float strengthBeforeSwap = player.getAttackStrengthScale(0.0F);
+		player.getInventory().setSelectedSlot(1);
+		player.tick();
+		test.assertTrue(strengthBeforeSwap > 0.0F && player.getAttackStrengthScale(0.0F) > strengthBeforeSwap,
+				"Switching hotbar items reset the attack strength cooldown");
+		test.succeed();
+	}
+
+	@GameTest
+	public void attackingDoesNotCancelSprinting(GameTestHelper test) {
+		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		var target = test.spawn(EntityTypes.COW, CENTER);
+		player.setSprinting(true);
+		player.attack(target);
+		test.assertTrue(player.isSprinting(), "Attacking a target stopped the player's sprint");
+		test.succeed();
+	}
+
+	@GameTest
+	public void speedPotionIncreasesHappyGhastFlyingSpeed(GameTestHelper test) {
+		var happyGhast = test.spawn(EntityTypes.HAPPY_GHAST, CENTER);
+		double baseSpeed = happyGhast.getAttributeValue(Attributes.FLYING_SPEED);
+		happyGhast.addEffect(new net.minecraft.world.effect.MobEffectInstance(MobEffects.SPEED, 200, 0));
+		test.assertTrue(happyGhast.getAttributeValue(Attributes.FLYING_SPEED) > baseSpeed,
+				"Speed did not increase a Happy Ghast's flying speed");
 		test.succeed();
 	}
 

@@ -123,7 +123,9 @@ directories with separate configurations.
   arrow entity identity/quantities/pickup state.
 - Nine-layer loom limit/copying, charcoal's 16,000-tick furnace fuel, washing,
   shulker dyeing, Wither maximum health, Slimeball hit effects, Hoglin launch,
-  and regular thrown fire-charge side impacts.
+  regular thrown fire-charge side impacts, shield knockback, food-use
+  interruption, short egg/snowball cooldowns, hotbar-swap attack strength,
+  sprint preservation, and Speed's Happy Ghast flying-speed modifier.
 - XP mixed values/counts, radius, Mending/full pickup, integer persistence,
   overflow protection, and enabled/disabled configuration.
 

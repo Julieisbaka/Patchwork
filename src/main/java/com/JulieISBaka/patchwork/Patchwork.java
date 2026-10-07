@@ -58,6 +58,7 @@ public class Patchwork implements ModInitializer {
 		PumpkinLanterns.register();
 		LightVariants.register();
 		GoldDoors.register();
+		HappyGhastSpeed.register();
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.BUILDING_BLOCKS).register(output -> {
 			output.insertAfter(Items.HONEYCOMB_BLOCK, GardenBlocks.WAX_ITEM);
 		});
