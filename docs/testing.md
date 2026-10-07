@@ -124,6 +124,8 @@ directories with separate configurations.
 - Bundle undyeing, cactus flower and tall-flower potting, increased Creaking
   attributes, animal eating with mobGriefing enabled/disabled, and Snow Speed
   level, exclusivity, and snow movement.
+- Iron and gold armor-wearing achievements, prismarine and shipwreck
+  achievements, player-head crafting, and water-free sugar-cane growth on mud.
 - Nine-layer loom limit/copying, charcoal's 16,000-tick furnace fuel, washing,
   shulker dyeing, Wither maximum health, Slimeball hit effects, Hoglin launch,
   regular thrown fire-charge side impacts, shield knockback, food-use

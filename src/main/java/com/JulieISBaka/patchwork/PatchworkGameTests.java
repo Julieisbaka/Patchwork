@@ -39,6 +39,7 @@ import net.minecraft.world.level.block.CarvedPumpkinBlock;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.minecraft.world.level.block.RedstoneTorchBlock;
 import net.minecraft.world.level.block.WallTorchBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.phys.Vec3;
@@ -548,6 +549,34 @@ public class PatchworkGameTests {
 				"Wax block is missing from Building Blocks");
 		test.assertTrue(natural.getDisplayItems().stream().anyMatch(stack -> stack.is(GardenBlocks.PAEONIA_ITEM)),
 				"Paeonia is missing from Natural Blocks");
+		test.succeed();
+	}
+
+	@GameTest
+	public void sugarCaneGrowsOnMudWithoutWater(GameTestHelper test) {
+		BlockPos pos = test.absolutePos(CENTER);
+		for (Direction direction : Direction.Plane.HORIZONTAL) {
+			test.getLevel().setBlockAndUpdate(pos.relative(direction), Blocks.AIR.defaultBlockState());
+		}
+		test.setBlock(CENTER.below(), Blocks.MUD);
+		BlockState cane = Blocks.SUGAR_CANE.defaultBlockState();
+		test.assertTrue(cane.canSurvive(test.getLevel(), pos), "Sugar cane could not survive on dry mud");
+		test.setBlock(CENTER, Blocks.SUGAR_CANE);
+		test.assertBlockPresent(Blocks.SUGAR_CANE, CENTER);
+		test.setBlock(CENTER.below(), Blocks.DIRT);
+		test.assertTrue(!cane.canSurvive(test.getLevel(), pos),
+				"Dry dirt incorrectly gained mud's water-free sugar-cane support");
+		test.succeed();
+	}
+
+	@GameTest
+	public void patchworkAdvancementsAreLoaded(GameTestHelper test) {
+		var advancements = test.getLevel().getServer().getAdvancements();
+		for (String path : new String[] { "adventure/iron_man", "adventure/living_like_a_king",
+				"adventure/update_aquatic", "adventure/wrecked" }) {
+			test.assertTrue(advancements.get(Patchwork.id(path)) != null,
+					"Patchwork advancement was not loaded: " + path);
+		}
 		test.succeed();
 	}
 
@@ -1864,6 +1893,19 @@ public class PatchworkGameTests {
 				"Water cauldron did not remove the bundle's dye");
 		test.assertTrue(test.getBlockState(CENTER).getValue(LayeredCauldronBlock.LEVEL) == 2,
 				"Undyeing a bundle did not use exactly one water level");
+		test.succeed();
+	}
+
+	@GameTest
+	public void leatherAndCarvedPumpkinCraftAPlayerHead(GameTestHelper test) {
+		var input = net.minecraft.world.item.crafting.CraftingInput.of(3, 3, java.util.List.of(
+				new ItemStack(Items.LEATHER), new ItemStack(Items.LEATHER), new ItemStack(Items.LEATHER),
+				new ItemStack(Items.LEATHER), new ItemStack(Items.CARVED_PUMPKIN), new ItemStack(Items.LEATHER),
+				new ItemStack(Items.LEATHER), new ItemStack(Items.LEATHER), new ItemStack(Items.LEATHER)));
+		var recipe = test.getLevel().getServer().getRecipeManager()
+				.getRecipeFor(net.minecraft.world.item.crafting.RecipeType.CRAFTING, input, test.getLevel());
+		test.assertTrue(recipe.isPresent() && recipe.orElseThrow().value().assemble(input).is(Items.PLAYER_HEAD),
+				"Leather around a carved pumpkin did not craft a player head");
 		test.succeed();
 	}
 

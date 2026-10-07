@@ -1,0 +1,35 @@
+{
+	"parent": "minecraft:adventure/root",
+	"criteria": {
+		"find_shipwreck": {
+			"trigger": "minecraft:location",
+			"conditions": {
+				"player": {
+					"type": "minecraft:entity_properties",
+					"entity": "this",
+					"predicate": {
+						"minecraft:location": {
+							"structures": "minecraft:shipwreck"
+						}
+					}
+				}
+			}
+		}
+	},
+	"display": {
+		"description": {
+			"translate": "advancements.patchwork.wrecked.description"
+		},
+		"icon": {
+			"id": "minecraft:map"
+		},
+		"title": {
+			"translate": "advancements.patchwork.wrecked.title"
+		}
+	},
+	"requirements": [
+		[
+			"find_shipwreck"
+		]
+	]
+}

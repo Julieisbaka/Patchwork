@@ -1,0 +1,31 @@
+{
+	"parent": "minecraft:adventure/root",
+	"criteria": {
+		"obtain_prismarine": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{
+						"items": "minecraft:prismarine"
+					}
+				]
+			}
+		}
+	},
+	"display": {
+		"description": {
+			"translate": "advancements.patchwork.update_aquatic.description"
+		},
+		"icon": {
+			"id": "minecraft:prismarine"
+		},
+		"title": {
+			"translate": "advancements.patchwork.update_aquatic.title"
+		}
+	},
+	"requirements": [
+		[
+			"obtain_prismarine"
+		]
+	]
+}

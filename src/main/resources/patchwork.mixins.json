@@ -37,6 +37,7 @@
 		"SoulFireSupportMixin",
 		"SkeletonCoverMixin",
 		"SpiderWebMixin",
+		"SugarCaneMudMixin",
 		"ThrownFireChargeMixin",
 		"ThrowableCooldownMixin",
 		"UnlitCandleStackingMixin",

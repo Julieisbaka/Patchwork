@@ -1,0 +1,43 @@
+{
+	"parent": "minecraft:recipes/root",
+	"criteria": {
+		"has_leather": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{
+						"items": "minecraft:leather"
+					}
+				]
+			}
+		},
+		"has_carved_pumpkin": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{
+						"items": "minecraft:carved_pumpkin"
+					}
+				]
+			}
+		},
+		"has_the_recipe": {
+			"trigger": "minecraft:recipe_unlocked",
+			"conditions": {
+				"recipes": "patchwork:player_head"
+			}
+		}
+	},
+	"requirements": [
+		[
+			"has_leather",
+			"has_carved_pumpkin",
+			"has_the_recipe"
+		]
+	],
+	"rewards": {
+		"recipes": [
+			"patchwork:player_head"
+		]
+	}
+}

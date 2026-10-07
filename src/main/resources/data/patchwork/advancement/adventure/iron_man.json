@@ -1,0 +1,47 @@
+{
+	"parent": "minecraft:story/obtain_armor",
+	"criteria": {
+		"wear_iron_armor": {
+			"trigger": "minecraft:location",
+			"conditions": {
+				"player": {
+					"type": "minecraft:entity_properties",
+					"entity": "this",
+					"predicate": {
+						"minecraft:equipment": {
+							"head": {
+								"items": "minecraft:iron_helmet"
+							},
+							"chest": {
+								"items": "minecraft:iron_chestplate"
+							},
+							"legs": {
+								"items": "minecraft:iron_leggings"
+							},
+							"feet": {
+								"items": "minecraft:iron_boots"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"display": {
+		"description": {
+			"translate": "advancements.patchwork.iron_man.description"
+		},
+		"frame": "challenge",
+		"icon": {
+			"id": "minecraft:iron_chestplate"
+		},
+		"title": {
+			"translate": "advancements.patchwork.iron_man.title"
+		}
+	},
+	"requirements": [
+		[
+			"wear_iron_armor"
+		]
+	]
+}
