@@ -742,8 +742,11 @@ public class PatchworkGameTests {
 		BlockPos head = test.absolutePos(CENTER.above(2));
 		test.setBlock(CENTER, Blocks.SOUL_SAND);
 		test.setBlock(CENTER.above(), Blocks.SOUL_SOIL);
-		test.setBlock(CENTER.above(2), PumpkinLanterns.SOUL_BLOCK);
-		test.assertTrue(SoulGolems.withBuilder(builder, () -> SoulGolems.trySpawn(test.getLevel(), head)),
+		SoulGolems.withBuilder(builder, () -> {
+			test.setBlock(CENTER.above(2), PumpkinLanterns.SOUL_BLOCK);
+			return null;
+		});
+		test.assertTrue(test.getEntities(SoulGolems.TYPE).stream().anyMatch(golem -> golem.blockPosition().distSqr(head) < 16),
 				"Player-built Soul Golem did not spawn");
 		var advancement = test.getLevel().getServer().getAdvancements()
 				.get(Patchwork.id("adventure/a_soulful_companion"));

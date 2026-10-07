@@ -73,6 +73,9 @@ public final class SoulGolems {
 		if (!serverLevel.addFreshEntity(golem)) {
 			throw new IllegalStateException("Could not spawn Soul Golem at " + base);
 		}
+		if (BUILDER.get() != null) {
+			Patchwork.awardAdvancement(BUILDER.get(), "adventure/a_soulful_companion", "summoned_soul_golem");
+		}
 		for (BlockPos pos : BlockPos.betweenClosed(base, head)) {
 			BlockState state = level.getBlockState(pos);
 			level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
