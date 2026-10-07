@@ -2102,7 +2102,9 @@ public class PatchworkGameTests {
 	@GameTest
 	public void shieldBlocksKnockBackMeleeAttacker(GameTestHelper test) {
 		Player defender = test.makeMockPlayer(GameType.SURVIVAL);
-		Player attacker = test.makeMockPlayer(GameType.SURVIVAL);
+		defender.snapTo(Vec3.atBottomCenterOf(test.absolutePos(CENTER)));
+		var attacker = test.spawn(EntityTypes.COW, CENTER.offset(0, 0, 2));
+		attacker.setNoAi(true);
 		defender.setYRot(0.0F);
 		defender.setItemInHand(InteractionHand.OFF_HAND, Items.SHIELD.getDefaultInstance());
 		defender.startUsingItem(InteractionHand.OFF_HAND);
@@ -2110,8 +2112,11 @@ public class PatchworkGameTests {
 			defender.tick();
 		}
 
-		test.assertTrue(defender.hurtServer(test.getLevel(), defender.damageSources().playerAttack(attacker), 4.0F),
-				"Shielded player did not receive the melee hit");
+		test.assertTrue(defender.isBlocking() && defender.getItemBlockingWith() != null,
+				"Shield was not actively blocking before the hit");
+		float healthBefore = defender.getHealth();
+		defender.hurtServer(test.getLevel(), defender.damageSources().mobAttack(attacker), 4.0F);
+		test.assertTrue(defender.getHealth() == healthBefore, "Shield did not block the melee damage");
 		test.assertTrue(attacker.getDeltaMovement().horizontalDistanceSqr() > 0.0,
 				"Blocking with a shield did not knock back the attacker");
 		test.succeed();
