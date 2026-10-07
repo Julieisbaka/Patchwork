@@ -10,6 +10,8 @@
 		"patchwork:unlit_waxed_copper_lantern",
 		"patchwork:unlit_waxed_exposed_copper_lantern",
 		"patchwork:unlit_waxed_weathered_copper_lantern",
-		"patchwork:unlit_waxed_oxidized_copper_lantern"
+		"patchwork:unlit_waxed_oxidized_copper_lantern",
+		"patchwork:gold_door",
+		"patchwork:gold_trapdoor"
 	]
 }
