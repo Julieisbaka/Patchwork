@@ -1,6 +1,12 @@
 {
     "replace": false,
     "values": [
-        "patchwork:potted_paeonia"
+        "patchwork:potted_paeonia",
+        "patchwork:potted_cactus_flower",
+        "patchwork:potted_rose_bush",
+        "patchwork:potted_peony",
+        "patchwork:potted_lilac",
+        "patchwork:potted_sunflower",
+        "patchwork:potted_pitcher_plant"
     ]
 }

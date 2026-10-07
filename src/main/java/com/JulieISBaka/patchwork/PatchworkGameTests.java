@@ -515,6 +515,28 @@ public class PatchworkGameTests {
 	}
 
 	@GameTest
+	public void cactusFlowerAndTallFlowersCanBePotted(GameTestHelper test) {
+		Block[] flowers = { Blocks.CACTUS_FLOWER, Blocks.ROSE_BUSH, Blocks.PEONY, Blocks.LILAC, Blocks.SUNFLOWER,
+				Blocks.PITCHER_PLANT };
+		Block[] potted = { GardenBlocks.POTTED_CACTUS_FLOWER, GardenBlocks.POTTED_ROSE_BUSH,
+				GardenBlocks.POTTED_PEONY, GardenBlocks.POTTED_LILAC, GardenBlocks.POTTED_SUNFLOWER,
+				GardenBlocks.POTTED_PITCHER_PLANT };
+		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		BlockPos pos = test.absolutePos(CENTER);
+		var hit = new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, false);
+		for (int i = 0; i < flowers.length; i++) {
+			test.setBlock(CENTER, Blocks.FLOWER_POT);
+			ItemStack stack = new ItemStack(flowers[i].asItem(), 2);
+			player.setItemInHand(InteractionHand.MAIN_HAND, stack);
+			test.getBlockState(CENTER).useItemOn(stack, test.getLevel(), player, InteractionHand.MAIN_HAND, hit);
+			test.assertBlockPresent(potted[i], CENTER);
+			test.assertTrue(player.getMainHandItem().getCount() == 1,
+					"Potting " + flowers[i] + " did not consume exactly one flower");
+		}
+		test.succeed();
+	}
+
+	@GameTest
 	public void gardenBlocksAppearInCreative(GameTestHelper test) {
 		net.minecraft.world.item.CreativeModeTabs.tryRebuildTabContents(test.getLevel().enabledFeatures(), true,
 				test.getLevel().registryAccess());
@@ -1828,6 +1850,24 @@ public class PatchworkGameTests {
 	}
 
 	@GameTest
+	public void cauldronUndyesBundles(GameTestHelper test) {
+		require(test, PatchworkConfig.settings().cauldronCleaning(), "cauldronCleaning");
+		test.setBlock(CENTER, Blocks.WATER_CAULDRON.defaultBlockState().setValue(LayeredCauldronBlock.LEVEL, 3));
+		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		ItemStack bundle = new ItemStack(Items.BUNDLE);
+		bundle.set(DataComponents.DYED_COLOR, new net.minecraft.world.item.component.DyedItemColor(0xD02090));
+		player.setItemInHand(InteractionHand.MAIN_HAND, bundle);
+		CauldronInteractions.WATER.get(bundle).interact(test.getBlockState(CENTER), test.getLevel(),
+				test.absolutePos(CENTER), player, InteractionHand.MAIN_HAND, bundle);
+		test.assertTrue(player.getMainHandItem().is(Items.BUNDLE)
+				&& !player.getMainHandItem().has(DataComponents.DYED_COLOR),
+				"Water cauldron did not remove the bundle's dye");
+		test.assertTrue(test.getBlockState(CENTER).getValue(LayeredCauldronBlock.LEVEL) == 2,
+				"Undyeing a bundle did not use exactly one water level");
+		test.succeed();
+	}
+
+	@GameTest
 	public void potionPourRefillAndDipOffhand(GameTestHelper test) {
 		require(test, PatchworkConfig.settings().potionCauldrons(), "potionCauldrons");
 		test.setBlock(CENTER, Blocks.CAULDRON);
@@ -2100,6 +2140,49 @@ public class PatchworkGameTests {
 	}
 
 	@GameTest
+	public void creakingHasIncreasedMovementAndAttackAttributes(GameTestHelper test) {
+		var creaking = test.spawn(EntityTypes.CREAKING, CENTER);
+		test.assertTrue(creaking.getAttributeValue(Attributes.MOVEMENT_SPEED) == 0.5,
+				"Creaking movement speed was not increased");
+		test.assertTrue(creaking.getAttributeValue(Attributes.ATTACK_DAMAGE) == 4.0,
+				"Creaking attack damage was not increased");
+		test.succeed();
+	}
+
+	@GameTest(maxTicks = 40)
+	public void animalsEatDroppedFood(GameTestHelper test) {
+		test.assertTrue(test.getLevel().getGameRules().get(GameRules.MOB_GRIEFING),
+				"Enable mobGriefing before running this test");
+		var cow = test.spawn(EntityTypes.COW, CENTER);
+		var item = new ItemEntity(test.getLevel(), cow.getX(), cow.getY(), cow.getZ(),
+				new ItemStack(Items.WHEAT, 2));
+		item.setPickUpDelay(0);
+		test.getLevel().addFreshEntity(item);
+		test.runAfterDelay(20, () -> {
+			test.assertTrue(item.isAlive() && item.getItem().getCount() == 1,
+					"Animal did not eat one item from the nearby food stack");
+			test.assertTrue(cow.isInLove(), "Eating dropped food did not feed the adult animal");
+			test.succeed();
+		});
+	}
+
+	@GameTest(maxTicks = 40)
+	public void animalsDoNotEatDroppedFoodWithoutMobGriefing(GameTestHelper test) {
+		boolean original = test.getLevel().getGameRules().get(GameRules.MOB_GRIEFING);
+		test.getLevel().getGameRules().set(GameRules.MOB_GRIEFING, false, test.getLevel().getServer());
+		var cow = test.spawn(EntityTypes.COW, CENTER);
+		var item = new ItemEntity(test.getLevel(), cow.getX(), cow.getY(), cow.getZ(), new ItemStack(Items.WHEAT));
+		item.setPickUpDelay(0);
+		test.getLevel().addFreshEntity(item);
+		test.runAfterDelay(20, () -> {
+			boolean didNotEat = item.isAlive() && item.getItem().getCount() == 1 && !cow.isInLove();
+			test.getLevel().getGameRules().set(GameRules.MOB_GRIEFING, original, test.getLevel().getServer());
+			test.assertTrue(didNotEat, "Animal ate dropped food while mobGriefing was disabled");
+			test.succeed();
+		});
+	}
+
+	@GameTest
 	public void shieldBlocksKnockBackMeleeAttacker(GameTestHelper test) {
 		Player defender = test.makeMockPlayer(GameType.SURVIVAL);
 		defender.snapTo(Vec3.atBottomCenterOf(test.absolutePos(CENTER)));
@@ -2176,6 +2259,44 @@ public class PatchworkGameTests {
 		player.attack(target);
 		test.assertTrue(player.isSprinting(), "Attacking a target stopped the player's sprint");
 		test.succeed();
+	}
+
+	@GameTest
+	public void snowSpeedIsAThreeLevelBootEnchantmentExclusiveWithSoulSpeed(GameTestHelper test) {
+		var enchantments = test.getLevel().registryAccess()
+				.lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT);
+		var snowSpeed = enchantments.getOrThrow(net.minecraft.resources.ResourceKey.create(
+				net.minecraft.core.registries.Registries.ENCHANTMENT, Patchwork.id("snow_speed")));
+		var soulSpeed = enchantments.getOrThrow(net.minecraft.world.item.enchantment.Enchantments.SOUL_SPEED);
+		test.assertTrue(snowSpeed.value().definition().maxLevel() == 3
+				&& snowSpeed.value().exclusiveSet().contains(soulSpeed),
+				"Snow Speed did not load at level III or exclude Soul Speed");
+		ItemStack boots = new ItemStack(Items.LEATHER_BOOTS);
+		boots.enchant(snowSpeed, 3);
+		test.assertTrue(boots.getEnchantments().getLevel(snowSpeed) == 3,
+				"Snow Speed III could not be applied to boots");
+		test.succeed();
+	}
+
+	@GameTest(maxTicks = 10)
+	public void snowSpeedBoostsMovementOnSnow(GameTestHelper test) {
+		test.setBlock(CENTER.below(), Blocks.SNOW_BLOCK);
+		var cow = test.spawn(EntityTypes.COW, CENTER);
+		cow.setNoAi(true);
+		var enchantment = test.getLevel().registryAccess()
+				.lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT)
+				.getOrThrow(net.minecraft.resources.ResourceKey.create(
+						net.minecraft.core.registries.Registries.ENCHANTMENT, Patchwork.id("snow_speed")));
+		ItemStack boots = new ItemStack(Items.LEATHER_BOOTS);
+		boots.enchant(enchantment, 1);
+		cow.setItemSlot(net.minecraft.world.entity.EquipmentSlot.FEET, boots);
+		double unenchantedSpeed = cow.getAttributeValue(Attributes.MOVEMENT_SPEED);
+		cow.setPos(cow.getX() + 0.1, cow.getY(), cow.getZ());
+		test.runAfterDelay(2, () -> {
+			test.assertTrue(cow.getAttributeValue(Attributes.MOVEMENT_SPEED) > unenchantedSpeed,
+					"Snow Speed did not increase movement speed on snow");
+			test.succeed();
+		});
 	}
 
 	@GameTest

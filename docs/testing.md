@@ -121,6 +121,9 @@ directories with separate configurations.
 - Empty potion-cauldron filling, water rejection, vanilla water bottles,
   matching/different refills, bottle extraction, offhand arrow use, and dropped
   arrow entity identity/quantities/pickup state.
+- Bundle undyeing, cactus flower and tall-flower potting, increased Creaking
+  attributes, animal eating with mobGriefing enabled/disabled, and Snow Speed
+  level, exclusivity, and snow movement.
 - Nine-layer loom limit/copying, charcoal's 16,000-tick furnace fuel, washing,
   shulker dyeing, Wither maximum health, Slimeball hit effects, Hoglin launch,
   regular thrown fire-charge side impacts, shield knockback, food-use

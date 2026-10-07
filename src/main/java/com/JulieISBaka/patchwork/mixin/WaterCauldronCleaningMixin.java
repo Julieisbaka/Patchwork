@@ -40,7 +40,8 @@ public class WaterCauldronCleaningMixin {
 			return;
 		}
 		Item cleanItem = CauldronCleaningItems.get(stack.getItem());
-		if (cleanItem == null) {
+		boolean cleanBundle = stack.is(Items.BUNDLE) && stack.has(DataComponents.DYED_COLOR);
+		if (cleanItem == null && !cleanBundle) {
 			return;
 		}
 		cir.setReturnValue((state, level, pos, player, hand, held) -> {
@@ -48,8 +49,14 @@ public class WaterCauldronCleaningMixin {
 				if (!PatchworkConfig.settings().cauldronCleaning()) {
 					return InteractionResult.TRY_WITH_EMPTY_HAND;
 				}
-				ItemStack cleaned = held.transmuteCopy(cleanItem, 1);
-				player.setItemInHand(hand, ItemUtils.createFilledResult(held, player, cleaned, false));
+				if (cleanBundle) {
+					ItemStack cleaned = held.copy();
+					cleaned.remove(DataComponents.DYED_COLOR);
+					player.setItemInHand(hand, cleaned);
+				} else {
+					ItemStack cleaned = held.transmuteCopy(cleanItem, 1);
+					player.setItemInHand(hand, ItemUtils.createFilledResult(held, player, cleaned, false));
+				}
 				player.awardStat(Stats.USE_CAULDRON);
 				LayeredCauldronBlock.lowerFillLevel(state, level, pos);
 			}

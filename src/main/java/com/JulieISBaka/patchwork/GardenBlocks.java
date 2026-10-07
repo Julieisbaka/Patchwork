@@ -25,6 +25,12 @@ public final class GardenBlocks {
 			properties -> new FlowerBlock(((FlowerBlock) Blocks.ALLIUM).getSuspiciousEffects(), properties));
 	public static final FlowerPotBlock POTTED_PAEONIA = block("potted_paeonia", Blocks.POTTED_ALLIUM,
 			properties -> new FlowerPotBlock(PAEONIA, properties));
+	public static final FlowerPotBlock POTTED_CACTUS_FLOWER = potted("cactus_flower", Blocks.CACTUS_FLOWER);
+	public static final FlowerPotBlock POTTED_ROSE_BUSH = potted("rose_bush", Blocks.ROSE_BUSH);
+	public static final FlowerPotBlock POTTED_PEONY = potted("peony", Blocks.PEONY);
+	public static final FlowerPotBlock POTTED_LILAC = potted("lilac", Blocks.LILAC);
+	public static final FlowerPotBlock POTTED_SUNFLOWER = potted("sunflower", Blocks.SUNFLOWER);
+	public static final FlowerPotBlock POTTED_PITCHER_PLANT = potted("pitcher_plant", Blocks.PITCHER_PLANT);
 	public static final Item WAX_ITEM = item("wax_block", WAX_BLOCK, false);
 	public static final Item PAEONIA_ITEM = item("paeonia", PAEONIA, true);
 	public static final ResourceKey<PlacedFeature> PAEONIA_PATCH = ResourceKey.create(Registries.PLACED_FEATURE,
@@ -47,6 +53,11 @@ public final class GardenBlocks {
 			properties.compostable(ContextIntProviders.COMPOSTABLE_MEDIUM);
 		}
 		return Registry.register(BuiltInRegistries.ITEM, key, new BlockItem(block, properties));
+	}
+
+	private static FlowerPotBlock potted(String name, Block flower) {
+		return block("potted_" + name, Blocks.POTTED_ALLIUM,
+				properties -> new FlowerPotBlock(flower, properties));
 	}
 
 	public static void register() {
