@@ -56,6 +56,9 @@ wolves or changing the server's banner interactions.
 | `callHornRecallRadius` | Controls recall distance only when `callHornRecall` is enabled. |
 | `ownerSweepProtection` | Protects the attacking owner's wolves, cats, and tamed rabbits from sword sweep damage; it does not disable direct attacks. |
 | `mobGriefing` | Governs Enderman defensive placement, Spider webs, Breeze extinguishing, and Soul Golem projectile block ignition. |
+| `spiderCeilingClimbing` | Controls spider and cave-spider ceiling adhesion and traversal. |
+| `caveSpiderNausea` | Controls the cave spider's 20% melee nausea chance. |
+| `patchworkAdvancements` | Controls Patchwork advancement resources and gameplay-triggered custom awards. |
 
 Player-thrown Soul Fire Charges can still ignite blocks when `mobGriefing` is
 disabled. Projectile damage to entities is independent of that rule.
