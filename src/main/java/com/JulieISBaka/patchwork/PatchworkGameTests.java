@@ -2155,4 +2155,87 @@ public class PatchworkGameTests {
 			test.succeed();
 		});
 	}
+
+	@GameTest
+	public void goldDoorLocksWhilePowered(GameTestHelper test) {
+		test.setBlock(CENTER.below(), Blocks.STONE);
+		test.setBlock(CENTER, GoldDoors.DOOR.defaultBlockState());
+		test.setBlock(CENTER.above(), GoldDoors.DOOR.defaultBlockState()
+				.setValue(net.minecraft.world.level.block.DoorBlock.HALF,
+						net.minecraft.world.level.block.state.properties.DoubleBlockHalf.UPPER));
+		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		Player creative = test.makeMockPlayer(GameType.CREATIVE);
+		creative.getAbilities().instabuild = true;
+		BlockPos pos = test.absolutePos(CENTER);
+		var hit = new BlockHitResult(Vec3.atCenterOf(pos), Direction.NORTH, pos, false);
+		test.getBlockState(CENTER).useWithoutItem(test.getLevel(), player, hit);
+		test.assertTrue(test.getBlockState(CENTER).getValue(BlockStateProperties.OPEN)
+				&& test.getBlockState(CENTER.above()).getValue(BlockStateProperties.OPEN),
+				"Gold door did not open by hand while unpowered");
+		test.getLevel().setBlockAndUpdate(test.absolutePos(CENTER.offset(1, 0, 0)),
+				Blocks.REDSTONE_BLOCK.defaultBlockState());
+		test.assertTrue(test.getBlockState(CENTER).getValue(BlockStateProperties.POWERED)
+				&& test.getBlockState(CENTER).getValue(BlockStateProperties.OPEN),
+				"Redstone power did not lock the gold door without changing its open state");
+		test.getBlockState(CENTER).useWithoutItem(test.getLevel(), player, hit);
+		test.assertTrue(test.getBlockState(CENTER).getValue(BlockStateProperties.OPEN),
+				"A survival player closed a powered gold door");
+		((net.minecraft.world.level.block.DoorBlock) GoldDoors.DOOR).setOpen(player, test.getLevel(),
+				test.getBlockState(CENTER), pos, false);
+		test.assertTrue(test.getBlockState(CENTER).getValue(BlockStateProperties.OPEN),
+				"A powered gold door was forced closed through setOpen");
+		test.getBlockState(CENTER).useWithoutItem(test.getLevel(), creative, hit);
+		test.assertTrue(!test.getBlockState(CENTER).getValue(BlockStateProperties.OPEN),
+				"A creative player could not bypass a powered gold door");
+		test.getLevel().setBlockAndUpdate(test.absolutePos(CENTER.offset(1, 0, 0)), Blocks.AIR.defaultBlockState());
+		test.assertTrue(!test.getBlockState(CENTER).getValue(BlockStateProperties.POWERED),
+				"Gold door stayed powered after its redstone source was removed");
+		test.getBlockState(CENTER).useWithoutItem(test.getLevel(), player, hit);
+		test.assertTrue(test.getBlockState(CENTER).getValue(BlockStateProperties.OPEN),
+				"Gold door stayed locked after losing power");
+		test.succeed();
+	}
+
+	@GameTest
+	public void goldTrapdoorLocksWhilePowered(GameTestHelper test) {
+		test.setBlock(CENTER, GoldDoors.TRAPDOOR.defaultBlockState());
+		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		Player creative = test.makeMockPlayer(GameType.CREATIVE);
+		creative.getAbilities().instabuild = true;
+		BlockPos pos = test.absolutePos(CENTER);
+		var hit = new BlockHitResult(Vec3.atCenterOf(pos), Direction.NORTH, pos, false);
+		test.getBlockState(CENTER).useWithoutItem(test.getLevel(), player, hit);
+		test.assertTrue(test.getBlockState(CENTER).getValue(BlockStateProperties.OPEN),
+				"Gold trapdoor did not open by hand while unpowered");
+		test.getLevel().setBlockAndUpdate(test.absolutePos(CENTER.offset(1, 0, 0)),
+				Blocks.REDSTONE_BLOCK.defaultBlockState());
+		test.assertTrue(test.getBlockState(CENTER).getValue(BlockStateProperties.POWERED)
+				&& test.getBlockState(CENTER).getValue(BlockStateProperties.OPEN),
+				"Redstone power did not lock the gold trapdoor without changing its open state");
+		test.getBlockState(CENTER).useWithoutItem(test.getLevel(), player, hit);
+		test.assertTrue(test.getBlockState(CENTER).getValue(BlockStateProperties.OPEN),
+				"A survival player closed a powered gold trapdoor");
+		test.getBlockState(CENTER).useWithoutItem(test.getLevel(), creative, hit);
+		test.assertTrue(!test.getBlockState(CENTER).getValue(BlockStateProperties.OPEN),
+				"A creative player could not bypass a powered gold trapdoor");
+		test.getLevel().setBlockAndUpdate(test.absolutePos(CENTER.offset(1, 0, 0)), Blocks.AIR.defaultBlockState());
+		test.getBlockState(CENTER).useWithoutItem(test.getLevel(), player, hit);
+		test.assertTrue(test.getBlockState(CENTER).getValue(BlockStateProperties.OPEN),
+				"Gold trapdoor stayed locked after losing power");
+		test.succeed();
+	}
+
+	@GameTest
+	public void goldDoorsDropAndNameThemselves(GameTestHelper test) {
+		for (var block : java.util.List.of(GoldDoors.DOOR, GoldDoors.TRAPDOOR)) {
+			var id = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(block);
+			var expected = net.minecraft.resources.ResourceKey.create(
+					net.minecraft.core.registries.Registries.LOOT_TABLE, Patchwork.id("blocks/" + id.getPath()));
+			test.assertTrue(block.getLootTable().equals(java.util.Optional.of(expected)),
+					"Gold door block does not drop itself: " + id);
+			test.assertTrue(block.getDescriptionId().equals(id.toLanguageKey("block")),
+					"Gold door block uses an unexpected description: " + id);
+		}
+		test.succeed();
+	}
 }
