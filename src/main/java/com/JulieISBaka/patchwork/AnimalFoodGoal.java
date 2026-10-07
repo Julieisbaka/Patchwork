@@ -68,7 +68,7 @@ public final class AnimalFoodGoal extends Goal {
 	}
 
 	private boolean isEdible(ItemEntity item) {
-		return item != null && item.isAlive() && item.onGround() && !item.hasPickUpDelay()
+		return item != null && item.isAlive() && !item.hasPickUpDelay()
 				&& this.animal.isFood(item.getItem());
 	}
 
