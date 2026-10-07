@@ -1976,15 +1976,17 @@ public class PatchworkGameTests {
 						new ItemStack(Items.STICK), empty, empty, new ItemStack(Items.STICK), empty, empty)),
 				new ToolRecipe(Items.STONE_SWORD, java.util.List.of(new ItemStack(Items.STONE), empty, empty,
 						new ItemStack(Items.COBBLESTONE), empty, empty, new ItemStack(Items.STICK), empty, empty)),
-				new ToolRecipe(Items.STONE_SPEAR, java.util.List.of(empty, empty, new ItemStack(Items.STONE), empty,
+				new ToolRecipe(Items.STONE_SPEAR, java.util.List.of(empty, empty, new ItemStack(Items.COBBLESTONE), empty,
 						new ItemStack(Items.STICK), empty, new ItemStack(Items.COBBLESTONE), empty, empty)));
 		var manager = test.getLevel().getServer().getRecipeManager();
 		for (ToolRecipe recipeCase : recipes) {
 			var input = net.minecraft.world.item.crafting.CraftingInput.of(3, 3, recipeCase.input());
 			var recipe = manager.getRecipeFor(net.minecraft.world.item.crafting.RecipeType.CRAFTING, input,
 					test.getLevel());
-			test.assertTrue(recipe.isPresent() && recipe.orElseThrow().value().assemble(input).is(recipeCase.result()),
-					"Stone tool recipe did not accept a stone/cobblestone mixture for " + recipeCase.result());
+			test.assertTrue(recipe.isPresent(),
+					"No matching stone tool recipe accepted a stone/cobblestone mixture for " + recipeCase.result());
+			test.assertTrue(recipe.orElseThrow().value().assemble(input).is(recipeCase.result()),
+					"Stone tool recipe produced the wrong item for " + recipeCase.result());
 		}
 		test.succeed();
 	}

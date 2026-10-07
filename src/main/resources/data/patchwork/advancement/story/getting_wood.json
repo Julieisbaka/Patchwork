@@ -5,14 +5,14 @@
 			"feature": "patchworkAdvancements"
 		}
 	],
-	"parent": "minecraft:adventure/root",
+	"parent": "minecraft:story/root",
 	"criteria": {
-		"obtain_prismarine": {
+		"obtain_log": {
 			"trigger": "minecraft:inventory_changed",
 			"conditions": {
 				"items": [
 					{
-						"items": "minecraft:prismarine"
+						"items": "#minecraft:logs"
 					}
 				]
 			}
@@ -20,18 +20,18 @@
 	},
 	"display": {
 		"description": {
-			"translate": "advancements.patchwork.update_aquatic.description"
+			"translate": "advancements.patchwork.getting_wood.description"
 		},
 		"icon": {
-			"id": "minecraft:prismarine"
+			"id": "minecraft:oak_log"
 		},
 		"title": {
-			"translate": "advancements.patchwork.update_aquatic.title"
+			"translate": "advancements.patchwork.getting_wood.title"
 		}
 	},
 	"requirements": [
 		[
-			"obtain_prismarine"
+			"obtain_log"
 		]
 	]
 }

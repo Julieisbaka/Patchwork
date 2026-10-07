@@ -1,0 +1,36 @@
+{
+	"fabric:load_conditions": [
+		{
+			"condition": "patchwork:feature_enabled",
+			"feature": "patchworkAdvancements"
+		}
+	],
+	"parent": "minecraft:story/root",
+	"criteria": {
+		"eat_enchanted_golden_apple": {
+			"trigger": "minecraft:consume_item",
+			"conditions": {
+				"item": {
+					"items": "minecraft:enchanted_golden_apple"
+				}
+			}
+		}
+	},
+	"display": {
+		"description": {
+			"translate": "advancements.patchwork.overpowered.description"
+		},
+		"frame": "challenge",
+		"icon": {
+			"id": "minecraft:enchanted_golden_apple"
+		},
+		"title": {
+			"translate": "advancements.patchwork.overpowered.title"
+		}
+	},
+	"requirements": [
+		[
+			"eat_enchanted_golden_apple"
+		]
+	]
+}

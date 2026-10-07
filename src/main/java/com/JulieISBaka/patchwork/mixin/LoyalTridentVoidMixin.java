@@ -1,5 +1,6 @@
 package com.JulieISBaka.patchwork.mixin;
 
+import com.JulieISBaka.patchwork.PatchworkConfig;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -16,7 +17,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class LoyalTridentVoidMixin {
 	@Inject(method = "checkBelowWorld", at = @At("HEAD"), cancellable = true)
 	private void patchwork$returnLoyalTridentFromVoid(CallbackInfo ci) {
-		if (!((Object) this instanceof ThrownTrident trident) || trident.level().isClientSide()
+		if (!PatchworkConfig.settings().loyalTridentVoidReturn()
+				|| !((Object) this instanceof ThrownTrident trident) || trident.level().isClientSide()
 				|| !(trident.getOwner() instanceof Player)
 				|| EnchantmentHelper.getItemEnchantmentLevel(
 						trident.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT)

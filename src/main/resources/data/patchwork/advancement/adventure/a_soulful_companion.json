@@ -1,17 +1,14 @@
 {
+	"fabric:load_conditions": [
+		{
+			"condition": "patchwork:feature_enabled",
+			"feature": "patchworkAdvancements"
+		}
+	],
 	"parent": "minecraft:adventure/summon_iron_golem",
 	"criteria": {
 		"summoned_soul_golem": {
-			"conditions": {
-				"entity": {
-					"type": "minecraft:entity_properties",
-					"entity": "this",
-					"predicate": {
-						"minecraft:entity_type": "patchwork:soul_golem"
-					}
-				}
-			},
-			"trigger": "minecraft:summoned_entity"
+			"trigger": "minecraft:impossible"
 		}
 	},
 	"display": {

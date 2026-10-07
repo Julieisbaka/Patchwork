@@ -1,4 +1,10 @@
 {
+	"fabric:load_conditions": [
+		{
+			"condition": "patchwork:feature_enabled",
+			"feature": "stoneToolMaterials"
+		}
+	],
 	"replace": false,
 	"values": [
 		"minecraft:stone"

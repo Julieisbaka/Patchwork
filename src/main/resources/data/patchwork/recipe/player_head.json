@@ -1,4 +1,10 @@
 {
+	"fabric:load_conditions": [
+		{
+			"condition": "patchwork:feature_enabled",
+			"feature": "playerHeadRecipe"
+		}
+	],
 	"type": "minecraft:crafting_shaped",
 	"category": "misc",
 	"key": {

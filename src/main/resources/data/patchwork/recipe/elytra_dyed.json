@@ -1,0 +1,15 @@
+{
+	"fabric:load_conditions": [
+		{
+			"condition": "patchwork:feature_enabled",
+			"feature": "elytraDyeing"
+		}
+	],
+	"type": "minecraft:crafting_dye",
+	"group": "dyed_armor",
+	"dye": "#minecraft:dyes",
+	"target": "minecraft:elytra",
+	"result": {
+		"id": "minecraft:elytra"
+	}
+}

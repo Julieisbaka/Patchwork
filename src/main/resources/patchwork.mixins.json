@@ -4,6 +4,7 @@
 	"compatibilityLevel": "JAVA_25",
 	"mixins": [
 		"BannerDuplicateRecipeMixin",
+		"CaveSpiderNauseaMixin",
 		"AnimalFoodMixin",
 		"AbstractArrowAccessor",
 		"BreezeShockwaveMixin",
@@ -31,6 +32,7 @@
 		"RabbitMixin",
 		"RabbitAvoidOwnerMixin",
 		"ShulkerVariantAccessor",
+		"SpiderCeilingMixin",
 		"SlimeballSnowballMixin",
 		"SlimeSplitMixin",
 		"ShieldKnockbackMixin",
@@ -45,6 +47,7 @@
 		"UnlitCandleStackingMixin",
 		"UnlitLightDropsMixin",
 		"WaterCauldronCleaningMixin",
+		"WanderingTraderBerryTradeMixin",
 		"WitherBossMixin",
 		"WolfBannerMixin"
 	],

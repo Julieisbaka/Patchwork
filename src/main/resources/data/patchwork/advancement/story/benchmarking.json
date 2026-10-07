@@ -1,0 +1,33 @@
+{
+	"fabric:load_conditions": [
+		{
+			"condition": "patchwork:feature_enabled",
+			"feature": "patchworkAdvancements"
+		}
+	],
+	"parent": "minecraft:story/root",
+	"criteria": {
+		"craft_crafting_table": {
+			"trigger": "minecraft:recipe_crafted",
+			"conditions": {
+				"recipe_id": "minecraft:crafting_table"
+			}
+		}
+	},
+	"display": {
+		"description": {
+			"translate": "advancements.patchwork.benchmarking.description"
+		},
+		"icon": {
+			"id": "minecraft:crafting_table"
+		},
+		"title": {
+			"translate": "advancements.patchwork.benchmarking.title"
+		}
+	},
+	"requirements": [
+		[
+			"craft_crafting_table"
+		]
+	]
+}

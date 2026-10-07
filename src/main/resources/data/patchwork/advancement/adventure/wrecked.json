@@ -1,4 +1,10 @@
 {
+	"fabric:load_conditions": [
+		{
+			"condition": "patchwork:feature_enabled",
+			"feature": "patchworkAdvancements"
+		}
+	],
 	"parent": "minecraft:adventure/root",
 	"criteria": {
 		"find_shipwreck": {

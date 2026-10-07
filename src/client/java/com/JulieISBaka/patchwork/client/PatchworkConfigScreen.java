@@ -19,7 +19,9 @@ public class PatchworkConfigScreen extends OptionsSubScreen {
 			"wolfBanners", "ownerSweepProtection", "shulkerDyeing", "throwableSlimeballs", "callHornRecall",
 			"cauldronCleaning", "beesDefendFlowers", "creeperChainReactions", "endermanDefense", "spiderWebs",
 			"throwableFireCharges", "slimeSplitClouds", "breezeShockwave", "breezeTorchExtinguishing", "hoglinCharge",
-			"skeletonCover", "potionCauldrons", "pumpkinLanterns", "experienceClumping" };
+			"skeletonCover", "potionCauldrons", "pumpkinLanterns", "experienceClumping", "sweetBerryTrades",
+			"elytraDyeing", "stoneToolMaterials", "playerHeadRecipe", "spiderCeilingClimbing", "caveSpiderNausea",
+			"loyalTridentVoidReturn", "patchworkAdvancements" };
 	private final boolean[] enabled;
 	private String radiusText;
 	private Button saveButton;
@@ -33,7 +35,10 @@ public class PatchworkConfigScreen extends OptionsSubScreen {
 				loaded.beesDefendFlowers(), loaded.creeperChainReactions(), loaded.endermanDefense(),
 				loaded.spiderWebs(), loaded.throwableFireCharges(), loaded.slimeSplitClouds(), loaded.breezeShockwave(),
 				loaded.breezeTorchExtinguishing(), loaded.hoglinCharge(), loaded.skeletonCover(),
-				loaded.potionCauldrons(), loaded.pumpkinLanterns(), loaded.experienceClumping() };
+				loaded.potionCauldrons(), loaded.pumpkinLanterns(), loaded.experienceClumping(),
+				loaded.sweetBerryTrades(), loaded.elytraDyeing(), loaded.stoneToolMaterials(),
+				loaded.playerHeadRecipe(), loaded.spiderCeilingClimbing(), loaded.caveSpiderNausea(),
+				loaded.loyalTridentVoidReturn(), loaded.patchworkAdvancements() };
 		this.radiusText = Integer.toString(loaded.callHornRecallRadius());
 	}
 
@@ -106,7 +111,9 @@ public class PatchworkConfigScreen extends OptionsSubScreen {
 					this.enabled[8],
 					this.enabled[9], this.enabled[10], this.enabled[11], this.enabled[12], this.enabled[13],
 					this.enabled[14], this.enabled[15], this.enabled[16], this.enabled[17], this.enabled[18],
-					this.enabled[19], this.enabled[20], this.enabled[21], Integer.parseInt(this.radiusText)));
+					this.enabled[19], this.enabled[20], this.enabled[21], this.enabled[22], this.enabled[23],
+					this.enabled[24], this.enabled[25], this.enabled[26], this.enabled[27], this.enabled[28],
+					this.enabled[29], Integer.parseInt(this.radiusText)));
 		} catch (IllegalStateException e) {
 			Patchwork.LOGGER.error("Could not save Patchwork settings", e);
 			this.saveButton.setMessage(Component.translatable("patchwork.config.save_failed"));

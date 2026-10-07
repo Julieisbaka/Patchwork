@@ -1,5 +1,6 @@
 package com.JulieISBaka.patchwork;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
@@ -33,6 +34,8 @@ public class Patchwork implements ModInitializer {
 	public static final String THROWN_FIRE_CHARGE_TAG = "patchwork:thrown_fire_charge";
 	private static final ResourceConditionType<ChainmailCondition> CHAINMAIL_CONDITION = ResourceConditionType
 			.create(id("chainmail_recipes"), MapCodec.unit(new ChainmailCondition()));
+	private static final ResourceConditionType<FeatureCondition> FEATURE_CONDITION = ResourceConditionType.create(
+			id("feature_enabled"), Codec.STRING.fieldOf("feature").xmap(FeatureCondition::new, FeatureCondition::feature));
 
 	private record ChainmailCondition() implements ResourceCondition {
 		@Override
@@ -43,6 +46,26 @@ public class Patchwork implements ModInitializer {
 		@Override
 		public boolean test(net.minecraft.resources.RegistryOps.RegistryInfoLookup registries) {
 			return PatchworkConfig.settings().chainmailRecipes();
+		}
+	}
+
+	private record FeatureCondition(String feature) implements ResourceCondition {
+		@Override
+		public ResourceConditionType<?> getType() {
+			return FEATURE_CONDITION;
+		}
+
+		@Override
+		public boolean test(net.minecraft.resources.RegistryOps.RegistryInfoLookup registries) {
+			PatchworkConfig.Settings settings = PatchworkConfig.settings();
+			return switch (this.feature) {
+				case "sweetBerryTrades" -> settings.sweetBerryTrades();
+				case "elytraDyeing" -> settings.elytraDyeing();
+				case "stoneToolMaterials" -> settings.stoneToolMaterials();
+				case "playerHeadRecipe" -> settings.playerHeadRecipe();
+				case "patchworkAdvancements" -> settings.patchworkAdvancements();
+				default -> throw new IllegalArgumentException("Unknown Patchwork resource feature: " + this.feature);
+			};
 		}
 	}
 
@@ -89,6 +112,7 @@ public class Patchwork implements ModInitializer {
 		});
 		SlimeSplitClouds.register();
 		ResourceConditions.register(CHAINMAIL_CONDITION);
+		ResourceConditions.register(FEATURE_CONDITION);
 		PlayerBlockBreakEvents.AFTER.register((level, player, pos, state, blockEntity) -> {
 			if (!PatchworkConfig.settings().beesDefendFlowers() || !(level instanceof ServerLevel serverLevel)
 					|| !state.is(BlockTags.FLOWERS)) {
@@ -134,7 +158,8 @@ public class Patchwork implements ModInitializer {
 
 	public static void awardAdvancement(net.minecraft.world.entity.player.Player player, String path,
 			String criterion) {
-		if (!(player instanceof ServerPlayer serverPlayer)) {
+		if (!PatchworkConfig.settings().patchworkAdvancements()
+				|| !(player instanceof ServerPlayer serverPlayer)) {
 			return;
 		}
 		var advancement = serverPlayer.level().getServer().getAdvancements().get(id(path));

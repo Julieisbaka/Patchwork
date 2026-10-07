@@ -14,14 +14,18 @@ public final class PatchworkConfig {
 	private static final int MAX_RECALL_RADIUS = 256;
 	private static final String RECALL_RADIUS_KEY = "callHornRecallRadius";
 	private static volatile Settings settings = new Settings(true, true, true, true, true, true, true, true, true, true,
-			false, true, true, true, true, true, true, true, true, true, true, true, DEFAULT_RECALL_RADIUS);
+			false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
+			true, true, DEFAULT_RECALL_RADIUS);
 
 	public record Settings(boolean witherDifficultyHealth, boolean witherBirthExplosion, boolean chainmailRecipes,
 			boolean wolfBanners, boolean ownerSweepProtection, boolean shulkerDyeing, boolean throwableSlimeballs,
 			boolean callHornRecall, boolean cauldronCleaning, boolean beesDefendFlowers, boolean creeperChainReactions,
 			boolean endermanDefense, boolean spiderWebs, boolean throwableFireCharges, boolean slimeSplitClouds,
 			boolean breezeShockwave, boolean breezeTorchExtinguishing, boolean hoglinCharge, boolean skeletonCover,
-			boolean potionCauldrons, boolean pumpkinLanterns, boolean experienceClumping, int callHornRecallRadius) {
+			boolean potionCauldrons, boolean pumpkinLanterns, boolean experienceClumping, boolean sweetBerryTrades,
+			boolean elytraDyeing, boolean stoneToolMaterials, boolean playerHeadRecipe, boolean spiderCeilingClimbing,
+			boolean caveSpiderNausea, boolean loyalTridentVoidReturn, boolean patchworkAdvancements,
+			int callHornRecallRadius) {
 	}
 
 	private PatchworkConfig() {
@@ -96,6 +100,14 @@ public final class PatchworkConfig {
 		boolean potionCauldrons = enabled(properties, "potionCauldrons", path);
 		boolean pumpkinLanterns = enabled(properties, "pumpkinLanterns", path);
 		boolean experienceClumping = enabled(properties, "experienceClumping", path);
+		boolean sweetBerryTrades = enabled(properties, "sweetBerryTrades", path);
+		boolean elytraDyeing = enabled(properties, "elytraDyeing", path);
+		boolean stoneToolMaterials = enabled(properties, "stoneToolMaterials", path);
+		boolean playerHeadRecipe = enabled(properties, "playerHeadRecipe", path);
+		boolean spiderCeilingClimbing = enabled(properties, "spiderCeilingClimbing", path);
+		boolean caveSpiderNausea = enabled(properties, "caveSpiderNausea", path);
+		boolean loyalTridentVoidReturn = enabled(properties, "loyalTridentVoidReturn", path);
+		boolean patchworkAdvancements = enabled(properties, "patchworkAdvancements", path);
 
 		if (properties.size() != originalPropertyCount) {
 			try (Writer writer = Files.newBufferedWriter(path)) {
@@ -110,7 +122,9 @@ public final class PatchworkConfig {
 				beesDefendFlowers, creeperChainReactions, endermanDefense, spiderWebs, throwableFireCharges,
 				slimeSplitClouds, breezeShockwave, breezeTorchExtinguishing, hoglinCharge, skeletonCover,
 				potionCauldrons,
-				pumpkinLanterns, experienceClumping, radius);
+				pumpkinLanterns, experienceClumping, sweetBerryTrades, elytraDyeing, stoneToolMaterials,
+				playerHeadRecipe, spiderCeilingClimbing, caveSpiderNausea, loyalTridentVoidReturn,
+				patchworkAdvancements, radius);
 		Patchwork.LOGGER.info("Patchwork config loaded from {}", path);
 		return loaded;
 	}
@@ -148,6 +162,14 @@ public final class PatchworkConfig {
 			properties.setProperty("potionCauldrons", Boolean.toString(updated.potionCauldrons()));
 			properties.setProperty("pumpkinLanterns", Boolean.toString(updated.pumpkinLanterns()));
 			properties.setProperty("experienceClumping", Boolean.toString(updated.experienceClumping()));
+			properties.setProperty("sweetBerryTrades", Boolean.toString(updated.sweetBerryTrades()));
+			properties.setProperty("elytraDyeing", Boolean.toString(updated.elytraDyeing()));
+			properties.setProperty("stoneToolMaterials", Boolean.toString(updated.stoneToolMaterials()));
+			properties.setProperty("playerHeadRecipe", Boolean.toString(updated.playerHeadRecipe()));
+			properties.setProperty("spiderCeilingClimbing", Boolean.toString(updated.spiderCeilingClimbing()));
+			properties.setProperty("caveSpiderNausea", Boolean.toString(updated.caveSpiderNausea()));
+			properties.setProperty("loyalTridentVoidReturn", Boolean.toString(updated.loyalTridentVoidReturn()));
+			properties.setProperty("patchworkAdvancements", Boolean.toString(updated.patchworkAdvancements()));
 			properties.setProperty(RECALL_RADIUS_KEY, Integer.toString(radius));
 			try (Writer writer = Files.newBufferedWriter(path)) {
 				properties.store(writer,
