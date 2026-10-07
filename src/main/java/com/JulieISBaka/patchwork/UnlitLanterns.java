@@ -87,6 +87,7 @@ public final class UnlitLanterns {
 			if (!level.isClientSide()) {
 				level.setBlockAndUpdate(pos, lit.withPropertiesOf(state));
 				stack.consume(1, player);
+				Patchwork.awardAdvancement(player, "adventure/let_there_be_light", "relight_with_fire_charge");
 				level.playSound(null, pos, SoundEvents.FIRECHARGE_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
 				level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
 			}

@@ -2,6 +2,7 @@ package com.JulieISBaka.patchwork;
 
 import java.util.Comparator;
 import java.util.EnumSet;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -79,6 +80,7 @@ public final class AnimalFoodGoal extends Goal {
 	}
 
 	private void eat() {
+		var thrower = this.food.getOwner();
 		ItemStack stack = this.food.getItem();
 		stack.shrink(1);
 		if (stack.isEmpty()) {
@@ -92,6 +94,9 @@ public final class AnimalFoodGoal extends Goal {
 			this.animal.setInLove(null);
 		}
 		this.animal.level().gameEvent(GameEvent.EAT, this.animal.position(), GameEvent.Context.of(this.animal));
+		if (thrower instanceof ServerPlayer player) {
+			Patchwork.awardAdvancement(player, "adventure/creature_comforts", "animal_ate_dropped_food");
+		}
 		this.nextEatTick = this.animal.tickCount + 40;
 		this.food = null;
 		this.animal.getNavigation().stop();

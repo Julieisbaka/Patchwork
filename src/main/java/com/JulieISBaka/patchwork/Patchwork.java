@@ -11,6 +11,7 @@ import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
@@ -129,5 +130,17 @@ public class Patchwork implements ModInitializer {
 
 	public static Identifier id(String path) {
 		return Identifier.fromNamespaceAndPath(MOD_ID, path);
+	}
+
+	public static void awardAdvancement(net.minecraft.world.entity.player.Player player, String path,
+			String criterion) {
+		if (!(player instanceof ServerPlayer serverPlayer)) {
+			return;
+		}
+		var advancement = serverPlayer.level().getServer().getAdvancements().get(id(path));
+		if (advancement == null) {
+			throw new IllegalStateException("Missing Patchwork advancement: " + path);
+		}
+		serverPlayer.getAdvancements().award(advancement, criterion);
 	}
 }

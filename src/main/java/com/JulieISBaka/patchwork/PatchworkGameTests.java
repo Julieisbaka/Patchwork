@@ -573,7 +573,9 @@ public class PatchworkGameTests {
 	public void patchworkAdvancementsAreLoaded(GameTestHelper test) {
 		var advancements = test.getLevel().getServer().getAdvancements();
 		for (String path : new String[] { "adventure/iron_man", "adventure/living_like_a_king",
-				"adventure/update_aquatic", "adventure/wrecked" }) {
+				"adventure/update_aquatic", "adventure/wrecked", "adventure/restored_to_color",
+				"adventure/creature_comforts", "adventure/a_soulful_companion",
+				"adventure/let_there_be_light" }) {
 			test.assertTrue(advancements.get(Patchwork.id(path)) != null,
 					"Patchwork advancement was not loaded: " + path);
 		}
@@ -729,6 +731,24 @@ public class PatchworkGameTests {
 				golem.discard();
 			}
 		}
+		test.succeed();
+	}
+
+	@GameTest
+	public void buildingSoulGolemAwardsAdvancement(GameTestHelper test) {
+		net.minecraft.server.level.ServerPlayer builder = (net.minecraft.server.level.ServerPlayer) test
+				.makeMockServerPlayer(GameType.SURVIVAL);
+		builder.setPos(Vec3.atBottomCenterOf(test.absolutePos(CENTER)));
+		BlockPos head = test.absolutePos(CENTER.above(2));
+		test.setBlock(CENTER, Blocks.SOUL_SAND);
+		test.setBlock(CENTER.above(), Blocks.SOUL_SOIL);
+		test.setBlock(CENTER.above(2), PumpkinLanterns.SOUL_BLOCK);
+		test.assertTrue(SoulGolems.withBuilder(builder, () -> SoulGolems.trySpawn(test.getLevel(), head)),
+				"Player-built Soul Golem did not spawn");
+		var advancement = test.getLevel().getServer().getAdvancements()
+				.get(Patchwork.id("adventure/a_soulful_companion"));
+		test.assertTrue(advancement != null && builder.getAdvancements().getOrStartProgress(advancement).isDone(),
+				"Building a Soul Golem did not award A Soulful Companion");
 		test.succeed();
 	}
 
@@ -1850,11 +1870,31 @@ public class PatchworkGameTests {
 	public void unlitTorchRelightsWithFireCharge(GameTestHelper test) {
 		test.setBlock(CENTER.below(), Blocks.STONE);
 		test.setBlock(CENTER, UnlitTorches.TORCH);
-		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		net.minecraft.server.level.ServerPlayer player = (net.minecraft.server.level.ServerPlayer) test
+				.makeMockServerPlayer(GameType.SURVIVAL);
 		player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.FIRE_CHARGE));
 		test.useBlock(CENTER, player);
 		test.assertBlockPresent(Blocks.TORCH, CENTER);
 		test.assertTrue(player.getMainHandItem().isEmpty(), "Relighting did not consume one fire charge");
+		var advancement = test.getLevel().getServer().getAdvancements()
+				.get(Patchwork.id("adventure/let_there_be_light"));
+		test.assertTrue(advancement != null && player.getAdvancements().getOrStartProgress(advancement).isDone(),
+				"Relighting with a fire charge did not award Let There Be Light");
+		test.succeed();
+	}
+
+	@GameTest
+	public void unlitLanternRelightsWithFireCharge(GameTestHelper test) {
+		test.setBlock(CENTER, UnlitLanterns.LANTERN.defaultBlockState());
+		net.minecraft.server.level.ServerPlayer player = (net.minecraft.server.level.ServerPlayer) test
+				.makeMockServerPlayer(GameType.SURVIVAL);
+		player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.FIRE_CHARGE));
+		test.useBlock(CENTER, player);
+		test.assertBlockPresent(Blocks.LANTERN, CENTER);
+		var advancement = test.getLevel().getServer().getAdvancements()
+				.get(Patchwork.id("adventure/let_there_be_light"));
+		test.assertTrue(advancement != null && player.getAdvancements().getOrStartProgress(advancement).isDone(),
+				"Relighting a lantern with a fire charge did not award Let There Be Light");
 		test.succeed();
 	}
 
@@ -1882,7 +1922,8 @@ public class PatchworkGameTests {
 	public void cauldronUndyesBundles(GameTestHelper test) {
 		require(test, PatchworkConfig.settings().cauldronCleaning(), "cauldronCleaning");
 		test.setBlock(CENTER, Blocks.WATER_CAULDRON.defaultBlockState().setValue(LayeredCauldronBlock.LEVEL, 3));
-		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		net.minecraft.server.level.ServerPlayer player = (net.minecraft.server.level.ServerPlayer) test
+				.makeMockServerPlayer(GameType.SURVIVAL);
 		ItemStack bundle = new ItemStack(Items.BUNDLE);
 		bundle.set(DataComponents.DYED_COLOR, new net.minecraft.world.item.component.DyedItemColor(0xD02090));
 		player.setItemInHand(InteractionHand.MAIN_HAND, bundle);
@@ -1893,6 +1934,10 @@ public class PatchworkGameTests {
 				"Water cauldron did not remove the bundle's dye");
 		test.assertTrue(test.getBlockState(CENTER).getValue(LayeredCauldronBlock.LEVEL) == 2,
 				"Undyeing a bundle did not use exactly one water level");
+		var advancement = test.getLevel().getServer().getAdvancements()
+				.get(Patchwork.id("adventure/restored_to_color"));
+		test.assertTrue(advancement != null && player.getAdvancements().getOrStartProgress(advancement).isDone(),
+				"Undyeing a bundle did not award Restored to Color");
 		test.succeed();
 	}
 
@@ -1906,6 +1951,38 @@ public class PatchworkGameTests {
 				.getRecipeFor(net.minecraft.world.item.crafting.RecipeType.CRAFTING, input, test.getLevel());
 		test.assertTrue(recipe.isPresent() && recipe.orElseThrow().value().assemble(input).is(Items.PLAYER_HEAD),
 				"Leather around a carved pumpkin did not craft a player head");
+		test.succeed();
+	}
+
+	@GameTest
+	public void stoneToolsCanUseStoneAndCobblestoneTogether(GameTestHelper test) {
+		record ToolRecipe(net.minecraft.world.item.Item result, java.util.List<ItemStack> input) {
+		}
+		ItemStack empty = ItemStack.EMPTY;
+		var recipes = java.util.List.of(
+				new ToolRecipe(Items.STONE_PICKAXE, java.util.List.of(new ItemStack(Items.STONE),
+						new ItemStack(Items.COBBLESTONE), new ItemStack(Items.STONE), empty, new ItemStack(Items.STICK),
+						empty, empty, new ItemStack(Items.STICK), empty)),
+				new ToolRecipe(Items.STONE_AXE, java.util.List.of(new ItemStack(Items.STONE),
+						new ItemStack(Items.COBBLESTONE), empty, new ItemStack(Items.STONE), new ItemStack(Items.STICK),
+						empty, empty, new ItemStack(Items.STICK), empty)),
+				new ToolRecipe(Items.STONE_HOE, java.util.List.of(new ItemStack(Items.STONE),
+						new ItemStack(Items.COBBLESTONE), empty, empty, new ItemStack(Items.STICK), empty, empty,
+						new ItemStack(Items.STICK), empty)),
+				new ToolRecipe(Items.STONE_SHOVEL, java.util.List.of(new ItemStack(Items.STONE), empty, empty,
+						empty, new ItemStack(Items.STICK), empty, empty, new ItemStack(Items.STICK), empty)),
+				new ToolRecipe(Items.STONE_SWORD, java.util.List.of(new ItemStack(Items.STONE), empty, empty,
+						new ItemStack(Items.COBBLESTONE), empty, empty, new ItemStack(Items.STICK), empty, empty)),
+				new ToolRecipe(Items.STONE_SPEAR, java.util.List.of(empty, empty, new ItemStack(Items.STONE), empty,
+						new ItemStack(Items.STICK), empty, new ItemStack(Items.COBBLESTONE), empty, empty)));
+		var manager = test.getLevel().getServer().getRecipeManager();
+		for (ToolRecipe recipeCase : recipes) {
+			var input = net.minecraft.world.item.crafting.CraftingInput.of(3, 3, recipeCase.input());
+			var recipe = manager.getRecipeFor(net.minecraft.world.item.crafting.RecipeType.CRAFTING, input,
+					test.getLevel());
+			test.assertTrue(recipe.isPresent() && recipe.orElseThrow().value().assemble(input).is(recipeCase.result()),
+					"Stone tool recipe did not accept a stone/cobblestone mixture for " + recipeCase.result());
+		}
 		test.succeed();
 	}
 
@@ -2196,14 +2273,22 @@ public class PatchworkGameTests {
 		test.assertTrue(test.getLevel().getGameRules().get(GameRules.MOB_GRIEFING),
 				"Enable mobGriefing before running this test");
 		var cow = test.spawn(EntityTypes.COW, CENTER);
+		net.minecraft.server.level.ServerPlayer feeder = (net.minecraft.server.level.ServerPlayer) test
+				.makeMockServerPlayer(GameType.SURVIVAL);
 		var item = new ItemEntity(test.getLevel(), cow.getX(), cow.getY(), cow.getZ(),
 				new ItemStack(Items.WHEAT, 2));
 		item.setPickUpDelay(0);
+		item.setThrower(feeder);
 		test.getLevel().addFreshEntity(item);
 		test.runAfterDelay(20, () -> {
 			test.assertTrue(item.isAlive() && item.getItem().getCount() == 1,
 					"Animal did not eat one item from the nearby food stack");
 			test.assertTrue(cow.isInLove(), "Eating dropped food did not feed the adult animal");
+			var advancement = test.getLevel().getServer().getAdvancements()
+					.get(Patchwork.id("adventure/creature_comforts"));
+			test.assertTrue(advancement != null
+					&& feeder.getAdvancements().getOrStartProgress(advancement).isDone(),
+					"Feeding an animal with dropped food did not award Creature Comforts");
 			test.succeed();
 		});
 	}
@@ -2244,6 +2329,26 @@ public class PatchworkGameTests {
 		test.assertTrue(defender.getHealth() == healthBefore, "Shield did not block the melee damage");
 		test.assertTrue(attacker.getDeltaMovement().horizontalDistanceSqr() > 0.0,
 				"Blocking with a shield did not knock back the attacker");
+		test.succeed();
+	}
+
+	@GameTest
+	public void loyalTridentReturnsAfterEnteringVoid(GameTestHelper test) {
+		var owner = test.makeMockServerPlayer(GameType.SURVIVAL);
+		owner.setPos(Vec3.atBottomCenterOf(test.absolutePos(CENTER)));
+		var loyalty = test.getLevel().registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT)
+				.getOrThrow(net.minecraft.world.item.enchantment.Enchantments.LOYALTY);
+		ItemStack tridentStack = new ItemStack(Items.TRIDENT);
+		tridentStack.enchant(loyalty, 1);
+		var trident = new net.minecraft.world.entity.projectile.arrow.ThrownTrident(test.getLevel(), owner,
+				tridentStack);
+		trident.setPos(owner.getX(), test.getLevel().getMinY() - 65.0, owner.getZ());
+		test.getLevel().addFreshEntity(trident);
+		trident.checkBelowWorld();
+		test.assertTrue(!trident.isRemoved(), "Loyalty trident was discarded on entering the void");
+		trident.tick();
+		test.assertTrue(!trident.isRemoved() && trident.getDeltaMovement().y > 0.0,
+				"Loyalty trident did not begin returning toward its owner from the void");
 		test.succeed();
 	}
 

@@ -1,0 +1,24 @@
+{
+	"parent": "minecraft:adventure/root",
+	"criteria": {
+		"wash_dyed_bundle": {
+			"trigger": "minecraft:impossible"
+		}
+	},
+	"display": {
+		"description": {
+			"translate": "advancements.patchwork.restored_to_color.description"
+		},
+		"icon": {
+			"id": "minecraft:bundle"
+		},
+		"title": {
+			"translate": "advancements.patchwork.restored_to_color.title"
+		}
+	},
+	"requirements": [
+		[
+			"wash_dyed_bundle"
+		]
+	]
+}

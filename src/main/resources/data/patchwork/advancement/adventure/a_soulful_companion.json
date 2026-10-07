@@ -1,0 +1,33 @@
+{
+	"parent": "minecraft:adventure/summon_iron_golem",
+	"criteria": {
+		"summoned_soul_golem": {
+			"conditions": {
+				"entity": {
+					"type": "minecraft:entity_properties",
+					"entity": "this",
+					"predicate": {
+						"minecraft:entity_type": "patchwork:soul_golem"
+					}
+				}
+			},
+			"trigger": "minecraft:summoned_entity"
+		}
+	},
+	"display": {
+		"description": {
+			"translate": "advancements.patchwork.a_soulful_companion.description"
+		},
+		"icon": {
+			"id": "patchwork:soul_golem_spawn_egg"
+		},
+		"title": {
+			"translate": "advancements.patchwork.a_soulful_companion.title"
+		}
+	},
+	"requirements": [
+		[
+			"summoned_soul_golem"
+		]
+	]
+}

@@ -5,6 +5,7 @@
 	"mixins": [
 		"BannerDuplicateRecipeMixin",
 		"AnimalFoodMixin",
+		"AbstractArrowAccessor",
 		"BreezeShockwaveMixin",
 		"CallGoatHornMixin",
 		"CreeperChainReactionMixin",
@@ -18,6 +19,7 @@
 		"HoglinImpactMixin",
 		"HoglinMovementMixin",
 		"LoomMenuMixin",
+		"LoyalTridentVoidMixin",
 		"LivingEntitySwapTickerAccessor",
 		"PlayerSweepMixin",
 		"PlayerSweepAccessor",

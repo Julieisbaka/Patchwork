@@ -126,6 +126,9 @@ directories with separate configurations.
   level, exclusivity, and snow movement.
 - Iron and gold armor-wearing achievements, prismarine and shipwreck
   achievements, player-head crafting, and water-free sugar-cane growth on mud.
+- Cauldron-washed bundles, animal-food and relighting advancements, Soul Golem
+  summoning advancement, Loyal trident void recovery, and mixed stone/cobblestone
+  recipes for every stone tool.
 - Nine-layer loom limit/copying, charcoal's 16,000-tick furnace fuel, washing,
   shulker dyeing, Wither maximum health, Slimeball hit effects, Hoglin launch,
   regular thrown fire-charge side impacts, shield knockback, food-use

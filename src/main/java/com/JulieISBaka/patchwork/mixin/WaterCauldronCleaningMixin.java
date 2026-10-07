@@ -1,6 +1,7 @@
 package com.JulieISBaka.patchwork.mixin;
 
 import com.JulieISBaka.patchwork.CauldronCleaningItems;
+import com.JulieISBaka.patchwork.Patchwork;
 import com.JulieISBaka.patchwork.PatchworkConfig;
 import com.JulieISBaka.patchwork.PotionCauldrons;
 import net.minecraft.core.component.DataComponents;
@@ -53,6 +54,7 @@ public class WaterCauldronCleaningMixin {
 					ItemStack cleaned = held.copy();
 					cleaned.remove(DataComponents.DYED_COLOR);
 					player.setItemInHand(hand, cleaned);
+					Patchwork.awardAdvancement(player, "adventure/restored_to_color", "wash_dyed_bundle");
 				} else {
 					ItemStack cleaned = held.transmuteCopy(cleanItem, 1);
 					player.setItemInHand(hand, ItemUtils.createFilledResult(held, player, cleaned, false));

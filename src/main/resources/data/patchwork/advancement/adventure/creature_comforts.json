@@ -1,0 +1,24 @@
+{
+	"parent": "minecraft:adventure/root",
+	"criteria": {
+		"animal_ate_dropped_food": {
+			"trigger": "minecraft:impossible"
+		}
+	},
+	"display": {
+		"description": {
+			"translate": "advancements.patchwork.creature_comforts.description"
+		},
+		"icon": {
+			"id": "minecraft:wheat"
+		},
+		"title": {
+			"translate": "advancements.patchwork.creature_comforts.title"
+		}
+	},
+	"requirements": [
+		[
+			"animal_ate_dropped_food"
+		]
+	]
+}

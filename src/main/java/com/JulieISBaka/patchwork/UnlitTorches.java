@@ -105,6 +105,7 @@ public final class UnlitTorches {
 				stack.hurtAndBreak(1, player, hand.asEquipmentSlot());
 			} else {
 				stack.consume(1, player);
+				Patchwork.awardAdvancement(player, "adventure/let_there_be_light", "relight_with_fire_charge");
 			}
 			level.playSound(null, pos, flint ? SoundEvents.FLINTANDSTEEL_USE : SoundEvents.FIRECHARGE_USE,
 					SoundSource.BLOCKS, 1.0F, 1.0F);
