@@ -18,6 +18,8 @@ import net.minecraft.world.entity.monster.cubemob.Slime;
 import net.minecraft.world.entity.monster.Shulker;
 import net.minecraft.world.entity.monster.breeze.Breeze;
 import net.minecraft.world.entity.monster.hoglin.Hoglin;
+import net.minecraft.world.entity.monster.spider.CaveSpider;
+import net.minecraft.world.entity.monster.spider.Spider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.hurtingprojectile.LargeFireball;
 import net.minecraft.world.entity.projectile.throwableitemprojectile.Snowball;
@@ -574,8 +576,8 @@ public class PatchworkGameTests {
 		var advancements = test.getLevel().getServer().getAdvancements();
 		for (String path : new String[] { "adventure/iron_man", "adventure/living_like_a_king",
 				"adventure/update_aquatic", "adventure/wrecked", "adventure/restored_to_color",
-				"adventure/creature_comforts", "adventure/a_soulful_companion",
-				"adventure/let_there_be_light" }) {
+				"adventure/creature_comforts", "adventure/a_soulful_companion", "adventure/let_there_be_light",
+				"story/getting_wood", "story/benchmarking", "story/overpowered" }) {
 			test.assertTrue(advancements.get(Patchwork.id(path)) != null,
 					"Patchwork advancement was not loaded: " + path);
 		}
@@ -1988,6 +1990,60 @@ public class PatchworkGameTests {
 			test.assertTrue(recipe.orElseThrow().value().assemble(input).is(recipeCase.result()),
 					"Stone tool recipe produced the wrong item for " + recipeCase.result());
 		}
+		test.succeed();
+	}
+
+	@GameTest
+	public void elytraCanBeDyedWithCraftingDyeRecipe(GameTestHelper test) {
+		var input = net.minecraft.world.item.crafting.CraftingInput.of(2, 1,
+				java.util.List.of(new ItemStack(Items.ELYTRA), new ItemStack(Items.DYE.red())));
+		var recipe = test.getLevel().getServer().getRecipeManager()
+				.getRecipeFor(net.minecraft.world.item.crafting.RecipeType.CRAFTING, input, test.getLevel());
+		test.assertTrue(recipe.isPresent() && recipe.orElseThrow().value().assemble(input)
+				.has(DataComponents.DYED_COLOR), "Dye did not add a color to the Elytra");
+		test.succeed();
+	}
+
+	@GameTest(maxTicks = 10)
+	public void spidersClingToAndTraverseCeilings(GameTestHelper test) {
+		test.setBlock(CENTER.above(), Blocks.STONE);
+		test.setBlock(CENTER.offset(1, 1, 0), Blocks.STONE);
+		Spider spider = test.spawn(EntityTypes.SPIDER, CENTER);
+		spider.setNoAi(true);
+		spider.setPos(test.absolutePos(CENTER).getX() + 0.5, test.absolutePos(CENTER).getY() + 0.1,
+				test.absolutePos(CENTER).getZ() + 0.5);
+		double startY = spider.getY();
+		spider.setDeltaMovement(0.1, 0.0, 0.0);
+		test.runAfterDelay(3, () -> {
+			test.assertTrue(spider.isNoGravity() && spider.getY() >= startY - 0.15,
+					"Spider fell instead of clinging to the overhead ceiling");
+			test.succeed();
+		});
+	}
+
+	@GameTest
+	public void caveSpiderCanInflictNausea(GameTestHelper test) {
+		CaveSpider spider = test.spawn(EntityTypes.CAVE_SPIDER, CENTER);
+		spider.setNoAi(true);
+		boolean nauseaApplied = false;
+		for (int attempt = 0; attempt < 100 && !nauseaApplied; attempt++) {
+			var victim = test.spawn(EntityTypes.COW, CENTER);
+			spider.doHurtTarget(test.getLevel(), victim);
+			nauseaApplied = victim.hasEffect(MobEffects.NAUSEA);
+			victim.discard();
+		}
+		test.assertTrue(nauseaApplied, "Repeated cave-spider hits never inflicted Nausea");
+		test.succeed();
+	}
+
+	@GameTest
+	public void wanderingTraderOffersSweetBerries(GameTestHelper test) {
+		var trader = test.spawn(EntityTypes.WANDERING_TRADER, CENTER);
+		net.minecraft.server.level.ServerPlayer player = (net.minecraft.server.level.ServerPlayer) test
+				.makeMockServerPlayer(GameType.SURVIVAL);
+		trader.mobInteract(player, InteractionHand.MAIN_HAND);
+		test.assertTrue(trader.getOffers().stream().anyMatch(offer -> offer.getResult().is(Items.SWEET_BERRIES)),
+				"Wandering trader did not receive a sweet-berry trade");
 		test.succeed();
 	}
 
