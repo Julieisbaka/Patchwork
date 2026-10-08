@@ -21,7 +21,7 @@ discards edits. Restart the game/server to apply changes.
 | `throwableSlimeballs`      | Slimeball throwing, effects, and cooldown                |
 | `throwableFireCharges`     | Player throwing of regular and Soul Fire Charges         |
 | `callHornRecall`           | Call goat horn recall of seated pets and staying rabbits |
-| `cauldronCleaning`         | Washing wool, terracotta, and stained glass              |
+| `cauldronCleaning`         | Washing wool, terracotta, stained glass, and dyed bundles |
 | `beesDefendFlowers`        | Bees defending nearby flowers                            |
 | `creeperChainReactions`    | Creeper blast chain reactions; off by default            |
 | `endermanDefense`          | Defensive carried-block placement                        |

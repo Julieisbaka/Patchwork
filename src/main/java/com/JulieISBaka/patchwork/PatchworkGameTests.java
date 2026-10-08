@@ -2010,11 +2010,13 @@ public class PatchworkGameTests {
 		spider.setNoAi(true);
 		spider.setPos(test.absolutePos(CENTER).getX() + 0.5, test.absolutePos(CENTER).getY() + 0.1,
 				test.absolutePos(CENTER).getZ() + 0.5);
+		double startX = spider.getX();
 		double startY = spider.getY();
 		spider.setDeltaMovement(0.1, 0.0, 0.0);
 		test.runAfterDelay(3, () -> {
 			test.assertTrue(spider.isNoGravity() && spider.getY() >= startY - 0.15,
 					"Spider fell instead of clinging to the overhead ceiling");
+			test.assertTrue(spider.getX() > startX + 0.1, "Spider did not move horizontally along the ceiling");
 			test.succeed();
 		});
 	}

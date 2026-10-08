@@ -129,6 +129,9 @@ directories with separate configurations.
 - Cauldron-washed bundles, animal-food and relighting advancements, Soul Golem
   summoning advancement, Loyal trident void recovery, and mixed stone/cobblestone
   recipes for every stone tool.
+- Elytra crafting dye, sweet-berry trader offers, spider ceiling movement,
+  cave-spider Nausea, and the Getting Wood, Benchmarking, and Overpowered
+  advancement resources.
 - Nine-layer loom limit/copying, charcoal's 16,000-tick furnace fuel, washing,
   shulker dyeing, Wither maximum health, Slimeball hit effects, Hoglin launch,
   regular thrown fire-charge side impacts, shield knockback, food-use
