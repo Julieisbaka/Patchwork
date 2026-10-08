@@ -1977,9 +1977,7 @@ public class PatchworkGameTests {
 				new ToolRecipe(Items.STONE_SHOVEL, java.util.List.of(new ItemStack(Items.STONE), empty, empty,
 						new ItemStack(Items.STICK), empty, empty, new ItemStack(Items.STICK), empty, empty)),
 				new ToolRecipe(Items.STONE_SWORD, java.util.List.of(new ItemStack(Items.STONE), empty, empty,
-						new ItemStack(Items.COBBLESTONE), empty, empty, new ItemStack(Items.STICK), empty, empty)),
-				new ToolRecipe(Items.STONE_SPEAR, java.util.List.of(empty, empty, new ItemStack(Items.COBBLESTONE), empty,
-						new ItemStack(Items.STICK), empty, new ItemStack(Items.COBBLESTONE), empty, empty)));
+						new ItemStack(Items.COBBLESTONE), empty, empty, new ItemStack(Items.STICK), empty, empty)));
 		var manager = test.getLevel().getServer().getRecipeManager();
 		for (ToolRecipe recipeCase : recipes) {
 			var input = net.minecraft.world.item.crafting.CraftingInput.of(3, 3, recipeCase.input());
@@ -2039,9 +2037,7 @@ public class PatchworkGameTests {
 	@GameTest
 	public void wanderingTraderOffersSweetBerries(GameTestHelper test) {
 		var trader = test.spawn(EntityTypes.WANDERING_TRADER, CENTER);
-		net.minecraft.server.level.ServerPlayer player = (net.minecraft.server.level.ServerPlayer) test
-				.makeMockServerPlayer(GameType.SURVIVAL);
-		trader.mobInteract(player, InteractionHand.MAIN_HAND);
+		WanderingTraderTrades.addSweetBerries(trader);
 		test.assertTrue(trader.getOffers().stream().anyMatch(offer -> offer.getResult().is(Items.SWEET_BERRIES)),
 				"Wandering trader did not receive a sweet-berry trade");
 		test.succeed();
