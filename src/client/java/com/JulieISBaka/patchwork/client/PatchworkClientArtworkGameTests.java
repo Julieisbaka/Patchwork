@@ -137,9 +137,22 @@ final class PatchworkClientArtworkGameTests {
 									}
 								}
 							}
+							for (int y = 36; y < 48; y++) {
+								for (int x = 0; x < 48; x++) {
+									if ((image.getRGB(x, y) >>> 24) != 255) {
+										throw new AssertionError(
+												"Soul Golem lower-body UV is transparent at " + x + "," + y);
+									}
+								}
+							}
 							for (int[] soulMark : new int[][] { { 13, 30 }, { 14, 30 }, { 24, 33 }, { 25, 33 } }) {
 								if (image.getRGB(soulMark[0], soulMark[1]) != 0xFF52D3BE) {
 									throw new AssertionError("Soul Golem base is missing its Soul Sand markings");
+								}
+							}
+							for (int[] soulMark : new int[][] { { 13, 42 }, { 14, 42 }, { 24, 45 }, { 25, 45 } }) {
+								if (image.getRGB(soulMark[0], soulMark[1]) != 0xFF52D3BE) {
+									throw new AssertionError("Soul Golem lower body is missing its Soul Sand markings");
 								}
 							}
 						}

@@ -170,8 +170,9 @@ starting successfully is not by itself evidence that the selected tests ran.
 - Cauldron-washed bundles, animal-food and relighting advancements, Soul Golem
   summoning advancement, Loyal trident void recovery, and mixed stone/cobblestone
   recipes for every stone tool.
-- Elytra crafting dye, sweet-berry trader offers, spider ceiling movement,
-  cave-spider Nausea, and the Getting Wood, Benchmarking, and Overpowered
+- Elytra crafting dye, sweet-berry trader offers, spider ceiling movement and
+  upside-down rendering, owner-only wolf banner shearing, cave-spider Nausea,
+  and the Getting Wood, Benchmarking, and Overpowered
   advancement resources.
 - Nine-layer loom limit/copying, charcoal's 16,000-tick furnace fuel, washing,
   shulker dyeing, Wither maximum health, Slimeball hit effects, Hoglin launch,
@@ -192,7 +193,7 @@ The client entrypoint uses a small dispatcher and focused suites:
 | Suite | Coverage |
 | --- | --- |
 | `PatchworkClientConfigGameTests` | Numeric fields, translation, validation, save/reopen, and cancel behavior. |
-| `PatchworkClientPetGameTests` | Rabbit owner/stay synchronization and wolf banner render-state extraction. |
+| `PatchworkClientPetGameTests` | Rabbit owner/stay synchronization, wolf banner state, and upside-down ceiling-spider rendering. |
 | `PatchworkClientPotionGameTests` | Potion-cauldron first-fill and block-entity-only tint updates in screenshots. |
 | `PatchworkClientLightGameTests` | Soul Golem and projectile renderers, light state/item models, and copper/Soul textures. |
 | `PatchworkClientArtworkGameTests` | Garden models, texture dimensions and alpha, and vanilla-artwork preservation. |
@@ -216,7 +217,7 @@ individual suite.
 - Ranged cadence, pathing around obstacles, distant/offline owners, PvP team
   behavior, and listening to golem sounds.
 - Configuration screen scrolling/tooltips, canceled edits, multiplayer server
-  authority, and wolf banners while walking/sitting.
+  authority, and wolf banner placement while walking/sitting.
 - Chainmail recipe-book UI, Wither birth-explosion damage under different
   exposure/armor, and difficulty transitions.
 - Call horn crowded destinations, owner interactions, hotbar cooldown visuals,

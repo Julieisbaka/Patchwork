@@ -21,6 +21,7 @@ import net.minecraft.world.entity.monster.hoglin.Hoglin;
 import net.minecraft.world.entity.monster.spider.CaveSpider;
 import net.minecraft.world.entity.monster.spider.Spider;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.projectile.hurtingprojectile.LargeFireball;
 import net.minecraft.world.entity.projectile.throwableitemprojectile.Snowball;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -2241,6 +2242,34 @@ public class PatchworkGameTests {
 			test.assertTrue(spider.getX() > startX + 0.1, "Spider did not move horizontally along the ceiling");
 			test.succeed();
 		});
+	}
+
+	@GameTest
+	public void ownerCanShearBannerFromWolf(GameTestHelper test) {
+		require(test, PatchworkConfig.settings().wolfBanners(), "wolfBanners");
+		var wolf = test.spawn(EntityTypes.WOLF, CENTER);
+		Player owner = test.makeMockPlayer(GameType.SURVIVAL);
+		wolf.tame(owner);
+		owner.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.BANNER.white()));
+		wolf.interact(owner, InteractionHand.MAIN_HAND, Vec3.ZERO);
+		test.assertTrue(wolf.getItemBySlot(EquipmentSlot.HEAD).is(Items.BANNER.white()),
+				"Owner could not equip a banner on the wolf");
+
+		Player stranger = test.makeMockPlayer(GameType.SURVIVAL);
+		stranger.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.SHEARS));
+		wolf.interact(stranger, InteractionHand.MAIN_HAND, Vec3.ZERO);
+		test.assertTrue(wolf.getItemBySlot(EquipmentSlot.HEAD).is(Items.BANNER.white())
+				&& stranger.getMainHandItem().getDamageValue() == 0,
+				"Non-owner removed the wolf banner or damaged their shears");
+
+		owner.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.SHEARS));
+		wolf.interact(owner, InteractionHand.MAIN_HAND, Vec3.ZERO);
+		test.assertTrue(wolf.getItemBySlot(EquipmentSlot.HEAD).isEmpty()
+				&& java.util.stream.IntStream.range(0, owner.getInventory().getContainerSize())
+						.anyMatch(slot -> owner.getInventory().getItem(slot).is(Items.BANNER.white()))
+				&& owner.getMainHandItem().getDamageValue() == 1,
+				"Owner could not shear and recover the wolf's banner");
+		test.succeed();
 	}
 
 	@GameTest

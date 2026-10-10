@@ -9,6 +9,9 @@ import net.minecraft.world.entity.animal.wolf.Wolf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BannerItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.level.gameevent.GameEvent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -35,6 +38,15 @@ public abstract class WolfBannerMixin {
 				if (hasBanner) {
 					patchwork$returnBanner(player, level, equipped);
 				}
+			}
+			cir.setReturnValue(InteractionResult.SUCCESS);
+		} else if (hasBanner && held.is(Items.SHEARS)) {
+			if (wolf.level() instanceof ServerLevel level) {
+				wolf.setItemSlot(EquipmentSlot.HEAD, ItemStack.EMPTY);
+				patchwork$returnBanner(player, level, equipped);
+				wolf.playSound(SoundEvents.SHEARS_SNIP, 1.0F, 1.0F);
+				wolf.gameEvent(GameEvent.SHEAR, player);
+				held.hurtAndBreak(1, player, hand.asEquipmentSlot());
 			}
 			cir.setReturnValue(InteractionResult.SUCCESS);
 		} else if (hasBanner && held.isEmpty() && player.isSecondaryUseActive()) {

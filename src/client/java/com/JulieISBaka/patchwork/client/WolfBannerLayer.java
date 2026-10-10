@@ -36,7 +36,7 @@ public class WolfBannerLayer extends RenderLayer<WolfRenderState, WolfModel> {
 		}
 
 		poseStack.pushPose();
-		poseStack.translate(0.0F, state.isSitting ? 0.56F : 0.72F, state.isSitting ? 0.15F : 0.12F);
+		poseStack.translate(0.0F, state.isSitting ? 0.47F : 0.72F, state.isSitting ? 0.025F : 0.12F);
 		poseStack.scale(0.24F, 0.24F, 0.24F);
 		this.bannerRenderer.submitSpecial(AttachmentType.GROUND, poseStack, nodes, light, OverlayTexture.NO_OVERLAY,
 				bannerItem.getColor(), banner.getOrDefault(DataComponents.BANNER_PATTERNS, BannerPatternLayers.EMPTY),

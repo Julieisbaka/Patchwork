@@ -7,6 +7,7 @@
 		"LoomScreenMixin",
 		"ExperienceOrbRenderStateMixin",
 		"ExperienceOrbRendererMixin",
+		"SpiderRendererMixin",
 		"WolfRenderStateMixin",
 		"WolfRendererMixin"
 	],
