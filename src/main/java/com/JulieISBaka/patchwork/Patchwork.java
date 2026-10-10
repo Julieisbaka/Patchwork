@@ -76,8 +76,8 @@ public class Patchwork implements ModInitializer {
 		}
 	}
 
-	@Override
 	/** Loads configuration and registers Patchwork gameplay content. */
+	@Override
 	public void onInitialize() {
 		PatchworkConfig.load();
 		UnlitTorches.register();
