@@ -14,10 +14,12 @@ See the [configuration guide](docs/configuration.md) for defaults and ranges.
 - **Soul Golems:** Build one from two soul sand or soul soil blocks topped with
   a Soul Jack o'Lantern. They protect their owner, attack at range with Soul
   Fire Charges, have 30 health, can be healed with gold, and can be sheared.
+  Construction and ranged attacks can be disabled independently.
 - **Soul Fire Charges:** Craft one by surrounding a regular Fire Charge with
   eight soul sand or soul soil. Use charges to create soul fire, light
   campfires and candles, or launch them by hand or dispenser. Charge-created
   soul fire works on solid tops, beside flammable blocks, and on leaves.
+  Player, dispenser, and Soul Golem projectile sources have separate controls.
 - **Potion cauldrons:** Pour a non-water potion into an empty cauldron, retrieve
   doses with glass bottles, refill with matching potions, or dip arrows. Each
   potion level can tip one arrow; different potions cannot be mixed.

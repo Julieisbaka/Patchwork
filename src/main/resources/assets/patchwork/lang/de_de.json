@@ -106,7 +106,7 @@
 	"patchwork.config.spiderWebs": "Spinnen weben Netze",
 	"patchwork.config.spiderWebs.summary": "Verfolgende Spinnen platzieren gelegentlich Spinnennetze bei ihrer Beute.",
 	"patchwork.config.spiderWebs.description": "Verfolgende Spinnen versuchen, Spinnennetze an den Füßen ihrer Beute zu platzieren, wenn genügend Platz vorhanden und mobGriefing aktiviert ist. Abstand, Versuchsintervall und Wahrscheinlichkeit sind einstellbar. Standard: 2-8 Blöcke, 100 Ticks, 25 Prozent.",
-	"patchwork.config.throwableFireCharges": "Werfbare Feuerkugeln",
+	"patchwork.config.throwableFireCharges": "Spielerw?rfe mit Feuerkugeln",
 	"patchwork.config.throwableFireCharges.summary": "Wirf Feuerkugeln mit einstellbarem Flugverhalten und Schaden.",
 	"patchwork.config.throwableFireCharges.description": "Wirf gewöhnliche Feuerkugeln oder Seelenfeuerkugeln ohne Explosionen. Schaden, Flugverhalten, Freiraum und Abklingzeit sind einstellbar. Standard: 2/3 Lebenspunkte, fünf Blöcke Freiraum, 30 Ticks Abklingzeit. Dieser Schalter steuert Spielerwürfe, nicht Seelengolemangriffe oder die Verwendung auf Blöcken. Die Flugeinstellungen und der Schaden von Seelenprojektilen gelten auch für Seelengolems und Werfer.",
 	"patchwork.config.slimeSplitClouds": "Schleimteilungswolken",
@@ -294,5 +294,16 @@
 	"item.patchwork.unlit_waxed_weathered_copper_campfire": "Erloschenes gewachstes verwittertes Kupferlagerfeuer",
 	"item.patchwork.unlit_oxidized_copper_campfire": "Erloschenes oxidiertes Kupferlagerfeuer",
 	"item.patchwork.unlit_waxed_oxidized_copper_campfire": "Erloschenes gewachstes oxidiertes Kupferlagerfeuer",
-	"tag.item.patchwork.soul_fire_bases": "Seelenfeuer-Untergründe"
+	"tag.item.patchwork.soul_fire_bases": "Seelenfeuer-Untergründe",
+	"patchwork.config.feature.summary": "Diese Patchwork-Funktion aktivieren oder deaktivieren.",
+	"patchwork.config.feature.description": "Diese Einstellung wird im Mehrspielermodus vom Server gesteuert. Speichern und das Spiel oder den Server neu starten, um ?nderungen anzuwenden.",
+	"patchwork.config.rabbitCarrotTaming": "Kaninchen mit Karotten z?hmen",
+	"patchwork.config.soulGolems": "Seelengolems",
+	"patchwork.config.soulFireCharges": "Seelenfeuerkugeln",
+	"patchwork.config.soulFireChargeDispenserProjectiles": "Seelenfeuerkugel-Projektile aus Spendern",
+	"patchwork.config.soulGolemProjectiles": "Seelengolem-Projektile",
+	"patchwork.config.unlitLights": "Unbeleuchtete Lichter",
+	"patchwork.config.soulCopperLightBlocks": "Seelen- und Kupferleuchtbl?cke",
+	"patchwork.config.restoredPaintings": "Wiederhergestellte Gem?lde",
+	"patchwork.config.illusionerRaidSpawns": "Illusion?r-Raidspawns"
 }

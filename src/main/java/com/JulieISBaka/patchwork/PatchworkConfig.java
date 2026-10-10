@@ -17,7 +17,7 @@ public final class PatchworkConfig {
 	private static final String RECALL_RADIUS_KEY = "callHornRecallRadius";
 	private static volatile Settings settings = new Settings(true, true, true, true, true, true, true, true, true, true,
 			false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
-			true, true, DEFAULT_RECALL_RADIUS, true, true, true, true, true, true, true, true, true,
+			true, true, DEFAULT_RECALL_RADIUS, true, true, true, true, true, true, true, true, true, true,
 			NumericSetting.defaults());
 
 	public record Settings(boolean witherDifficultyHealth, boolean witherBirthExplosion, boolean chainmailRecipes,

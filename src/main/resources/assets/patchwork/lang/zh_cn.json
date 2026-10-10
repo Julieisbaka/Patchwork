@@ -106,7 +106,7 @@
 	"patchwork.config.spiderWebs": "蜘蛛结网",
 	"patchwork.config.spiderWebs.summary": "追逐猎物的蜘蛛偶尔会在猎物脚下放置蜘蛛网。",
 	"patchwork.config.spiderWebs.description": "追逐猎物的蜘蛛会在空间允许且启用了“生物破坏”（mobGriefing）时，尝试在猎物脚下放置蜘蛛网。距离、尝试间隔和概率均可配置。默认值：2–8 格、100 刻、25%。",
-	"patchwork.config.throwableFireCharges": "可投掷火焰弹",
+	"patchwork.config.throwableFireCharges": "???????",
 	"patchwork.config.throwableFireCharges.summary": "发射火球，飞行参数和伤害均可配置。",
 	"patchwork.config.throwableFireCharges.description": "投掷不会爆炸的普通或灵魂火焰弹。伤害、飞行参数、净空距离和冷却时间均可配置。默认值：2/3 点生命值、5 格净空距离、30 刻冷却。此开关控制玩家投掷，不影响灵魂傀儡攻击或对方块使用。灵魂弹射物的飞行和伤害设置也适用于灵魂傀儡和发射器。",
 	"patchwork.config.slimeSplitClouds": "史莱姆分裂云雾",
@@ -294,5 +294,16 @@
 	"item.patchwork.unlit_waxed_weathered_copper_campfire": "未点燃的涂蜡的锈蚀的铜营火",
 	"item.patchwork.unlit_oxidized_copper_campfire": "未点燃的氧化的铜营火",
 	"item.patchwork.unlit_waxed_oxidized_copper_campfire": "未点燃的涂蜡的氧化的铜营火",
-	"tag.item.patchwork.soul_fire_bases": "灵魂火燃烧基底"
+	"tag.item.patchwork.soul_fire_bases": "灵魂火燃烧基底",
+	"patchwork.config.feature.summary": "?????? Patchwork ???",
+	"patchwork.config.feature.description": "????????????????????????????????",
+	"patchwork.config.rabbitCarrotTaming": "???????",
+	"patchwork.config.soulGolems": "????",
+	"patchwork.config.soulFireCharges": "?????",
+	"patchwork.config.soulFireChargeDispenserProjectiles": "??????????",
+	"patchwork.config.soulGolemProjectiles": "?????????",
+	"patchwork.config.unlitLights": "??????",
+	"patchwork.config.soulCopperLightBlocks": "?????????",
+	"patchwork.config.restoredPaintings": "?????",
+	"patchwork.config.illusionerRaidSpawns": "????????"
 }

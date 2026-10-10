@@ -106,7 +106,7 @@
 	"patchwork.config.spiderWebs": "Aranhas tecem teias",
 	"patchwork.config.spiderWebs.summary": "Aranhas em perseguição colocam teias junto à presa ocasionalmente.",
 	"patchwork.config.spiderWebs.description": "Aranhas em perseguição tentam colocar teias aos pés da presa se houver espaço e mobGriefing estiver ativado. A distância, o intervalo entre tentativas e a chance são configuráveis. Padrões: 2-8 blocos, 100 ticks, 25 por cento.",
-	"patchwork.config.throwableFireCharges": "Bolas de fogo arremessáveis",
+	"patchwork.config.throwableFireCharges": "Proj?teis arremessados por jogadores",
 	"patchwork.config.throwableFireCharges.summary": "Lance bolas de fogo com voo e dano configuráveis.",
 	"patchwork.config.throwableFireCharges.description": "Arremesse bolas de fogo comuns ou das almas sem explosões. O dano, o voo, o espaço livre e o tempo de espera são configuráveis. Padrões: 2/3 PV, cinco blocos de espaço livre, espera de 30 ticks. Esta opção controla os arremessos dos jogadores, não os ataques dos golems das almas nem o uso em blocos. As configurações de voo e dano dos projéteis das almas também se aplicam aos golems das almas e aos ejetores.",
 	"patchwork.config.slimeSplitClouds": "Nuvens de divisão dos slimes",
@@ -294,5 +294,16 @@
 	"item.patchwork.unlit_waxed_weathered_copper_campfire": "Fogueira de cobre desgastado encerado apagada",
 	"item.patchwork.unlit_oxidized_copper_campfire": "Fogueira de cobre oxidado apagada",
 	"item.patchwork.unlit_waxed_oxidized_copper_campfire": "Fogueira de cobre oxidado encerado apagada",
-	"tag.item.patchwork.soul_fire_bases": "Bases para fogo das almas"
+	"tag.item.patchwork.soul_fire_bases": "Bases para fogo das almas",
+	"patchwork.config.feature.summary": "Ative ou desative este recurso do Patchwork.",
+	"patchwork.config.feature.description": "Esta op??o ? controlada pelo servidor no multijogador. Salve e reinicie o jogo ou servidor para aplicar as altera??es.",
+	"patchwork.config.rabbitCarrotTaming": "Domar coelhos com cenouras",
+	"patchwork.config.soulGolems": "Golens das almas",
+	"patchwork.config.soulFireCharges": "Cargas ?gneas das almas",
+	"patchwork.config.soulFireChargeDispenserProjectiles": "Proj?teis de carga ?gnea das almas em dispensadores",
+	"patchwork.config.soulGolemProjectiles": "Proj?teis dos golens das almas",
+	"patchwork.config.unlitLights": "Luzes apagadas",
+	"patchwork.config.soulCopperLightBlocks": "Blocos de luz das almas e de cobre",
+	"patchwork.config.restoredPaintings": "Pinturas restauradas",
+	"patchwork.config.illusionerRaidSpawns": "Apari??o de ilusionistas em raids"
 }

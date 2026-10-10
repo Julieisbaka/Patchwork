@@ -106,7 +106,7 @@
 	"patchwork.config.spiderWebs": "Las arañas tejen telarañas",
 	"patchwork.config.spiderWebs.summary": "Las arañas que persiguen colocan telarañas junto a su presa de vez en cuando.",
 	"patchwork.config.spiderWebs.description": "Las arañas que persiguen intentan colocar telarañas a los pies de su presa si hay espacio y mobGriefing está activado. La distancia, el intervalo de intentos y la probabilidad son configurables. Valores predeterminados: 2-8 bloques, 100 ticks, 25 por ciento.",
-	"patchwork.config.throwableFireCharges": "Cargas ígneas arrojadizas",
+	"patchwork.config.throwableFireCharges": "Proyectiles lanzados por jugadores",
 	"patchwork.config.throwableFireCharges.summary": "Lanza bolas de fuego con vuelo y daño configurables.",
 	"patchwork.config.throwableFireCharges.description": "Lanza cargas ígneas normales o de almas sin explosiones. El daño, el vuelo, el espacio libre y el tiempo de espera son configurables. Valores predeterminados: 2/3 PV, cinco bloques de espacio libre, espera de 30 ticks. Esta opción controla los lanzamientos de los jugadores, no los ataques de los gólems de almas ni el uso sobre bloques. Los ajustes de vuelo y daño de los proyectiles de almas también se aplican a los gólems de almas y a los dispensadores.",
 	"patchwork.config.slimeSplitClouds": "Nubes de división de los slimes",
@@ -294,5 +294,16 @@
 	"item.patchwork.unlit_waxed_weathered_copper_campfire": "Hoguera de cobre degradado encerado apagada",
 	"item.patchwork.unlit_oxidized_copper_campfire": "Hoguera de cobre oxidado apagada",
 	"item.patchwork.unlit_waxed_oxidized_copper_campfire": "Hoguera de cobre oxidado encerado apagada",
-	"tag.item.patchwork.soul_fire_bases": "Bases para fuego de almas"
+	"tag.item.patchwork.soul_fire_bases": "Bases para fuego de almas",
+	"patchwork.config.feature.summary": "Activar o desactivar esta funci?n de Patchwork.",
+	"patchwork.config.feature.description": "Esta opci?n la controla el servidor en multijugador. Guarda y reinicia el juego o el servidor para aplicar los cambios.",
+	"patchwork.config.rabbitCarrotTaming": "Domar conejos con zanahorias",
+	"patchwork.config.soulGolems": "G?lems de almas",
+	"patchwork.config.soulFireCharges": "Cargas ?gneas de almas",
+	"patchwork.config.soulFireChargeDispenserProjectiles": "Proyectiles de carga ?gnea de almas en dispensadores",
+	"patchwork.config.soulGolemProjectiles": "Proyectiles de g?lems de almas",
+	"patchwork.config.unlitLights": "Luces apagadas",
+	"patchwork.config.soulCopperLightBlocks": "Bloques de luz de almas y cobre",
+	"patchwork.config.restoredPaintings": "Pinturas restauradas",
+	"patchwork.config.illusionerRaidSpawns": "Aparici?n de ilusionistas en incursiones"
 }

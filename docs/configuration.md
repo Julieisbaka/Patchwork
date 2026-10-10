@@ -79,7 +79,16 @@ chain explosions can cause extra terrain damage.
 | `ownerSweepProtection`     | Owned wolf/cat/rabbit protection from sword sweeps       |
 | `shulkerDyeing`            | Shulker recoloring                                       |
 | `throwableSlimeballs`      | Slimeball throwing, effects, and cooldown                |
-| `throwableFireCharges`     | Player throwing of regular and Soul Fire Charges         |
+| `throwableFireCharges`     | Player projectiles from regular and Soul Fire Charges    |
+| `soulFireCharges`          | Soul Fire Charge crafting, use, and projectile support    |
+| `soulFireChargeDispenserProjectiles` | Soul Fire Charges fired by dispensers              |
+| `soulGolemProjectiles`     | Soul Golem ranged Soul Fire Charge attacks                |
+| `soulGolems`               | Soul Golem construction and Creative spawn egg            |
+| `rabbitCarrotTaming`       | Rabbit carrot taming and owner commands                   |
+| `unlitLights`              | Unlit lights, extinguishing, relighting, and drops        |
+| `soulCopperLightBlocks`    | Soul and copper light blocks and recipes                  |
+| `restoredPaintings`        | Earth, Wind, Water, and Fire painting availability        |
+| `illusionerRaidSpawns`     | Illusioners joining raid waves from wave five             |
 | `callHornRecall`           | Call goat horn recall of seated pets and staying rabbits |
 | `cauldronCleaning`         | Washing wool, terracotta, stained glass, and dyed bundles |
 | `beesDefendFlowers`        | Bees defending nearby flowers                            |
@@ -177,6 +186,10 @@ Soul projectile damage and flight settings affect player throws, dispensers,
 and Soul Golems. They do not change Ghast fireballs or regular dispenser fire
 charges. Soul Fire Charges can place soul fire on solid tops, beside flammable
 blocks, and on leaves. This does not make soul fire spread like regular fire.
+`throwableFireCharges` is the player-projectile control;
+`soulFireChargeDispenserProjectiles` and `soulGolemProjectiles` independently
+control dispenser and Soul Golem launches. Each Soul projectile source also
+requires `soulFireCharges`.
 
 ### Slime clouds and experience orbs
 
@@ -220,13 +233,17 @@ busy server slower; an allowed value is not a performance guarantee.
 | Disable potion cauldrons | New interactions stop; placed potion cauldrons remain. |
 | Disable XP clumping | Vanilla spawning, merging, and pickup return. Saved XP values are not truncated. |
 | Disable difficulty-based Wither health | New Withers use vanilla health. Existing saved Wither health is not reset. |
-| Disable throwable fire charges | Player air throws stop. Crafting, direct block use, dispensers, Soul Golem attacks, and Creative items remain. |
+| Disable throwable fire charges | Player air throws stop. Dispenser and Soul Golem Soul Fire Charges have separate controls. |
+| Disable Soul Fire Charges | Their recipe, direct block use, and all Soul projectile sources stop. Existing charges and placed soul fire remain. |
+| Disable dispenser Soul Fire Charge projectiles | Dispensers stop launching Soul Fire Charges; the other sources are controlled separately. |
+| Disable Soul Golem projectiles | Soul Golems stop ranged attacks; construction and other behavior remain. |
+| Disable Soul Golems | Soul-lantern structures no longer create golems and the spawn egg is hidden from Creative. Existing golems remain. |
+| Disable rabbit carrot taming | New taming and owner commands stop; existing owner data is retained but inactive. |
+| Disable unlit lights | Extinguishing, relighting, unlit-light drops, and unlit recipes are disabled. Existing unlit blocks remain. |
+| Disable Soul/copper light blocks | Their recipes and Creative entries are removed; placed blocks remain. |
+| Disable restored paintings | Earth, Wind, Water, and Fire leave the normal placement pool and Creative painting list. |
+| Disable Illusioner raid spawns | New raids no longer add Illusioners; existing raid members remain. |
 | Disable pumpkin lantern lighting | Torch-lighting interactions stop. Crafting, placement, and Soul Golem construction remain. |
-
-Some additions are always available: rabbit carrot taming, Soul Golems and
-Soul Fire Charges, unlit lights, Soul/copper light blocks, restored paintings,
-and Illusioner raid spawns. There are no separate availability switches for
-these additions.
 
 ### Vanilla game rules still matter
 

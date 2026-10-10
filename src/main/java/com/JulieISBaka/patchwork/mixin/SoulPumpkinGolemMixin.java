@@ -18,7 +18,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class SoulPumpkinGolemMixin {
 	@Inject(method = "trySpawnGolem", at = @At("HEAD"), cancellable = true)
 	private void patchwork$spawnSoulGolem(Level level, BlockPos pos, CallbackInfo ci) {
-		if (SoulGolems.trySpawn(level, pos)) {
+		if (level.getBlockState(pos).is(PumpkinLanterns.SOUL_BLOCK)
+				&& (!PatchworkConfig.settings().soulGolems()
+						|| !PatchworkConfig.settings().soulCopperLightBlocks())) {
+			ci.cancel();
+		} else if (SoulGolems.trySpawn(level, pos)) {
 			ci.cancel();
 		}
 	}

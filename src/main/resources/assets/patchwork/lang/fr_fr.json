@@ -106,7 +106,7 @@
 	"patchwork.config.spiderWebs": "Les araignées tissent des toiles",
 	"patchwork.config.spiderWebs.summary": "Les araignées en poursuite posent parfois des toiles près de leur proie.",
 	"patchwork.config.spiderWebs.description": "Les araignées en poursuite tentent de poser des toiles aux pieds de leur proie si l'espace le permet et que mobGriefing est activé. La distance, l'intervalle des tentatives et la probabilité sont réglables. Valeurs par défaut : 2-8 blocs, 100 ticks, 25 pour cent.",
-	"patchwork.config.throwableFireCharges": "Boules de feu à lancer",
+	"patchwork.config.throwableFireCharges": "Projectiles lanc?s par les joueurs",
 	"patchwork.config.throwableFireCharges.summary": "Lancez des boules de feu au vol et aux dégâts réglables.",
 	"patchwork.config.throwableFireCharges.description": "Lancez des boules de feu ordinaires ou des âmes sans explosion. Les dégâts, le vol, le dégagement et le délai sont réglables. Valeurs par défaut : 2/3 PV, dégagement de cinq blocs, délai de 30 ticks. Cette option contrôle les lancers des joueurs, pas les attaques des golems des âmes ni l'utilisation sur les blocs. Les réglages de vol et de dégâts des projectiles des âmes s'appliquent aussi aux golems des âmes et aux distributeurs.",
 	"patchwork.config.slimeSplitClouds": "Nuages de division des Slimes",
@@ -294,5 +294,16 @@
 	"item.patchwork.unlit_waxed_weathered_copper_campfire": "Feu de camp de cuivre altéré ciré éteint",
 	"item.patchwork.unlit_oxidized_copper_campfire": "Feu de camp de cuivre oxydé éteint",
 	"item.patchwork.unlit_waxed_oxidized_copper_campfire": "Feu de camp de cuivre oxydé ciré éteint",
-	"tag.item.patchwork.soul_fire_bases": "Supports du feu des âmes"
+	"tag.item.patchwork.soul_fire_bases": "Supports du feu des âmes",
+	"patchwork.config.feature.summary": "Activer ou d?sactiver cet ajout de Patchwork.",
+	"patchwork.config.feature.description": "Cette option est contr?l?e par le serveur en multijoueur. Enregistrez puis red?marrez le jeu ou le serveur pour appliquer les changements.",
+	"patchwork.config.rabbitCarrotTaming": "Apprivoisement des lapins avec des carottes",
+	"patchwork.config.soulGolems": "Golems des ?mes",
+	"patchwork.config.soulFireCharges": "Charges de feu des ?mes",
+	"patchwork.config.soulFireChargeDispenserProjectiles": "Projectiles de charge des ?mes par les distributeurs",
+	"patchwork.config.soulGolemProjectiles": "Projectiles des golems des ?mes",
+	"patchwork.config.unlitLights": "Lumi?res ?teintes",
+	"patchwork.config.soulCopperLightBlocks": "Blocs lumineux des ?mes et de cuivre",
+	"patchwork.config.restoredPaintings": "Peintures restaur?es",
+	"patchwork.config.illusionerRaidSpawns": "Apparition des illusionnistes dans les raids"
 }

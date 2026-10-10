@@ -99,8 +99,8 @@ public final class SoulFireCharges {
 	}
 
 	public static SoulFireball shoot(ServerLevel level, LivingEntity shooter, Vec3 origin, Vec3 direction) {
-		if (!PatchworkConfig.settings().soulFireCharges() || !PatchworkConfig.settings().soulGolemProjectiles()) {
-			throw new IllegalStateException("Soul Golem projectiles are disabled");
+		if (!PatchworkConfig.settings().soulFireCharges()) {
+			throw new IllegalStateException("Soul Fire Charges are disabled");
 		}
 		SoulFireball projectile = new SoulFireball(PROJECTILE, level);
 		projectile.setOwner(shooter);

@@ -106,7 +106,7 @@
 	"patchwork.config.spiderWebs": "거미가 거미줄 치기",
 	"patchwork.config.spiderWebs.summary": "추격하는 거미가 가끔 먹잇감의 발밑에 거미줄을 설치합니다.",
 	"patchwork.config.spiderWebs.description": "추격하는 거미는 공간이 있고 '몹의 블록 변경 허용'(mobGriefing)이 켜져 있으면 먹잇감의 발밑에 거미줄 설치를 시도합니다. 거리, 시도 간격, 확률을 설정할 수 있습니다. 기본값: 2~8블록, 100틱, 25%.",
-	"patchwork.config.throwableFireCharges": "화염구 투척",
+	"patchwork.config.throwableFireCharges": "???? ??? ??",
 	"patchwork.config.throwableFireCharges.summary": "비행과 피해량을 설정할 수 있는 화염구를 발사합니다.",
 	"patchwork.config.throwableFireCharges.description": "폭발하지 않는 일반 또는 영혼 화염구를 던집니다. 피해량, 비행, 여유 공간, 재사용 대기 시간을 설정할 수 있습니다. 기본값: 체력 2/3, 여유 공간 5블록, 재사용 대기 시간 30틱. 이 설정은 플레이어의 투척만 제어하며 영혼 골렘의 공격이나 블록에 사용하는 동작은 제어하지 않습니다. 영혼 투사체의 비행 및 피해 설정은 영혼 골렘과 발사기에도 적용됩니다.",
 	"patchwork.config.slimeSplitClouds": "슬라임 분열 구름",
@@ -294,5 +294,16 @@
 	"item.patchwork.unlit_waxed_weathered_copper_campfire": "불 꺼진 밀랍칠한 녹슨 구리 모닥불",
 	"item.patchwork.unlit_oxidized_copper_campfire": "불 꺼진 산화된 구리 모닥불",
 	"item.patchwork.unlit_waxed_oxidized_copper_campfire": "불 꺼진 밀랍칠한 산화된 구리 모닥불",
-	"tag.item.patchwork.soul_fire_bases": "영혼 불 기반 블록"
+	"tag.item.patchwork.soul_fire_bases": "영혼 불 기반 블록",
+	"patchwork.config.feature.summary": "? Patchwork ??? ??? ???.",
+	"patchwork.config.feature.description": "???????? ??? ? ??? ?????. ?? ??? ????? ??? ? ?? ?? ??? ?? ?????.",
+	"patchwork.config.rabbitCarrotTaming": "???? ?? ????",
+	"patchwork.config.soulGolems": "?? ??",
+	"patchwork.config.soulFireCharges": "?? ???",
+	"patchwork.config.soulFireChargeDispenserProjectiles": "???? ?? ??? ???",
+	"patchwork.config.soulGolemProjectiles": "?? ?? ???",
+	"patchwork.config.unlitLights": "?? ??",
+	"patchwork.config.soulCopperLightBlocks": "?? ? ?? ?? ??",
+	"patchwork.config.restoredPaintings": "??? ??",
+	"patchwork.config.illusionerRaidSpawns": "?? ??? ??"
 }

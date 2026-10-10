@@ -62,12 +62,14 @@ public class PatchworkConfigScreen extends OptionsSubScreen {
 		for (int index = 0; index < KEYS.length; index++) {
 			final int setting = index;
 			String key = "patchwork.config." + KEYS[index];
+			String descriptionKey = index >= 31 ? "patchwork.config.feature.description" : key + ".description";
+			String summaryKey = index >= 31 ? "patchwork.config.feature.summary" : key + ".summary";
 			Button toggle = Button.builder(label(index), button -> {
 				this.enabled[setting] = !this.enabled[setting];
 				button.setMessage(label(setting));
-			}).tooltip(Tooltip.create(Component.translatable(key + ".description"))).build();
+			}).tooltip(Tooltip.create(Component.translatable(descriptionKey))).build();
 			options.addBig(toggle);
-			options.addBig(new StringWidget(Component.translatable(key + ".summary"), this.font).setMaxWidth(310));
+			options.addBig(new StringWidget(Component.translatable(summaryKey), this.font).setMaxWidth(310));
 		}
 
 		options.addHeader(Component.translatable("patchwork.config.callHornRecallRadius"));
