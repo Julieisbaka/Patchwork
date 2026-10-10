@@ -28,5 +28,11 @@
 		"recipes": [
 			"patchwork:soul_fire_charge"
 		]
-	}
+	},
+	"fabric:load_conditions": [
+		{
+			"condition": "patchwork:feature_enabled",
+			"feature": "soulFireCharges"
+		}
+	]
 }

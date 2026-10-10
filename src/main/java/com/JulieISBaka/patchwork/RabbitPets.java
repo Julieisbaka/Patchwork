@@ -1,6 +1,7 @@
 package com.JulieISBaka.patchwork;
 
 import java.util.EnumSet;
+import com.JulieISBaka.patchwork.PatchworkConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.world.entity.LivingEntity;
@@ -51,7 +52,8 @@ public final class RabbitPets {
 
 		@Override
 		public boolean canUse() {
-			return pet.getOwnerReference() != null && pet.patchwork$isOrderedToStay()
+			return PatchworkConfig.settings().rabbitCarrotTaming() && pet.getOwnerReference() != null
+					&& pet.patchwork$isOrderedToStay()
 					&& rabbit.onGround() && !rabbit.isInWater();
 		}
 
@@ -77,7 +79,7 @@ public final class RabbitPets {
 		}
 
 		private boolean canFollow(LivingEntity candidate) {
-			return candidate != null && candidate.isAlive() && !candidate.isSpectator()
+			return PatchworkConfig.settings().rabbitCarrotTaming() && candidate != null && candidate.isAlive() && !candidate.isSpectator()
 					&& candidate.level() == rabbit.level() && !pet.patchwork$isOrderedToStay()
 					&& !rabbit.isPassenger() && !rabbit.isLeashed();
 		}

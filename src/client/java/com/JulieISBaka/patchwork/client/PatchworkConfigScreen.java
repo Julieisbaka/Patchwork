@@ -24,7 +24,9 @@ public class PatchworkConfigScreen extends OptionsSubScreen {
 			"throwableFireCharges", "slimeSplitClouds", "breezeShockwave", "breezeTorchExtinguishing", "hoglinCharge",
 			"skeletonCover", "potionCauldrons", "pumpkinLanterns", "experienceClumping", "sweetBerryTrades",
 			"elytraDyeing", "stoneToolMaterials", "playerHeadRecipe", "spiderCeilingClimbing", "caveSpiderNausea",
-			"loyalTridentVoidReturn", "patchworkAdvancements", "animalDroppedFood" };
+			"loyalTridentVoidReturn", "patchworkAdvancements", "animalDroppedFood", "rabbitCarrotTaming",
+			"soulGolems", "soulFireCharges", "soulFireChargeDispenserProjectiles", "soulGolemProjectiles",
+			"unlitLights", "soulCopperLightBlocks", "restoredPaintings", "illusionerRaidSpawns" };
 	private final boolean[] enabled;
 	private final Map<NumericSetting, String> numericText = new EnumMap<>(NumericSetting.class);
 	private String radiusText;
@@ -42,7 +44,10 @@ public class PatchworkConfigScreen extends OptionsSubScreen {
 				loaded.potionCauldrons(), loaded.pumpkinLanterns(), loaded.experienceClumping(),
 				loaded.sweetBerryTrades(), loaded.elytraDyeing(), loaded.stoneToolMaterials(),
 				loaded.playerHeadRecipe(), loaded.spiderCeilingClimbing(), loaded.caveSpiderNausea(),
-				loaded.loyalTridentVoidReturn(), loaded.patchworkAdvancements(), loaded.animalDroppedFood() };
+				loaded.loyalTridentVoidReturn(), loaded.patchworkAdvancements(), loaded.animalDroppedFood(),
+				loaded.rabbitCarrotTaming(), loaded.soulGolems(), loaded.soulFireCharges(),
+				loaded.soulFireChargeDispenserProjectiles(), loaded.soulGolemProjectiles(), loaded.unlitLights(),
+				loaded.soulCopperLightBlocks(), loaded.restoredPaintings(), loaded.illusionerRaidSpawns() };
 		this.radiusText = Integer.toString(loaded.callHornRecallRadius());
 		for (NumericSetting setting : NumericSetting.values()) {
 			this.numericText.put(setting, setting.format(loaded.numericValues().get(setting)));
@@ -172,7 +177,9 @@ public class PatchworkConfigScreen extends OptionsSubScreen {
 					this.enabled[14], this.enabled[15], this.enabled[16], this.enabled[17], this.enabled[18],
 					this.enabled[19], this.enabled[20], this.enabled[21], this.enabled[22], this.enabled[23],
 					this.enabled[24], this.enabled[25], this.enabled[26], this.enabled[27], this.enabled[28],
-					this.enabled[29], Integer.parseInt(this.radiusText), this.enabled[30], parsedNumericValues()));
+					this.enabled[29], Integer.parseInt(this.radiusText), this.enabled[30], this.enabled[31],
+					this.enabled[32], this.enabled[33], this.enabled[34], this.enabled[35], this.enabled[36],
+					this.enabled[37], this.enabled[38], this.enabled[39], parsedNumericValues()));
 		} catch (IllegalStateException | IllegalArgumentException e) {
 			Patchwork.LOGGER.error("Could not save Patchwork settings", e);
 			this.saveButton.setMessage(Component.translatable("patchwork.config.save_failed"));

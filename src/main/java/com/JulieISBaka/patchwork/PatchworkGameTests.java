@@ -840,18 +840,18 @@ public class PatchworkGameTests {
 				"Iron repaired the Soul Golem or was consumed");
 		player.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.GOLD_INGOT, 3));
 		golem.interact(player, InteractionHand.OFF_HAND, Vec3.ZERO);
-		test.assertTrue(golem.getHealth() == 35.0F && player.getOffhandItem().getCount() == 2,
+		test.assertTrue(golem.getHealth() == 30.0F && player.getOffhandItem().getCount() == 2,
 				"Gold did not heal 25 HP and consume exactly one ingot");
 		golem.interact(player, InteractionHand.OFF_HAND, Vec3.ZERO);
 		golem.interact(player, InteractionHand.OFF_HAND, Vec3.ZERO);
-		test.assertTrue(golem.getHealth() == 50.0F && player.getOffhandItem().getCount() == 1,
+		test.assertTrue(golem.getHealth() == 30.0F && player.getOffhandItem().getCount() == 2,
 				"Repairing full health consumed an ingot or exceeded max health");
 		Player creative = test.makeMockPlayer(GameType.CREATIVE);
 		creative.getAbilities().instabuild = true;
 		creative.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.GOLD_INGOT));
 		golem.setHealth(25.0F);
 		golem.interact(creative, InteractionHand.MAIN_HAND, Vec3.ZERO);
-		test.assertTrue(golem.getHealth() == 50.0F && creative.getMainHandItem().getCount() == 1,
+		test.assertTrue(golem.getHealth() == 30.0F && creative.getMainHandItem().getCount() == 1,
 				"Creative gold repair consumed the ingot");
 		var iron = test.spawn(EntityTypes.IRON_GOLEM, CENTER.offset(2, 0, 0));
 		iron.setHealth(50.0F);
@@ -878,7 +878,7 @@ public class PatchworkGameTests {
 				new BlockHitResult(Vec3.atCenterOf(floor), Direction.UP, floor, false)));
 		test.assertTrue(test.getEntities(SoulGolems.TYPE).size() == 1, "Spawn egg did not spawn one Soul Golem");
 		var golem = test.getEntities(SoulGolems.TYPE).getFirst();
-		test.assertTrue(golem.getMaxHealth() == 50.0F && !golem.canAttack(player) && golem.isPlayerCreated()
+		test.assertTrue(golem.getMaxHealth() == 30.0F && !golem.canAttack(player) && golem.isPlayerCreated()
 				&& golem.isPersistenceRequired(), "Egg-created Soul Golem did not keep balanced, friendly behavior");
 		test.assertTrue(golem.getOwnerReference() != null && golem.getOwnerReference().matches(player),
 				"Spawn egg did not assign its player as owner");
@@ -899,8 +899,8 @@ public class PatchworkGameTests {
 				SoulGolem golem = golems.getFirst();
 				test.assertTrue(golem.isPlayerCreated() && golem.isPersistenceRequired(),
 						"Soul Golem is not a persistent player-built defender");
-				test.assertTrue(golem.getMaxHealth() == 50.0F,
-						"Soul Golem does not have half of an iron golem's health");
+				test.assertTrue(golem.getMaxHealth() == 30.0F,
+						"Soul Golem does not have 30 health");
 				test.assertBlockPresent(Blocks.AIR, CENTER);
 				test.assertBlockPresent(Blocks.AIR, CENTER.above());
 				test.assertBlockPresent(Blocks.AIR, CENTER.above(2));

@@ -1,4 +1,10 @@
 {
+	"fabric:load_conditions": [
+		{
+			"condition": "patchwork:feature_enabled",
+			"feature": "soulFireCharges"
+		}
+	],
 	"type": "minecraft:crafting_shaped",
 	"category": "misc",
 	"pattern": [

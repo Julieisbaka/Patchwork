@@ -56,6 +56,9 @@ public final class SoulFireCharges {
 
 				@Override
 				public InteractionResult useOn(UseOnContext context) {
+					if (!PatchworkConfig.settings().soulFireCharges()) {
+						return InteractionResult.PASS;
+					}
 					BlockPos pos = context.getClickedPos();
 					BlockState state = context.getLevel().getBlockState(pos);
 					boolean light = CampfireBlock.canLight(state) || CandleBlock.canLight(state)
@@ -89,10 +92,16 @@ public final class SoulFireCharges {
 	}
 
 	public static void register() {
-		DispenserBlock.registerProjectileBehavior(ITEM);
+		if (PatchworkConfig.settings().soulFireCharges()
+				&& PatchworkConfig.settings().soulFireChargeDispenserProjectiles()) {
+			DispenserBlock.registerProjectileBehavior(ITEM);
+		}
 	}
 
 	public static SoulFireball shoot(ServerLevel level, LivingEntity shooter, Vec3 origin, Vec3 direction) {
+		if (!PatchworkConfig.settings().soulFireCharges() || !PatchworkConfig.settings().soulGolemProjectiles()) {
+			throw new IllegalStateException("Soul Golem projectiles are disabled");
+		}
 		SoulFireball projectile = new SoulFireball(PROJECTILE, level);
 		projectile.setOwner(shooter);
 		projectile.setPos(origin);
@@ -107,7 +116,9 @@ public final class SoulFireCharges {
 
 	public static InteractionResult throwCharge(Player player, Level level, InteractionHand hand) {
 		ItemStack stack = player.getItemInHand(hand);
-		if (!PatchworkConfig.settings().throwableFireCharges() || (!stack.is(Items.FIRE_CHARGE) && !stack.is(ITEM))) {
+		if (!PatchworkConfig.settings().throwableFireCharges()
+				|| (stack.is(ITEM) && !PatchworkConfig.settings().soulFireCharges())
+				|| (!stack.is(Items.FIRE_CHARGE) && !stack.is(ITEM))) {
 			return InteractionResult.PASS;
 		}
 		if (player.getCooldowns().isOnCooldown(stack)) {

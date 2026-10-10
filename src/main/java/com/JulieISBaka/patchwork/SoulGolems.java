@@ -39,7 +39,7 @@ public final class SoulGolems {
 	}
 
 	public static void register() {
-		FabricDefaultAttributeRegistry.register(TYPE, IronGolem.createAttributes().add(Attributes.MAX_HEALTH, 50.0));
+		FabricDefaultAttributeRegistry.register(TYPE, IronGolem.createAttributes().add(Attributes.MAX_HEALTH, 30.0));
 	}
 
 	public static <T> T withBuilder(Player player, Supplier<T> placement) {
@@ -58,7 +58,8 @@ public final class SoulGolems {
 
 	public static boolean trySpawn(Level level, BlockPos head) {
 		BlockState lantern = level.getBlockState(head);
-		if (!(level instanceof ServerLevel serverLevel) || !lantern.is(PumpkinLanterns.SOUL_BLOCK)
+		if (!PatchworkConfig.settings().soulGolems() || !PatchworkConfig.settings().soulCopperLightBlocks()
+				|| !(level instanceof ServerLevel serverLevel) || !lantern.is(PumpkinLanterns.SOUL_BLOCK)
 				|| !isSoulBlock(level.getBlockState(head.below()))
 				|| !isSoulBlock(level.getBlockState(head.below(2)))) {
 			return false;

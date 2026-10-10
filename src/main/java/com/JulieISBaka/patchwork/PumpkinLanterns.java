@@ -51,7 +51,10 @@ public final class PumpkinLanterns {
 			}
 			ItemStack held = player.getItemInHand(hand);
 			Block replacement = held.is(Items.TORCH) ? Blocks.JACK_O_LANTERN
-					: held.is(Items.SOUL_TORCH) ? SOUL_BLOCK : LightVariants.copperPumpkinFor(held.getItem());
+					: PatchworkConfig.settings().soulCopperLightBlocks() && held.is(Items.SOUL_TORCH) ? SOUL_BLOCK
+							: PatchworkConfig.settings().soulCopperLightBlocks()
+									? LightVariants.copperPumpkinFor(held.getItem())
+									: null;
 			if (replacement == null) {
 				return InteractionResult.PASS;
 			}

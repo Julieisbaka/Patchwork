@@ -1,6 +1,7 @@
 package com.JulieISBaka.patchwork.mixin;
 
 import com.JulieISBaka.patchwork.PumpkinLanterns;
+import com.JulieISBaka.patchwork.PatchworkConfig;
 import com.JulieISBaka.patchwork.SoulGolems;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import java.util.function.Predicate;
@@ -25,6 +26,7 @@ public class SoulPumpkinGolemMixin {
 	@ModifyExpressionValue(method = { "getOrCreateIronGolemFull",
 			"getOrCreateCopperGolemFull" }, at = @At(value = "FIELD", target = "Lnet/minecraft/world/level/block/CarvedPumpkinBlock;PUMPKINS_PREDICATE:Ljava/util/function/Predicate;"))
 	private Predicate<BlockState> patchwork$acceptSoulLantern(Predicate<BlockState> original) {
-		return original.or(state -> state.is(PumpkinLanterns.SOUL_BLOCK));
+		return PatchworkConfig.settings().soulCopperLightBlocks()
+				? original.or(state -> state.is(PumpkinLanterns.SOUL_BLOCK)) : original;
 	}
 }

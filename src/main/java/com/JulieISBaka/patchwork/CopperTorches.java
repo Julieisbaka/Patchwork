@@ -60,20 +60,27 @@ public final class CopperTorches {
 			OxidizableBlocksRegistry.registerWeatheringCopperBlocks(collection);
 		}
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register(output -> {
-			for (Block block : LIT.asList()) {
-				if (block != Blocks.COPPER_TORCH) {
-					output.accept(block.asItem());
+			if (PatchworkConfig.settings().soulCopperLightBlocks()) {
+				for (Block block : LIT.asList()) {
+					if (block != Blocks.COPPER_TORCH) {
+						output.accept(block.asItem());
+					}
 				}
 			}
-			for (Block block : UNLIT.asList()) {
-				if (block != UNLIT.weathering().unaffected()) {
-					output.accept(block.asItem());
+			if (PatchworkConfig.settings().unlitLights()) {
+				for (Block block : UNLIT.asList()) {
+					if (block != UNLIT.weathering().unaffected()) {
+						output.accept(block.asItem());
+					}
 				}
 			}
 		});
 	}
 
 	public static BlockState extinguish(BlockState state) {
+		if (!PatchworkConfig.settings().unlitLights()) {
+			return null;
+		}
 		Block unlit = counterpart(state.getBlock(), LIT, UNLIT);
 		if (unlit == null) {
 			unlit = counterpart(state.getBlock(), LIT_WALL, UNLIT_WALL);

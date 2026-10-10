@@ -1,5 +1,6 @@
 package com.JulieISBaka.patchwork.mixin;
 
+import com.JulieISBaka.patchwork.PatchworkConfig;
 import java.util.Objects;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -15,6 +16,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class RaidMixin {
 	@Inject(method = "spawnGroup", at = @At("TAIL"))
 	private void patchwork$spawnIllusioner(ServerLevel level, BlockPos pos, CallbackInfo ci) {
+		if (!PatchworkConfig.settings().illusionerRaidSpawns()) {
+			return;
+		}
 		Raid raid = (Raid) (Object) this;
 		int wave = raid.getGroupsSpawned();
 		if (wave < 5) {

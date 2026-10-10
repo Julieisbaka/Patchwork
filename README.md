@@ -13,7 +13,7 @@ See the [configuration guide](docs/configuration.md) for defaults and ranges.
 
 - **Soul Golems:** Build one from two soul sand or soul soil blocks topped with
   a Soul Jack o'Lantern. They protect their owner, attack at range with Soul
-  Fire Charges, have 50 health, can be healed with gold, and can be sheared.
+  Fire Charges, have 30 health, can be healed with gold, and can be sheared.
 - **Soul Fire Charges:** Craft one by surrounding a regular Fire Charge with
   eight soul sand or soul soil. Use charges to create soul fire, light
   campfires and candles, or launch them by hand or dispenser. Charge-created

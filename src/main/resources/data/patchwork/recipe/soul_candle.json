@@ -12,5 +12,11 @@
 	},
 	"result": {
 		"id": "patchwork:soul_candle"
-	}
+	},
+	"fabric:load_conditions": [
+		{
+			"condition": "patchwork:feature_enabled",
+			"feature": "soulCopperLightBlocks"
+		}
+	]
 }

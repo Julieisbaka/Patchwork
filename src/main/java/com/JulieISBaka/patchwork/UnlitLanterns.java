@@ -45,10 +45,17 @@ public final class UnlitLanterns {
 	public static void register() {
 		OxidizableBlocksRegistry.registerWeatheringCopperBlocks(COPPER_LANTERN);
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS)
-				.register(output -> UNLIT.forEach((lit, unlit) -> output.insertAfter(lit.asItem(), unlit.asItem())));
+				.register(output -> {
+					if (PatchworkConfig.settings().unlitLights()) {
+						UNLIT.forEach((lit, unlit) -> output.insertAfter(lit.asItem(), unlit.asItem()));
+					}
+				});
 	}
 
 	public static BlockState extinguish(BlockState lit) {
+		if (!PatchworkConfig.settings().unlitLights()) {
+			return null;
+		}
 		Block unlit = UNLIT.get(lit.getBlock());
 		return unlit == null ? null : unlit.withPropertiesOf(lit);
 	}
@@ -81,7 +88,8 @@ public final class UnlitLanterns {
 		@Override
 		protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
 				Player player, InteractionHand hand, BlockHitResult hit) {
-			if (!stack.is(Items.FIRE_CHARGE) || state.getValue(WATERLOGGED)) {
+			if (!PatchworkConfig.settings().unlitLights() || !stack.is(Items.FIRE_CHARGE)
+					|| state.getValue(WATERLOGGED)) {
 				return InteractionResult.TRY_WITH_EMPTY_HAND;
 			}
 			if (!level.isClientSide()) {

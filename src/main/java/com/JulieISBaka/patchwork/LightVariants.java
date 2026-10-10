@@ -76,7 +76,13 @@ public final class LightVariants {
 		registerUnlitItem(Blocks.SOUL_CAMPFIRE);
 		COPPER_CAMPFIRES.forEach(LightVariants::registerUnlitItem);
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS)
-				.register(output -> ITEMS.forEach(output::accept));
+				.register(output -> ITEMS.forEach(item -> {
+					String path = BuiltInRegistries.ITEM.getKey(item).getPath();
+					if (path.startsWith("unlit_") ? PatchworkConfig.settings().unlitLights()
+							: PatchworkConfig.settings().soulCopperLightBlocks()) {
+						output.accept(item);
+					}
+				}));
 	}
 
 	public static List<Block> blocks() {
@@ -89,11 +95,12 @@ public final class LightVariants {
 
 	public static boolean isUnlitItemFor(ItemStack stack, Block block) {
 		var item = UNLIT_ITEMS.get(block);
-		return item != null && stack.is(item);
+		return PatchworkConfig.settings().unlitLights() && item != null && stack.is(item);
 	}
 
 	public static Item unlitItem(BlockState state) {
-		return state.hasProperty(BlockStateProperties.LIT) && !state.getValue(BlockStateProperties.LIT)
+		return PatchworkConfig.settings().unlitLights() && state.hasProperty(BlockStateProperties.LIT)
+				&& !state.getValue(BlockStateProperties.LIT)
 				? UNLIT_ITEMS.get(state.getBlock()) : null;
 	}
 

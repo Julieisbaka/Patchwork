@@ -2,6 +2,7 @@ package com.JulieISBaka.patchwork.mixin;
 
 import com.JulieISBaka.patchwork.RabbitPet;
 import com.JulieISBaka.patchwork.RabbitPets;
+import com.JulieISBaka.patchwork.PatchworkConfig;
 import java.util.Optional;
 import net.minecraft.advancements.triggers.CriteriaTriggers;
 import net.minecraft.core.particles.ParticleTypes;
@@ -56,7 +57,8 @@ public abstract class RabbitMixin extends Animal implements RabbitPet {
 
 	@Inject(method = "startJumping", at = @At("HEAD"), cancellable = true)
 	private void patchwork$stayOnGround(CallbackInfo ci) {
-		if (patchwork$isOrderedToStay() && onGround() && !isInWater()) {
+		if (PatchworkConfig.settings().rabbitCarrotTaming() && patchwork$isOrderedToStay() && onGround()
+				&& !isInWater()) {
 			ci.cancel();
 		}
 	}
@@ -83,7 +85,8 @@ public abstract class RabbitMixin extends Animal implements RabbitPet {
 	public InteractionResult mobInteract(Player player, InteractionHand hand) {
 		var stack = player.getItemInHand(hand);
 		Rabbit rabbit = (Rabbit) (Object) this;
-		if (rabbit.getVariant() != Rabbit.Variant.EVIL && getOwnerReference() == null && stack.is(Items.CARROT)) {
+		if (PatchworkConfig.settings().rabbitCarrotTaming() && rabbit.getVariant() != Rabbit.Variant.EVIL
+				&& getOwnerReference() == null && stack.is(Items.CARROT)) {
 			if (level() instanceof ServerLevel level) {
 				entityData.set(PATCHWORK_OWNER, Optional.of(EntityReference.of(player)));
 				setPersistenceRequired();
@@ -96,7 +99,7 @@ public abstract class RabbitMixin extends Animal implements RabbitPet {
 			}
 			return InteractionResult.SUCCESS;
 		}
-		if (patchwork$isOwnedBy(player) && stack.isEmpty()) {
+		if (PatchworkConfig.settings().rabbitCarrotTaming() && patchwork$isOwnedBy(player) && stack.isEmpty()) {
 			if (!level().isClientSide()) {
 				patchwork$setOrderedToStay(!patchwork$isOrderedToStay());
 			}

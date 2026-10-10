@@ -2,6 +2,7 @@ package com.JulieISBaka.patchwork.mixin;
 
 import java.util.List;
 import com.JulieISBaka.patchwork.LightVariants;
+import com.JulieISBaka.patchwork.PatchworkConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.LevelReader;
@@ -18,6 +19,9 @@ public class UnlitLightDropsMixin {
 	@Inject(method = "getDrops", at = @At("RETURN"), cancellable = true)
 	private void patchwork$unlitDrops(BlockState state, LootParams.Builder params,
 			CallbackInfoReturnable<List<ItemStack>> cir) {
+		if (!PatchworkConfig.settings().unlitLights()) {
+			return;
+		}
 		var item = LightVariants.unlitItem(state);
 		if (item != null) {
 			cir.setReturnValue(cir.getReturnValue().stream().map(stack -> stack.is(state.getBlock().asItem())
@@ -28,6 +32,9 @@ public class UnlitLightDropsMixin {
 	@Inject(method = "getCloneItemStack", at = @At("RETURN"), cancellable = true)
 	private void patchwork$pickUnlit(LevelReader level, BlockPos pos, BlockState state, boolean includeData,
 			CallbackInfoReturnable<ItemStack> cir) {
+		if (!PatchworkConfig.settings().unlitLights()) {
+			return;
+		}
 		var item = LightVariants.unlitItem(state);
 		if (item != null) {
 			cir.setReturnValue(cir.getReturnValue().transmuteCopy(item));

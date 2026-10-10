@@ -28,5 +28,11 @@
 		"recipes": [
 			"patchwork:waxed_exposed_copper_candle_from_honeycomb"
 		]
-	}
+	},
+	"fabric:load_conditions": [
+		{
+			"condition": "patchwork:feature_enabled",
+			"feature": "soulCopperLightBlocks"
+		}
+	]
 }

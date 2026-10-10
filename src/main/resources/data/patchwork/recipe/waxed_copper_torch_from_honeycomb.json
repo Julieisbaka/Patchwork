@@ -8,5 +8,11 @@
 	"result": {
 		"id": "patchwork:waxed_copper_torch",
 		"count": 1
-	}
+	},
+	"fabric:load_conditions": [
+		{
+			"condition": "patchwork:feature_enabled",
+			"feature": "soulCopperLightBlocks"
+		}
+	]
 }

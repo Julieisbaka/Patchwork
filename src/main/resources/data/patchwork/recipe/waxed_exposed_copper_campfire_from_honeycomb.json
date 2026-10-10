@@ -6,5 +6,11 @@
 	],
 	"result": {
 		"id": "patchwork:waxed_exposed_copper_campfire"
-	}
+	},
+	"fabric:load_conditions": [
+		{
+			"condition": "patchwork:feature_enabled",
+			"feature": "soulCopperLightBlocks"
+		}
+	]
 }

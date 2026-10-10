@@ -28,5 +28,15 @@
 		"recipes": [
 			"patchwork:unlit_waxed_weathered_copper_candle"
 		]
-	}
+	},
+	"fabric:load_conditions": [
+		{
+			"condition": "patchwork:feature_enabled",
+			"feature": "unlitLights"
+		},
+		{
+			"condition": "patchwork:feature_enabled",
+			"feature": "soulCopperLightBlocks"
+		}
+	]
 }

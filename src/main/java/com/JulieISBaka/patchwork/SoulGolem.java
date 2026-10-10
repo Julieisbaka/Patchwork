@@ -126,7 +126,9 @@ public class SoulGolem extends IronGolem implements OwnableEntity, RangedAttackM
 
 	@Override
 	public void performRangedAttack(LivingEntity target, float distanceFactor) {
-		if (level() instanceof ServerLevel level && canAttack(target) && getSensing().hasLineOfSight(target)) {
+		if (PatchworkConfig.settings().soulGolems() && PatchworkConfig.settings().soulFireCharges()
+				&& PatchworkConfig.settings().soulGolemProjectiles() && level() instanceof ServerLevel level
+				&& canAttack(target) && getSensing().hasLineOfSight(target)) {
 			Vec3 origin = getEyePosition().add(0, -0.1, 0);
 			SoulFireCharges.shoot(level, this, origin, target.getEyePosition().subtract(origin));
 			playSound(SoundEvents.FIRECHARGE_USE, 1.0F, 1.0F);

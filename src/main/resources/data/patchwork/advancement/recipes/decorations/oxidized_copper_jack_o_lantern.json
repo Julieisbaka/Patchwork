@@ -28,5 +28,11 @@
 		"recipes": [
 			"patchwork:oxidized_copper_jack_o_lantern"
 		]
-	}
+	},
+	"fabric:load_conditions": [
+		{
+			"condition": "patchwork:feature_enabled",
+			"feature": "soulCopperLightBlocks"
+		}
+	]
 }

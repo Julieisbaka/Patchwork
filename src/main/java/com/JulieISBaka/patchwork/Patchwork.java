@@ -63,6 +63,10 @@ public class Patchwork implements ModInitializer {
 				case "stoneToolMaterials" -> settings.stoneToolMaterials();
 				case "playerHeadRecipe" -> settings.playerHeadRecipe();
 				case "patchworkAdvancements" -> settings.patchworkAdvancements();
+				case "soulFireCharges" -> settings.soulFireCharges();
+				case "unlitLights" -> settings.unlitLights();
+				case "soulCopperLightBlocks" -> settings.soulCopperLightBlocks();
+				case "restoredPaintings" -> settings.restoredPaintings();
 				default -> throw new IllegalArgumentException("Unknown Patchwork resource feature: " + this.feature);
 			};
 		}
@@ -89,17 +93,25 @@ public class Patchwork implements ModInitializer {
 			output.insertAfter(Items.ALLIUM, GardenBlocks.PAEONIA_ITEM);
 		});
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.SPAWN_EGGS).register(output -> {
-			output.insertAfter(Items.SNOW_GOLEM_SPAWN_EGG, SoulGolems.SPAWN_EGG);
+			if (PatchworkConfig.settings().soulGolems()) {
+				output.insertAfter(Items.SNOW_GOLEM_SPAWN_EGG, SoulGolems.SPAWN_EGG);
+			}
 		});
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register(output -> {
-			output.insertAfter(Items.TORCH, UnlitTorches.TORCH_ITEM);
-			output.insertAfter(Items.SOUL_TORCH, UnlitTorches.SOUL_TORCH_ITEM);
-			output.insertAfter(Items.COPPER_TORCH, UnlitTorches.COPPER_TORCH.asItem());
-			output.insertAfter(Items.REDSTONE_TORCH, UnlitTorches.REDSTONE_TORCH_ITEM);
-			output.insertAfter(Items.JACK_O_LANTERN, PumpkinLanterns.SOUL_ITEM);
+			if (PatchworkConfig.settings().unlitLights()) {
+				output.insertAfter(Items.TORCH, UnlitTorches.TORCH_ITEM);
+				output.insertAfter(Items.SOUL_TORCH, UnlitTorches.SOUL_TORCH_ITEM);
+				output.insertAfter(Items.COPPER_TORCH, UnlitTorches.COPPER_TORCH.asItem());
+				output.insertAfter(Items.REDSTONE_TORCH, UnlitTorches.REDSTONE_TORCH_ITEM);
+			}
+			if (PatchworkConfig.settings().soulCopperLightBlocks()) {
+				output.insertAfter(Items.JACK_O_LANTERN, PumpkinLanterns.SOUL_ITEM);
+			}
 		});
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.REDSTONE_BLOCKS).register(output -> {
-			output.insertAfter(Items.REDSTONE_TORCH, UnlitTorches.REDSTONE_TORCH_ITEM);
+			if (PatchworkConfig.settings().unlitLights()) {
+				output.insertAfter(Items.REDSTONE_TORCH, UnlitTorches.REDSTONE_TORCH_ITEM);
+			}
 		});
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.COMBAT).register(output -> {
 			if (PatchworkConfig.settings().throwableSlimeballs()) {
@@ -107,7 +119,9 @@ public class Patchwork implements ModInitializer {
 			}
 			output.insertAfter(PatchworkConfig.settings().throwableSlimeballs() ? Items.SLIME_BALL : Items.WIND_CHARGE,
 					Items.FIRE_CHARGE);
-			output.insertAfter(Items.FIRE_CHARGE, SoulFireCharges.ITEM);
+			if (PatchworkConfig.settings().soulFireCharges()) {
+				output.insertAfter(Items.FIRE_CHARGE, SoulFireCharges.ITEM);
+			}
 		});
 		SlimeSplitClouds.register();
 		ResourceConditions.register(CHAINMAIL_CONDITION);

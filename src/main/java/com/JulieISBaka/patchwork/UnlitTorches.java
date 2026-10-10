@@ -60,6 +60,9 @@ public final class UnlitTorches {
 	}
 
 	public static BlockState extinguish(BlockState lit) {
+		if (!PatchworkConfig.settings().unlitLights()) {
+			return null;
+		}
 		if (lit.getBlock() instanceof RedstoneTorchBlock && !lit.getValue(RedstoneTorchBlock.LIT)) {
 			return null;
 		}
@@ -95,6 +98,9 @@ public final class UnlitTorches {
 
 	static InteractionResult relight(ItemStack stack, Level level, BlockPos pos, Player player, InteractionHand hand,
 			BlockState lit) {
+		if (!PatchworkConfig.settings().unlitLights()) {
+			return InteractionResult.PASS;
+		}
 		boolean flint = stack.is(Items.FLINT_AND_STEEL);
 		if (!flint && !stack.is(Items.FIRE_CHARGE)) {
 			return InteractionResult.TRY_WITH_EMPTY_HAND;

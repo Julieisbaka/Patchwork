@@ -28,5 +28,11 @@
 		"recipes": [
 			"patchwork:waxed_weathered_copper_campfire_from_honeycomb"
 		]
-	}
+	},
+	"fabric:load_conditions": [
+		{
+			"condition": "patchwork:feature_enabled",
+			"feature": "soulCopperLightBlocks"
+		}
+	]
 }

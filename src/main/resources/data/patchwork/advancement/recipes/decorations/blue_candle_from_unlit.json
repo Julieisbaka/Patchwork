@@ -28,5 +28,11 @@
 		"recipes": [
 			"patchwork:blue_candle_from_unlit"
 		]
-	}
+	},
+	"fabric:load_conditions": [
+		{
+			"condition": "patchwork:feature_enabled",
+			"feature": "unlitLights"
+		}
+	]
 }

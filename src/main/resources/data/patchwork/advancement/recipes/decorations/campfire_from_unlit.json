@@ -28,5 +28,11 @@
 		"recipes": [
 			"patchwork:campfire_from_unlit"
 		]
-	}
+	},
+	"fabric:load_conditions": [
+		{
+			"condition": "patchwork:feature_enabled",
+			"feature": "unlitLights"
+		}
+	]
 }

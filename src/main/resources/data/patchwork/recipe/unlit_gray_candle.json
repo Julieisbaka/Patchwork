@@ -5,5 +5,11 @@
 	],
 	"result": {
 		"id": "patchwork:unlit_gray_candle"
-	}
+	},
+	"fabric:load_conditions": [
+		{
+			"condition": "patchwork:feature_enabled",
+			"feature": "unlitLights"
+		}
+	]
 }

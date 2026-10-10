@@ -1,6 +1,7 @@
 package com.JulieISBaka.patchwork.mixin;
 
 import com.JulieISBaka.patchwork.LightVariants;
+import com.JulieISBaka.patchwork.PatchworkConfig;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.CandleBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -14,7 +15,8 @@ public class UnlitCandleStackingMixin {
 	@Inject(method = "canBeReplaced", at = @At("HEAD"), cancellable = true)
 	private void patchwork$stackUnlit(BlockState state, BlockPlaceContext context,
 			CallbackInfoReturnable<Boolean> cir) {
-		if (!context.isSecondaryUseActive() && state.getValue(CandleBlock.CANDLES) < 4
+		if (PatchworkConfig.settings().unlitLights() && !context.isSecondaryUseActive()
+				&& state.getValue(CandleBlock.CANDLES) < 4
 				&& LightVariants.isUnlitItemFor(context.getItemInHand(), state.getBlock())) {
 			cir.setReturnValue(true);
 		}

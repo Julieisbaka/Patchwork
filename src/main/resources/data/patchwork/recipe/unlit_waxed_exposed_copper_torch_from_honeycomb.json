@@ -8,5 +8,15 @@
 	"result": {
 		"id": "patchwork:unlit_waxed_exposed_copper_torch",
 		"count": 1
-	}
+	},
+	"fabric:load_conditions": [
+		{
+			"condition": "patchwork:feature_enabled",
+			"feature": "unlitLights"
+		},
+		{
+			"condition": "patchwork:feature_enabled",
+			"feature": "soulCopperLightBlocks"
+		}
+	]
 }

@@ -28,5 +28,11 @@
 		"recipes": [
 			"patchwork:copper_campfire"
 		]
-	}
+	},
+	"fabric:load_conditions": [
+		{
+			"condition": "patchwork:feature_enabled",
+			"feature": "soulCopperLightBlocks"
+		}
+	]
 }

@@ -17,7 +17,8 @@ public final class PatchworkConfig {
 	private static final String RECALL_RADIUS_KEY = "callHornRecallRadius";
 	private static volatile Settings settings = new Settings(true, true, true, true, true, true, true, true, true, true,
 			false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
-			true, true, DEFAULT_RECALL_RADIUS, true, NumericSetting.defaults());
+			true, true, DEFAULT_RECALL_RADIUS, true, true, true, true, true, true, true, true, true,
+			NumericSetting.defaults());
 
 	public record Settings(boolean witherDifficultyHealth, boolean witherBirthExplosion, boolean chainmailRecipes,
 			boolean wolfBanners, boolean ownerSweepProtection, boolean shulkerDyeing, boolean throwableSlimeballs,
@@ -27,7 +28,10 @@ public final class PatchworkConfig {
 			boolean potionCauldrons, boolean pumpkinLanterns, boolean experienceClumping, boolean sweetBerryTrades,
 			boolean elytraDyeing, boolean stoneToolMaterials, boolean playerHeadRecipe, boolean spiderCeilingClimbing,
 			boolean caveSpiderNausea, boolean loyalTridentVoidReturn, boolean patchworkAdvancements,
-			int callHornRecallRadius, boolean animalDroppedFood, Map<NumericSetting, Double> numericValues) {
+			int callHornRecallRadius, boolean animalDroppedFood, boolean rabbitCarrotTaming, boolean soulGolems,
+			boolean soulFireCharges, boolean soulFireChargeDispenserProjectiles, boolean soulGolemProjectiles,
+			boolean unlitLights, boolean soulCopperLightBlocks, boolean restoredPaintings, boolean illusionerRaidSpawns,
+			Map<NumericSetting, Double> numericValues) {
 		public Settings {
 			numericValues = Map.copyOf(numericValues);
 			for (NumericSetting setting : NumericSetting.values()) {
@@ -125,6 +129,15 @@ public final class PatchworkConfig {
 		boolean loyalTridentVoidReturn = enabled(properties, "loyalTridentVoidReturn", path);
 		boolean patchworkAdvancements = enabled(properties, "patchworkAdvancements", path);
 		boolean animalDroppedFood = enabled(properties, "animalDroppedFood", path);
+		boolean rabbitCarrotTaming = enabled(properties, "rabbitCarrotTaming", path);
+		boolean soulGolems = enabled(properties, "soulGolems", path);
+		boolean soulFireCharges = enabled(properties, "soulFireCharges", path);
+		boolean soulFireChargeDispenserProjectiles = enabled(properties, "soulFireChargeDispenserProjectiles", path);
+		boolean soulGolemProjectiles = enabled(properties, "soulGolemProjectiles", path);
+		boolean unlitLights = enabled(properties, "unlitLights", path);
+		boolean soulCopperLightBlocks = enabled(properties, "soulCopperLightBlocks", path);
+		boolean restoredPaintings = enabled(properties, "restoredPaintings", path);
+		boolean illusionerRaidSpawns = enabled(properties, "illusionerRaidSpawns", path);
 		Map<NumericSetting, Double> numericValues = new EnumMap<>(NumericSetting.class);
 		for (NumericSetting setting : NumericSetting.values()) {
 			String text = properties.getProperty(setting.key());
@@ -147,7 +160,9 @@ public final class PatchworkConfig {
 				potionCauldrons,
 				pumpkinLanterns, experienceClumping, sweetBerryTrades, elytraDyeing, stoneToolMaterials,
 				playerHeadRecipe, spiderCeilingClimbing, caveSpiderNausea, loyalTridentVoidReturn,
-				patchworkAdvancements, radius, animalDroppedFood, numericValues);
+				patchworkAdvancements, radius, animalDroppedFood, rabbitCarrotTaming, soulGolems, soulFireCharges,
+				soulFireChargeDispenserProjectiles, soulGolemProjectiles, unlitLights, soulCopperLightBlocks,
+				restoredPaintings, illusionerRaidSpawns, numericValues);
 		if (properties.size() != originalPropertyCount) {
 			try (Writer writer = Files.newBufferedWriter(path)) {
 				properties.store(writer,
@@ -206,6 +221,16 @@ public final class PatchworkConfig {
 			properties.setProperty("patchworkAdvancements", Boolean.toString(updated.patchworkAdvancements()));
 			properties.setProperty(RECALL_RADIUS_KEY, Integer.toString(radius));
 			properties.setProperty("animalDroppedFood", Boolean.toString(updated.animalDroppedFood()));
+			properties.setProperty("rabbitCarrotTaming", Boolean.toString(updated.rabbitCarrotTaming()));
+			properties.setProperty("soulGolems", Boolean.toString(updated.soulGolems()));
+			properties.setProperty("soulFireCharges", Boolean.toString(updated.soulFireCharges()));
+			properties.setProperty("soulFireChargeDispenserProjectiles",
+					Boolean.toString(updated.soulFireChargeDispenserProjectiles()));
+			properties.setProperty("soulGolemProjectiles", Boolean.toString(updated.soulGolemProjectiles()));
+			properties.setProperty("unlitLights", Boolean.toString(updated.unlitLights()));
+			properties.setProperty("soulCopperLightBlocks", Boolean.toString(updated.soulCopperLightBlocks()));
+			properties.setProperty("restoredPaintings", Boolean.toString(updated.restoredPaintings()));
+			properties.setProperty("illusionerRaidSpawns", Boolean.toString(updated.illusionerRaidSpawns()));
 			for (NumericSetting setting : NumericSetting.values()) {
 				properties.setProperty(setting.key(), setting.format(updated.numericValues().get(setting)));
 			}
