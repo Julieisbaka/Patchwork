@@ -23,25 +23,30 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CarvedPumpkinBlock;
 import net.minecraft.world.level.block.state.BlockState;
 
+/** Registration and construction logic for tameable Soul Golems. */
 public final class SoulGolems {
 	private static final ThreadLocal<Player> BUILDER = new ThreadLocal<>();
 	private static final ResourceKey<EntityType<?>> TYPE_KEY = ResourceKey.create(Registries.ENTITY_TYPE,
 			Patchwork.id("soul_golem"));
+	/** Registered Soul Golem entity type. */
 	public static final EntityType<SoulGolem> TYPE = Registry.register(BuiltInRegistries.ENTITY_TYPE, TYPE_KEY,
 			EntityType.Builder.of(SoulGolem::new, MobCategory.MISC).sized(0.7F, 1.9F).eyeHeight(1.7F)
 					.clientTrackingRange(10).noLootTable().build(TYPE_KEY));
 	private static final ResourceKey<Item> EGG_KEY = ResourceKey.create(Registries.ITEM,
 			Patchwork.id("soul_golem_spawn_egg"));
+	/** Creative spawn egg for Soul Golems. */
 	public static final Item SPAWN_EGG = Registry.register(BuiltInRegistries.ITEM, EGG_KEY,
 			new SpawnEggItem(new Item.Properties().spawnEgg(TYPE).setId(EGG_KEY)));
 
 	private SoulGolems() {
 	}
 
+	/** Registers the Soul Golem's attributes. */
 	public static void register() {
 		FabricDefaultAttributeRegistry.register(TYPE, IronGolem.createAttributes().add(Attributes.MAX_HEALTH, 30.0));
 	}
 
+	/** Associates a player with a block placement while allowing nested placements to restore their context. */
 	public static <T> T withBuilder(Player player, Supplier<T> placement) {
 		Player previous = BUILDER.get();
 		BUILDER.set(player);
@@ -56,6 +61,7 @@ public final class SoulGolems {
 		}
 	}
 
+	/** Tries to create a Soul Golem from a valid soul-block structure beneath the supplied head block. */
 	public static boolean trySpawn(Level level, BlockPos head) {
 		BlockState lantern = level.getBlockState(head);
 		if (!PatchworkConfig.settings().soulGolems() || !PatchworkConfig.settings().soulCopperLightBlocks()

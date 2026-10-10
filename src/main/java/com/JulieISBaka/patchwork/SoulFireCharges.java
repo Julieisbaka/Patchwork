@@ -37,9 +37,11 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
+/** Registration and gameplay helpers for Soul Fire Charges and their projectiles. */
 public final class SoulFireCharges {
 	private static final ResourceKey<Item> ITEM_KEY = ResourceKey.create(Registries.ITEM,
 			Patchwork.id("soul_fire_charge"));
+	/** Registered Soul Fire Charge item. */
 	public static final Item ITEM = Registry.register(BuiltInRegistries.ITEM, ITEM_KEY,
 			new FireChargeItem(new Item.Properties().setId(ITEM_KEY)) {
 				@Override
@@ -83,6 +85,7 @@ public final class SoulFireCharges {
 			});
 	private static final ResourceKey<EntityType<?>> PROJECTILE_KEY = ResourceKey.create(Registries.ENTITY_TYPE,
 			Patchwork.id("soul_fireball"));
+	/** Registered entity type for Soul Fire Charge projectiles. */
 	public static final EntityType<SoulFireball> PROJECTILE = Registry.register(BuiltInRegistries.ENTITY_TYPE,
 			PROJECTILE_KEY,
 			EntityType.Builder.<SoulFireball>of(SoulFireball::new, MobCategory.MISC).sized(0.3125F, 0.3125F)
@@ -91,6 +94,7 @@ public final class SoulFireCharges {
 	private SoulFireCharges() {
 	}
 
+	/** Registers dispenser behavior when the corresponding configuration switches are enabled. */
 	public static void register() {
 		if (PatchworkConfig.settings().soulFireCharges()
 				&& PatchworkConfig.settings().soulFireChargeDispenserProjectiles()) {
@@ -98,6 +102,7 @@ public final class SoulFireCharges {
 		}
 	}
 
+	/** Fires a Soul Fire Charge projectile from an entity at the requested origin and direction. */
 	public static SoulFireball shoot(ServerLevel level, LivingEntity shooter, Vec3 origin, Vec3 direction) {
 		if (!PatchworkConfig.settings().soulFireCharges()) {
 			throw new IllegalStateException("Soul Fire Charges are disabled");
@@ -114,6 +119,7 @@ public final class SoulFireCharges {
 		return projectile;
 	}
 
+	/** Throws a held Soul Fire Charge when player throwing is enabled. */
 	public static InteractionResult throwCharge(Player player, Level level, InteractionHand hand) {
 		ItemStack stack = player.getItemInHand(hand);
 		if (!PatchworkConfig.settings().throwableFireCharges()
@@ -153,10 +159,12 @@ public final class SoulFireCharges {
 		return InteractionResult.SUCCESS;
 	}
 
+	/** Returns whether a Soul Fire Charge can place Soul Fire at the given position. */
 	public static boolean canPlaceFire(Level level, BlockPos pos) {
 		return level.getBlockState(pos).isAir() && SoulFireSupport.chargeFire().canSurvive(level, pos);
 	}
 
+	/** Applies Soul Fire Charge effects at a block impact location. */
 	public static void ignite(Level level, BlockHitResult hit) {
 		BlockPos struck = hit.getBlockPos();
 		BlockState state = level.getBlockState(struck);

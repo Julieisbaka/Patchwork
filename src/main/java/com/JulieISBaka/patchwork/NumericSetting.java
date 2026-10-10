@@ -3,6 +3,9 @@ package com.JulieISBaka.patchwork;
 import java.util.EnumMap;
 import java.util.Map;
 
+/**
+ * Numeric gameplay settings, including their config keys, defaults, and validation bounds.
+ */
 public enum NumericSetting {
 	ANIMAL_FOOD_SEARCH_RADIUS("animalFoodSearchRadius", 8, 1, 64, false),
 	ANIMAL_FOOD_EAT_DISTANCE("animalFoodEatDistance", 1.5, 0.1, 8, false),
@@ -62,6 +65,7 @@ public enum NumericSetting {
 	private final double maximum;
 	private final boolean integer;
 
+	/** Creates a numeric setting with a default value, inclusive range, and integer constraint. */
 	NumericSetting(String key, double defaultValue, double minimum, double maximum, boolean integer) {
 		this.key = key;
 		this.defaultValue = defaultValue;
@@ -70,26 +74,32 @@ public enum NumericSetting {
 		this.integer = integer;
 	}
 
+	/** Returns the key used to persist this setting. */
 	public String key() {
 		return this.key;
 	}
 
+	/** Returns the default value used when this setting is missing. */
 	public double defaultValue() {
 		return this.defaultValue;
 	}
 
+	/** Returns the inclusive minimum accepted value. */
 	public double minimum() {
 		return this.minimum;
 	}
 
+	/** Returns the inclusive maximum accepted value. */
 	public double maximum() {
 		return this.maximum;
 	}
 
+	/** Returns whether this setting only accepts whole numbers. */
 	public boolean integer() {
 		return this.integer;
 	}
 
+	/** Parses and validates a value written in the format expected by this setting. */
 	public double parse(String text) {
 		double value;
 		try {
@@ -102,6 +112,7 @@ public enum NumericSetting {
 		return value;
 	}
 
+	/** Validates that a value is finite and within this setting's configured range. */
 	public void validate(double value) {
 		if (!Double.isFinite(value) || value < this.minimum || value > this.maximum
 				|| (this.integer && value != Math.rint(value))) {
@@ -111,14 +122,17 @@ public enum NumericSetting {
 		}
 	}
 
+	/** Formats a value for persistence or display. */
 	public String format(double value) {
 		return this.integer ? Integer.toString((int) value) : Double.toString(value);
 	}
 
+	/** Reads this setting's current value from the loaded Patchwork configuration. */
 	public double get() {
 		return PatchworkConfig.settings().numericValues().get(this);
 	}
 
+	/** Returns this setting as an integer, rejecting non-integer settings. */
 	public int intValue() {
 		if (!this.integer) {
 			throw new IllegalStateException(this.key + " is not an integer setting");
@@ -126,15 +140,18 @@ public enum NumericSetting {
 		return (int) get();
 	}
 
+	/** Returns this setting as a float. */
 	public float floatValue() {
 		return (float) get();
 	}
 
+	/** Returns the square of this setting's current value. */
 	public double squared() {
 		double value = get();
 		return value * value;
 	}
 
+	/** Creates an immutable map containing the default value for every numeric setting. */
 	public static Map<NumericSetting, Double> defaults() {
 		Map<NumericSetting, Double> values = new EnumMap<>(NumericSetting.class);
 		for (NumericSetting setting : values()) {

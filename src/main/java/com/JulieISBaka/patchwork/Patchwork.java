@@ -27,9 +27,13 @@ import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/** Fabric entrypoint and shared resource-condition utilities for Patchwork. */
 public class Patchwork implements ModInitializer {
+	/** Namespace used for Patchwork registry identifiers and resources. */
 	public static final String MOD_ID = "patchwork";
+	/** Logger shared by Patchwork initialization and gameplay systems. */
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+	/** Persistent entity tag marking projectiles created by throwable fire charges. */
 	public static final String THROWN_FIRE_CHARGE_TAG = "patchwork:thrown_fire_charge";
 	private static final ResourceConditionType<ChainmailCondition> CHAINMAIL_CONDITION = ResourceConditionType
 			.create(id("chainmail_recipes"), MapCodec.unit(new ChainmailCondition()));
@@ -73,6 +77,7 @@ public class Patchwork implements ModInitializer {
 	}
 
 	@Override
+	/** Loads configuration and registers Patchwork gameplay content. */
 	public void onInitialize() {
 		PatchworkConfig.load();
 		UnlitTorches.register();
@@ -167,10 +172,12 @@ public class Patchwork implements ModInitializer {
 		LOGGER.info("Patchwork initialized");
 	}
 
+	/** Creates an identifier in the Patchwork namespace. */
 	public static Identifier id(String path) {
 		return Identifier.fromNamespaceAndPath(MOD_ID, path);
 	}
 
+	/** Awards a Patchwork advancement criterion when it is available to the player. */
 	public static void awardAdvancement(net.minecraft.world.entity.player.Player player, String path,
 			String criterion) {
 		if (!PatchworkConfig.settings().patchworkAdvancements()

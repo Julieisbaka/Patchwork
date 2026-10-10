@@ -23,8 +23,8 @@ From the repository root, run the Gradle wrapper for your platform:
 ./gradlew build
 ```
 
-The Gradle unit-test task has no conventional unit tests. Gameplay validation
-uses Fabric GameTests, not a passing empty `test` task.
+The Gradle `test` task has no conventional unit tests. Gameplay validation uses
+Fabric GameTests; a successful empty `test` task is not gameplay coverage.
 Both Java source sets compile with `-Xlint:deprecation -Werror`; deprecated
 API calls fail the build rather than being hidden or suppressed.
 
@@ -50,6 +50,24 @@ Feature tests fail explicitly if a required configuration switch is off.
 Breeze extinguishing requires `mobGriefing=true`. The XP configuration test
 is intentionally valid with clumping both on and off; run it in separate
 directories with separate configurations.
+
+### Running focused server coverage
+
+Use the Fabric GameTest selector in game, or pass a wildcard filter to a
+headless Loom server run. For example, from PowerShell:
+
+```powershell
+$env:JAVA_TOOL_OPTIONS = '-Dfabric-api.gametest -Dfabric-api.gametest.filter=patchwork:*rabbit*'
+.\gradlew.bat runServer --args='--gameDir build/patchwork-rabbit-gametest --nogui'
+Remove-Item Env:JAVA_TOOL_OPTIONS
+```
+
+Change the selector and game directory for each run. Useful selectors include
+`patchwork:*configuration_automatically*`, `patchwork:*numeric_configuration*`,
+`patchwork:*soul_fire_charge*`, `patchwork:*soul_golem*`,
+`patchwork:*unlit*`, `patchwork:*restored*`, and `patchwork:*garden*`.
+Read the runner output for the required-test count and failures; a server
+starting successfully is not by itself evidence that the selected tests ran.
 
 ## Automated coverage
 
@@ -77,7 +95,7 @@ directories with separate configurations.
   invalid fields and paired distances disabling Save, correction re-enabling
   Save, fractional value persistence, reopening, and Cancel discarding edits.
   Add `-Dpatchwork.configScreenTestOnly=true` to a client GameTest run to skip
-  the other client tests. The test restores the original config afterward.
+  the other client groups. The test restores the original config afterward.
 - Rabbit carrot taming in either hand, baby/Creative behavior, exclusive owner
   commands, unchanged breeding, ownership/stay save-load and legacy wild saves,
   actual stay/follow movement, owner avoidance, safe/unsupported/leashed teleport
@@ -167,23 +185,29 @@ The `fabric-client-gametest` entrypoint is dormant in normal play. Define a
 Loom client run with `-Dfabric.client.gametest` and
 `-Dfabric.client.gametest.modid=patchwork`.
 
-The test creates a temporary world, checks headed/sheared Soul Golem render
-states, validates all ten lantern items' generated-model thickness, exercises
-Soul Fire Charge item/projectile rendering and original transparent icon,
-all ordinary/charge soul-fire state models, copper torch item models, and writes
-screenshots to the run directory. Potion tests pour one bottle into a rendered
-empty cauldron and require at least 100 strongly red/green pixels in the central
-world-view region of screenshots. They also change only the block entity color
-while keeping the block state unchanged. Two ordinary client ticks let terrain
-extraction submit dirty sections before waiting for rendering to finish.
-No second pour or reload is used.
-Removing the client mesh invalidation makes this regression fail with a stale
-color, confirming it checks the rendered result rather than just stored data.
-In-world checks exercise model loading and client mixins; a server-only build cannot
-validate those.
-It also tames a rabbit with a real connected server player, checks client
-owner/stay synchronization, and verifies exactly one wolf banner layer plus
-banner render-state extraction after the renderer API migration.
+The client entrypoint uses a small dispatcher and focused suites:
+
+| Suite | Coverage |
+| --- | --- |
+| `PatchworkClientConfigGameTests` | Numeric fields, translation, validation, save/reopen, and cancel behavior. |
+| `PatchworkClientPetGameTests` | Rabbit owner/stay synchronization and wolf banner render-state extraction. |
+| `PatchworkClientPotionGameTests` | Potion-cauldron first-fill and block-entity-only tint updates in screenshots. |
+| `PatchworkClientLightGameTests` | Soul Golem and projectile renderers, light state/item models, and copper/Soul textures. |
+| `PatchworkClientArtworkGameTests` | Garden models, texture dimensions and alpha, and vanilla-artwork preservation. |
+
+Each group creates and closes its own temporary world where it needs one.
+Screenshots are written to the run directory. The potion rendering regression
+requires at least 100 strongly red/green pixels in the central world-view
+region; it checks the rendered tint after two ordinary client ticks, without a
+second pour or resource reload. This catches stale meshes after block-entity
+data-only changes rather than checking only stored state. Client checks exercise
+model loading and client mixins; a server-only build cannot validate them.
+
+The current entrypoint runs the groups in sequence. Use
+`-Dpatchwork.configScreenTestOnly=true` to run only config-screen coverage.
+Other group-specific command-line selectors are not currently exposed; to add
+one, route it through the dispatcher rather than skipping tests inside an
+individual suite.
 
 ## Remaining manual checks
 

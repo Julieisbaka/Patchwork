@@ -10,16 +10,22 @@ import java.util.EnumMap;
 import java.util.Map;
 import net.fabricmc.loader.api.FabricLoader;
 
+/** Loads, validates, and persists Patchwork's feature switches and numeric settings. */
 public final class PatchworkConfig {
+	/** Default recall distance used when a configuration file omits the setting. */
 	private static final int DEFAULT_RECALL_RADIUS = 32;
+	/** Smallest supported Call Horn recall distance. */
 	private static final int MIN_RECALL_RADIUS = 16;
+	/** Largest supported Call Horn recall distance. */
 	private static final int MAX_RECALL_RADIUS = 256;
+	/** Properties-file key for the Call Horn recall distance. */
 	private static final String RECALL_RADIUS_KEY = "callHornRecallRadius";
 	private static volatile Settings settings = new Settings(true, true, true, true, true, true, true, true, true, true,
 			false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
 			true, true, DEFAULT_RECALL_RADIUS, true, true, true, true, true, true, true, true, true, true,
 			NumericSetting.defaults());
 
+	/** Immutable snapshot of all feature switches and validated numeric settings. */
 	public record Settings(boolean witherDifficultyHealth, boolean witherBirthExplosion, boolean chainmailRecipes,
 			boolean wolfBanners, boolean ownerSweepProtection, boolean shulkerDyeing, boolean throwableSlimeballs,
 			boolean callHornRecall, boolean cauldronCleaning, boolean beesDefendFlowers, boolean creeperChainReactions,
@@ -51,18 +57,22 @@ public final class PatchworkConfig {
 	private PatchworkConfig() {
 	}
 
+	/** Returns the configured Call Horn recall distance. */
 	public static int callHornRecallRadius() {
 		return settings.callHornRecallRadius();
 	}
 
+	/** Returns the current immutable configuration snapshot. */
 	public static Settings settings() {
 		return settings;
 	}
 
+	/** Loads the properties file from Fabric's configuration directory. */
 	public static void load() {
 		settings = read();
 	}
 
+	/** Reads and validates the properties file from Fabric's configuration directory. */
 	public static Settings read() {
 		return read(FabricLoader.getInstance().getConfigDir().resolve("patchwork.properties"));
 	}
@@ -175,6 +185,7 @@ public final class PatchworkConfig {
 		return loaded;
 	}
 
+	/** Persists a complete configuration snapshot to Fabric's configuration directory. */
 	public static void save(Settings updated) {
 		save(FabricLoader.getInstance().getConfigDir().resolve("patchwork.properties"), updated);
 	}

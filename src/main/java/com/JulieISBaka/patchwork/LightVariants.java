@@ -41,23 +41,31 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.Vec3;
 
+/** Registers and exposes Soul/copper lighting families and their unlit item variants. */
 public final class LightVariants {
 	private static final List<Block> BLOCKS = new ArrayList<>();
 	private static final List<Item> ITEMS = new ArrayList<>();
 	private static final Map<Block, Item> UNLIT_ITEMS = new LinkedHashMap<>();
+	/** Soul Candle block. */
 	public static final CandleBlock SOUL_CANDLE = registerCandle("soul_candle", null, false);
+	/** Copper Candle blocks across all weathering and wax states. */
 	public static final WeatheringCopperCollection<Block> COPPER_CANDLES = copperFamily("copper_candle",
 			LightVariants::registerCandle);
+	/** Copper Candle Cake blocks across all weathering and wax states. */
 	public static final WeatheringCopperCollection<Block> COPPER_CANDLE_CAKES = createCakes();
+	/** Copper Campfire blocks across all weathering and wax states. */
 	public static final WeatheringCopperCollection<Block> COPPER_CAMPFIRES = copperFamily("copper_campfire",
 			LightVariants::registerCampfire);
+	/** Copper Jack o'Lantern blocks across all weathering and wax states. */
 	public static final WeatheringCopperCollection<Block> COPPER_PUMPKINS = copperFamily("copper_jack_o_lantern",
 			LightVariants::registerPumpkin);
+	/** Soul Candle Cake block. */
 	public static final Block SOUL_CANDLE_CAKE = registerCake("soul_candle_cake", SOUL_CANDLE, null, false);
 
 	private LightVariants() {
 	}
 
+	/** Registers oxidation, campfire behavior, and unlit-item variants. */
 	public static void register() {
 		for (var family : List.of(COPPER_CANDLES, COPPER_CANDLE_CAKES, COPPER_CAMPFIRES, COPPER_PUMPKINS)) {
 			OxidizableBlocksRegistry.registerWeatheringCopperBlocks(family);
@@ -85,25 +93,30 @@ public final class LightVariants {
 				}));
 	}
 
+	/** Returns an immutable view of the registered custom light blocks. */
 	public static List<Block> blocks() {
 		return List.copyOf(BLOCKS);
 	}
 
+	/** Returns an immutable map from light blocks to their unlit item forms. */
 	public static Map<Block, Item> unlitItems() {
 		return Map.copyOf(UNLIT_ITEMS);
 	}
 
+	/** Checks whether the stack is the unlit item corresponding to the supplied lit block. */
 	public static boolean isUnlitItemFor(ItemStack stack, Block block) {
 		var item = UNLIT_ITEMS.get(block);
 		return PatchworkConfig.settings().unlitLights() && item != null && stack.is(item);
 	}
 
+	/** Returns the unlit item corresponding to an unlit light state, or {@code null} otherwise. */
 	public static Item unlitItem(BlockState state) {
 		return PatchworkConfig.settings().unlitLights() && state.hasProperty(BlockStateProperties.LIT)
 				&& !state.getValue(BlockStateProperties.LIT)
 				? UNLIT_ITEMS.get(state.getBlock()) : null;
 	}
 
+	/** Returns the copper pumpkin matching a copper torch item, or {@code null} if it is not a copper torch. */
 	public static Block copperPumpkinFor(Item item) {
 		int index = CopperTorches.LIT.asList().indexOf(Block.byItem(item));
 		return index < 0 ? null : COPPER_PUMPKINS.asList().get(index);
