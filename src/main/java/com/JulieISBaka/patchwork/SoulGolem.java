@@ -99,8 +99,11 @@ public class SoulGolem extends IronGolem implements OwnableEntity, RangedAttackM
 		if (builder != null && builder.isAlliedTo(target)) {
 			return true;
 		}
-		return owner != null && target instanceof OwnableEntity pet && pet.getOwnerReference() != null
-				&& pet.getOwnerReference().getUUID().equals(owner.getUUID());
+		if (owner != null && target instanceof OwnableEntity pet) {
+			EntityReference<LivingEntity> petOwner = pet.getOwnerReference();
+			return petOwner != null && petOwner.getUUID().equals(owner.getUUID());
+		}
+		return false;
 	}
 
 	@Override

@@ -9,6 +9,7 @@ public interface RabbitPet extends OwnableEntity {
 	void patchwork$setOrderedToStay(boolean stay);
 
 	default boolean patchwork$isOwnedBy(LivingEntity entity) {
-		return getOwnerReference() != null && getOwnerReference().matches(entity);
+		var owner = getOwnerReference();
+		return owner != null && owner.matches(entity);
 	}
 }
