@@ -53,6 +53,13 @@ directories with separate configurations.
 
 ## Automated coverage
 
+- All eight non-English language files match English keys, contain nonempty
+  strings, and preserve format placeholders. Select with
+  `patchwork:*translations_cover_every_key*`.
+- Soul Charge support includes direct use and projectile ignition on the top
+  and four sides of planks, logs, leaves, and wool, unsupported-side survival,
+  removal after support loss, unchanged ordinary soul fire, and a live leaf-side
+  projectile impact. Select with `patchwork:*soul_fire_charge*`.
 - Configuration creation, empty-file initialization, automatic migration of
   each missing setting, preservation of custom/unknown values, unchanged complete
   files, and rejection of invalid booleans/radii without modifying the file.
@@ -103,7 +110,7 @@ directories with separate configurations.
   no melee damage, gold-only repair, claim protection, shearing, and persistence.
 - Soul Fire Charge shaped recipe with mixed materials, missing ingredients,
   throwing clearance/cooldown/consumption, real vanilla soul fire on ordinary
-  solid supports and soul sand/soil, unchanged support blocks, charge-only
+  solid supports and soul sand/soil, flammable sides and leaves, unchanged support blocks, charge-only
   survival, block-state save/load, neighbor/support updates, Creative placement,
   rejection of floating/occupied positions, Combat tab adjacency, direct block use,
   actual redstone-triggered dispenser consumption/projectile ignition,
@@ -192,4 +199,4 @@ banner render-state extraction after the renderer API migration.
   and Hoglin wall/ceiling collision damage.
 - Potion persistence across an actual world save/restart.
 
-[Feature overview](../README.md) | [Technical details](technical.md)
+[Feature overview](../README.md) | [Configuration guide](configuration.md)

@@ -55,6 +55,39 @@ public class PatchworkGameTests {
 	}
 
 	@GameTest
+	public void translationsCoverEveryKeyAndPlaceholder(GameTestHelper test) throws Exception {
+		var loader = PatchworkGameTests.class.getClassLoader();
+		com.google.gson.JsonObject english;
+		try (var stream = java.util.Objects.requireNonNull(
+				loader.getResourceAsStream("assets/patchwork/lang/en_us.json"));
+				var reader = new java.io.InputStreamReader(stream, java.nio.charset.StandardCharsets.UTF_8)) {
+			english = com.google.gson.JsonParser.parseReader(reader).getAsJsonObject();
+		}
+		var placeholder = java.util.regex.Pattern.compile("%(?:(\\d+)\\$)?[sd]");
+		for (String language : java.util.List.of("de_de", "fr_fr", "es_es", "pt_br", "zh_cn", "ja_jp", "ko_kr",
+				"ru_ru")) {
+			try (var stream = java.util.Objects.requireNonNull(
+					loader.getResourceAsStream("assets/patchwork/lang/" + language + ".json"));
+					var reader = new java.io.InputStreamReader(stream, java.nio.charset.StandardCharsets.UTF_8)) {
+				var translated = com.google.gson.JsonParser.parseReader(reader).getAsJsonObject();
+				test.assertTrue(translated.keySet().equals(english.keySet()),
+						"Translation keys differ from English: " + language);
+				for (String key : english.keySet()) {
+					var value = translated.get(key);
+					test.assertTrue(value.isJsonPrimitive() && value.getAsJsonPrimitive().isString()
+							&& !value.getAsString().isBlank(), "Empty/non-string translation: " + language + ":" + key);
+					var expected = placeholder.matcher(english.get(key).getAsString()).results()
+							.map(java.util.regex.MatchResult::group).sorted().toList();
+					var actual = placeholder.matcher(value.getAsString()).results()
+							.map(java.util.regex.MatchResult::group).sorted().toList();
+					test.assertTrue(expected.equals(actual), "Broken translation placeholders: " + language + ":" + key);
+				}
+			}
+		}
+		test.succeed();
+	}
+
+	@GameTest
 	public void configurationAutomaticallyAddsMissingDefaults(GameTestHelper test) throws Exception {
 		var directory = java.nio.file.Files.createTempDirectory("patchwork-config-test-");
 		var path = directory.resolve("patchwork.properties");
@@ -1112,6 +1145,69 @@ public class PatchworkGameTests {
 			SoulFireCharges.ignite(test.getLevel(), new BlockHitResult(Vec3.atCenterOf(test.absolutePos(wall)),
 					Direction.UP, test.absolutePos(wall), false));
 			test.assertBlockPresent(Blocks.GLASS, wall.above());
+			test.succeed();
+		});
+	}
+
+	@GameTest
+	public void soulFireChargeFlammableSidesAndLeaves(GameTestHelper test) {
+		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		BlockPos support = CENTER.above();
+		for (var block : java.util.List.of(Blocks.OAK_PLANKS, Blocks.OAK_LOG, Blocks.OAK_LEAVES,
+				Blocks.WOOL.white())) {
+			for (Direction face : java.util.List.of(Direction.NORTH, Direction.SOUTH, Direction.EAST,
+					Direction.WEST, Direction.UP)) {
+				test.setBlock(support, block);
+				BlockPos fire = support.relative(face);
+				test.setBlock(fire, Blocks.AIR);
+				test.setBlock(fire.below(), Blocks.AIR);
+				// The top-face case needs the flammable support directly below the fire.
+				test.setBlock(support, block);
+				BlockPos absoluteSupport = test.absolutePos(support);
+				BlockPos absoluteFire = test.absolutePos(fire);
+				test.assertTrue(Blocks.FIRE.defaultBlockState().canSurvive(test.getLevel(), absoluteFire),
+						"Test setup does not support vanilla fire");
+				test.assertTrue(!Blocks.SOUL_FIRE.defaultBlockState().canSurvive(test.getLevel(), absoluteFire),
+						"Ordinary soul fire gained flammable support");
+				player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(SoulFireCharges.ITEM, 2));
+				var hit = new BlockHitResult(Vec3.atCenterOf(absoluteSupport), face, absoluteSupport, false);
+				var result = SoulFireCharges.ITEM.useOn(new UseOnContext(player, InteractionHand.MAIN_HAND, hit));
+				test.assertTrue(result == InteractionResult.SUCCESS && player.getMainHandItem().getCount() == 1,
+						"Soul charge block use failed on " + block + " face " + face);
+				test.assertTrue(test.getBlockState(fire).equals(SoulFireSupport.chargeFire()),
+						"Soul fire was not placed on the clicked flammable face");
+				test.setBlock(fire.relative(face), Blocks.GLASS);
+				test.assertBlockPresent(Blocks.SOUL_FIRE, fire);
+				test.setBlock(fire.relative(face), Blocks.AIR);
+				test.setBlock(support, Blocks.AIR);
+				test.assertBlockPresent(Blocks.AIR, fire);
+				test.setBlock(support, block);
+				SoulFireCharges.ignite(test.getLevel(), hit);
+				test.assertTrue(test.getBlockState(fire).equals(SoulFireSupport.chargeFire()),
+						"Soul projectile ignition failed on " + block + " face " + face);
+				test.assertBlockPresent(block, support);
+				test.setBlock(fire, Blocks.AIR);
+				test.setBlock(support, Blocks.AIR);
+			}
+		}
+		test.succeed();
+	}
+
+	@GameTest(maxTicks = 15)
+	public void soulFireChargeProjectileHitsLeafSide(GameTestHelper test) {
+		BlockPos leaves = CENTER.east().above();
+		test.setBlock(leaves, Blocks.OAK_LEAVES.defaultBlockState()
+				.setValue(net.minecraft.world.level.block.LeavesBlock.PERSISTENT, true));
+		test.setBlock(leaves.west().below(), Blocks.AIR);
+		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		var projectile = SoulFireCharges.shoot(test.getLevel(), player,
+				Vec3.atCenterOf(test.absolutePos(CENTER.above())), new Vec3(1, 0, 0));
+		test.runAfterDelay(6, () -> {
+			test.assertBlockPresent(Blocks.SOUL_FIRE, leaves.west());
+			test.assertBlockPresent(Blocks.OAK_LEAVES, leaves);
+			test.assertTrue(projectile.isRemoved(), "Leaf impact did not remove the projectile");
+			test.setBlock(leaves, Blocks.AIR);
+			test.assertBlockPresent(Blocks.AIR, leaves.west());
 			test.succeed();
 		});
 	}

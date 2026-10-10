@@ -16,7 +16,8 @@ See the [configuration guide](docs/configuration.md) for defaults and ranges.
   Fire Charges, have 50 health, can be healed with gold, and can be sheared.
 - **Soul Fire Charges:** Craft one by surrounding a regular Fire Charge with
   eight soul sand or soul soil. Use charges to create soul fire, light
-  campfires and candles, or launch them by hand or dispenser.
+  campfires and candles, or launch them by hand or dispenser. Charge-created
+  soul fire works on solid tops, beside flammable blocks, and on leaves.
 - **Potion cauldrons:** Pour a non-water potion into an empty cauldron, retrieve
   doses with glass bottles, refill with matching potions, or dip arrows. Each
   potion level can tip one arrow; different potions cannot be mixed.
@@ -103,9 +104,11 @@ On Windows, use `.\gradlew.bat build`. Gradle writes the mod jar to
 
 ## Project documentation
 
-- [Configuration guide](docs/configuration.md) — settings, multiplayer
-  authority, and config migration.
-- [Technical configuration details](docs/technical.md) — file format, restart
-  requirements, setting dependencies, persistence, and troubleshooting.
+Patchwork includes English, German, French, Spanish, Brazilian Portuguese,
+Simplified Chinese, Japanese, Korean, and Russian translations. Choose your
+language in Minecraft's language settings; config property names stay the same.
+
+- [Configuration guide](docs/configuration.md) — getting started, practical
+  examples, all settings, multiplayer behavior, and troubleshooting.
 - [Testing guide](docs/testing.md) — builds, automated GameTests, and manual
   checks.

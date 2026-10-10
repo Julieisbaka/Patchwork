@@ -1,14 +1,74 @@
-# Configuration
+# Customize Patchwork
 
-Patchwork creates `config/patchwork.properties` at startup. Development runs
-use their run directory's `config` folder. Every boolean defaults to `true`
-except `creeperChainReactions`, which defaults to `false`.
+Make animals find food farther away, tone down combat, or disable features
+you do not want. You do not need to edit anything to play: the defaults give
+you Patchwork's standard experience.
 
-With Mod Menu 21.0.0 installed, use Patchwork's Config button for a scrolling
-settings screen. Hover for descriptions. Save writes the file; Cancel
-discards edits. Restart the game/server to apply changes.
+## Quick start
 
-## Settings
+### In game (recommended)
+
+1. Install **Mod Menu** alongside Patchwork.
+2. Open **Mods**, select **Patchwork**, and choose **Config**.
+3. Toggle features or scroll down to **Gameplay tuning**. Hover over a setting
+   for help; numeric fields show their default and allowed range.
+4. Choose **Save**, then restart the game. **Cancel** leaves your settings alone.
+
+### On a server or without Mod Menu
+
+1. Start the game or server once so Patchwork creates its settings file.
+2. Stop it, then open `config/patchwork.properties` inside that instance's
+   game/server folder with a text editor.
+3. Change the values after `=` and save the file.
+4. Start the game or server again.
+
+Do not edit a different launcher profile's file by mistake. **In multiplayer,
+the server's settings control gameplay**, even if your local settings differ.
+Ask the server owner to change them. Your local `wolfBanners` option can still
+hide banner rendering on your own screen.
+
+## Try these changes
+
+These are examples to copy into the settings file, not built-in presets.
+Keep each property only once, and restart after saving.
+
+### Let animals find food farther away
+
+```properties
+animalDroppedFood=true
+animalFoodSearchRadius=16
+animalFoodEatCooldownTicks=100
+```
+
+Animals look up to 16 blocks away and wait at least five seconds between
+meals. They still need suitable breeding food and `mobGriefing=true`.
+
+### Make combat a little gentler
+
+```properties
+caveSpiderNauseaChance=0.1
+breezeShockwaveCooldownTicks=400
+hoglinImpactDamage=1
+```
+
+Nausea has a 10% chance, Breeze gusts wait 20 seconds between triggers, and
+Hoglin collision damage drops to half a heart.
+
+### Reduce repeated searches on a busy server
+
+```properties
+animalFoodSearchIntervalTicks=40
+experienceMergeIntervalTicks=40
+```
+
+Animals and XP orbs scan every two seconds. They may react less quickly,
+but repeated searches happen less often. Keep radii modest too.
+
+## Feature switches
+
+Use `true` to enable a feature and `false` to disable it. All switches default
+to `true` except `creeperChainReactions`, which is **off by default** because
+chain explosions can cause extra terrain damage.
 
 | Property                   | Controls                                                 |
 | -------------------------- | -------------------------------------------------------- |
@@ -42,22 +102,45 @@ discards edits. Restart the game/server to apply changes.
 | `caveSpiderNausea`         | Cave-spider melee nausea chance                          |
 | `loyalTridentVoidReturn`   | Loyalty tridents survive falling into the void           |
 | `patchworkAdvancements`    | Patchwork-specific advancement data and awards           |
-| `callHornRecallRadius`     | Integer 16-256 blocks; default 32                        |
 | `animalDroppedFood`        | Animals seeking/eating dropped breeding food            |
 
-## Gameplay tuning
+### Pet recall distance
 
-Values ending in `Ticks` are integers; 20 ticks equal one second at normal server speed. Distances are in blocks, damage/healing/health in HP (2 HP = one heart), and chances range from 0 (never) to 1 (always). Effect amplifiers are zero-based: 0 is level I. Movement speed multipliers scale the mob's normal navigation speed; launch velocities and initial projectile speed are in blocks per tick.
+`callHornRecallRadius` controls how far the Call goat horn searches for your
+seated pets and staying rabbits. It defaults to **32 blocks** and accepts a
+whole number from **16 to 256**. The `callHornRecall` switch must be enabled.
+
+## Gameplay tuning reference
+
+The tables below list the exact names used in the settings file. In Mod Menu,
+the same settings have readable labels. Their defaults preserve the standard
+Patchwork behavior.
+
+- **Time:** 20 ticks = one second at normal server speed. Settings ending in
+  `Ticks` need whole numbers.
+- **Health:** 2 HP = one heart.
+- **Chance:** `0` means never, `0.25` means 25%, and `1` means always.
+- **Effect strength:** amplifier `0` is level I, `1` is level II, and so on.
+- **Speed:** movement multipliers scale a creature's normal movement.
+  Projectile and launch velocities are measured in blocks per tick.
+- **Numbers:** decimals are allowed unless a range says **Integer**.
+
+### Animal feeding and flower defense
 
 | Property | Default | Allowed range | Controls |
 | --- | --- | --- | --- |
-| `animalFoodSearchRadius` | 8 | 1-64 | Food search box inflation and maximum pursuit distance |
+| `animalFoodSearchRadius` | 8 | 1-64 | How far animals search for and pursue dropped food |
 | `animalFoodEatDistance` | 1.5 | 0.1-8 | Distance at which food is consumed |
 | `animalFoodSearchIntervalTicks` | 10 | 1-1200 | Delay between food searches |
 | `animalFoodEatCooldownTicks` | 40 | 0-12000 | Minimum delay between meals |
 | `animalFoodRepathIntervalTicks` | 10 | 1-1200 | Navigation update interval |
 | `animalFoodMovementSpeed` | 1.1 | 0.1-4 | Food-seeking movement multiplier |
 | `beeDefenseRadius` | 4 | Integer 1-16 | Flower-to-hive defense radius |
+
+### Breeze, Spider, and Enderman behavior
+
+| Property | Default | Allowed range | Controls |
+| --- | --- | --- | --- |
 | `breezeShockwaveRadius` | 5 | Integer 1-16 | Entity push and block extinguishing radius |
 | `breezeShockwaveCooldownTicks` | 200 | 0-12000 | Delay between shockwaves |
 | `breezeShockwaveHorizontalPush` | 1.2 | 0-4 | Horizontal push velocity |
@@ -69,6 +152,13 @@ Values ending in `Ticks` are integers; 20 ticks equal one second at normal serve
 | `spiderWebChance` | 0.25 | 0-1 | Web placement chance per eligible attempt |
 | `spiderWebMinDistance` | 2 | 0-64 | Minimum prey distance |
 | `spiderWebMaxDistance` | 8 | 0.1-64 | Maximum prey distance |
+
+The Spider minimum distance must be less than or equal to its maximum distance.
+
+### Throwables and fire charges
+
+| Property | Default | Allowed range | Controls |
+| --- | --- | --- | --- |
 | `slimeballCooldownTicks` | 20 | 0-12000 | Throwing cooldown |
 | `slimeballDamage` | 1 | 0-100 | Damage to non-Slime targets |
 | `slimeballHealing` | 1 | 0-100 | Healing for Slimes |
@@ -82,11 +172,26 @@ Values ending in `Ticks` are integers; 20 ticks equal one second at normal serve
 | `fireChargeDamage` | 2 | 0-100 | Direct damage of player-thrown regular charges |
 | `soulFireChargeDamage` | 3 | 0-100 | Direct damage of all Soul projectiles |
 | `soulFireChargeBurnSeconds` | 2 | 0-600 | Burning duration after a damaging Soul projectile hit |
+
+Soul projectile damage and flight settings affect player throws, dispensers,
+and Soul Golems. They do not change Ghast fireballs or regular dispenser fire
+charges. Soul Fire Charges can place soul fire on solid tops, beside flammable
+blocks, and on leaves. This does not make soul fire spread like regular fire.
+
+### Slime clouds and experience orbs
+
+| Property | Default | Allowed range | Controls |
+| --- | --- | --- | --- |
 | `slimeCloudLifetimeTicks` | 100 | 1-12000 | Slime split cloud lifetime |
 | `slimeCloudRadius` | 1 | Integer 0-8 | Square half-width; side length is `2 * radius + 1` |
 | `slimeCloudEffectAmplifier` | 1 | Integer 0-10 | Cloud Slowness amplifier |
 | `experienceMergeRadius` | 2 | 0.1-16 | Orb merging radius |
 | `experienceMergeIntervalTicks` | 20 | 1-1200 | Delay between merge scans |
+
+### Combat, Soul Golems, and movement
+
+| Property | Default | Allowed range | Controls |
+| --- | --- | --- | --- |
 | `hoglinChargeMinSpeed` | 0.18 | 0-2 | Minimum horizontal speed for charge hits; sprinting also qualifies |
 | `hoglinHorizontalLaunch` | 0.2 | 0-4 | Horizontal launch velocity |
 | `hoglinVerticalLaunch` | 0.69 | 0-4 | Vertical launch velocity |
@@ -103,75 +208,55 @@ Values ending in `Ticks` are integers; 20 ticks equal one second at normal serve
 | `skeletonCoverMovementSpeed` | 1.15 | 0.1-4 | Cover/peek movement multiplier |
 | `flyingSpeedEffectMultiplier` | 0.2 | 0-4 | Flying speed bonus per Speed effect level; 0 disables the bonus |
 
-`spiderWebMinDistance` must not exceed `spiderWebMaxDistance`. Numeric settings
-for switchable features take effect only when the corresponding feature is
-enabled. Soul projectile settings also affect dispensers and Soul Golems;
-they do not alter vanilla Ghast fireballs or regular dispenser fire charges.
-The food radius keeps the original box-based search and spherical pursuit
-limit rather than changing how animals select targets.
+Tuning a disabled feature will not turn it on. Enable its feature switch too.
+Large search radii, large clouds, and very short scan intervals can make a
+busy server slower; an allowed value is not a performance guarantee.
 
-For example:
+## What happens when I turn something off?
 
-```properties
-animalDroppedFood=true
-animalFoodSearchRadius=16.0
-animalFoodEatCooldownTicks=100
-breezeShockwaveRadius=8
-caveSpiderNauseaChance=0.5
-eggSnowballCooldownTicks=0
-```
+| Change | What to expect |
+| --- | --- |
+| Disable wolf banners | New interactions stop, but equipped banners are not erased. Your client can hide them locally. |
+| Disable potion cauldrons | New interactions stop; placed potion cauldrons remain. |
+| Disable XP clumping | Vanilla spawning, merging, and pickup return. Saved XP values are not truncated. |
+| Disable difficulty-based Wither health | New Withers use vanilla health. Existing saved Wither health is not reset. |
+| Disable throwable fire charges | Player air throws stop. Crafting, direct block use, dispensers, Soul Golem attacks, and Creative items remain. |
+| Disable pumpkin lantern lighting | Torch-lighting interactions stop. Crafting, placement, and Soul Golem construction remain. |
 
-Large search radii, large cloud areas, and short scan intervals can increase
-server tick costs. The ranges bound those costs but are not performance
-guarantees. Structural constants (registry IDs, block-state limits, mixin
-targets, data formats, and rendering geometry) are not gameplay settings.
+Some additions are always available: rabbit carrot taming, Soul Golems and
+Soul Fire Charges, unlit lights, Soul/copper light blocks, restored paintings,
+and Illusioner raid spawns. There are no separate availability switches for
+these additions.
 
-## Server authority and persistence
+### Vanilla game rules still matter
 
-Multiplayer gameplay uses the server's configuration. Client Mod Menu changes
-cannot change server gameplay. Clients use their own `wolfBanners` switch for
-rendering existing banners. Disabling wolf banner interactions on the server
-does not erase banners already equipped.
+With `mobGriefing=false`, animals do not eat dropped food, Endermen do not place
+defensive blocks, Spiders do not place webs, Breezes do not extinguish blocks,
+and Soul Golem projectiles do not ignite blocks. Player Soul Fire Charges can
+still ignite blocks. Projectile damage is independent of that rule.
 
-Unlit block items, Soul Golems, Soul Fire Charges, and their recipes have no
-separate availability switch. Soul Candles and copper candles/candle cakes,
-campfires, and Jack o'Lanterns are also always available, including oxidation,
-waxing, recipes, and unlit items. The four restored paintings and illusioner raid
-spawns are also always enabled. Illusioners join waves 5 and later, including
-bonus waves; Easy raids have no illusioners.
-Rabbit carrot taming is always enabled. One ordinary carrot tames an unowned
-non-killer rabbit, including babies. Only the owner can toggle staying, using
-an empty hand. Golden carrots still use vanilla feeding, and feeding already
-tamed rabbits does not transfer ownership. Offspring are born wild.
-`throwableFireCharges` gates player air throws
-of both charge types, not Soul Golem attacks, crafting, or direct block use.
-Both Fire Charge items remain available next to each other in Creative Combat
-when throwing is disabled; disabling air throws does not remove the items.
-`pumpkinLanterns` gates torch-lighting interactions for regular, soul, and copper
-Jack o'Lanterns, not crafting or placing those blocks, or constructing a Soul
-Golem with a Soul Jack o'Lantern.
+`breezeTorchExtinguishing` also needs `breezeShockwave=true`.
 
-Disabling `potionCauldrons` prevents new interactions but preserves placed
-potion cauldrons. Disabling `experienceClumping` restores vanilla orb
-spawning/merging/pickup without truncating values already saved.
+## Troubleshooting
 
-`mobGriefing` governs animal dropped-food feeding, Enderman defense, Spider webs, Breeze extinguishing, and
-Soul Golem projectile block ignition. Player Soul Fire Charges can still
-ignite blocks. Direct projectile entity damage is independent of this rule.
+**My changes did not apply.** Restart the affected game/server, confirm you
+edited the right instance, and check that the feature itself is enabled.
+On multiplayer servers, changing your own config does not override the server.
 
-## Requirements and errors
+**Save is disabled in Mod Menu.** Look for a red number field and hover for its
+range. Use a whole number for integer fields. Also check that the Spider minimum
+distance is no greater than its maximum.
 
-New files are initialized with every switch and numeric default.
-Missing settings in existing files are automatically added with their
-defaults and saved at startup, preserving existing values and unknown properties.
-Invalid existing values still produce a startup error and leave the file
-unchanged, including invalid distance combinations. The Call horn radius must
-be an integer from 16 to 256. Other numeric ranges are listed above.
-Fractional values are allowed only for non-integer settings; NaN and infinity
-are rejected. Mod Menu marks invalid numeric entries red and disables Save
-until all fields and the paired Spider distances are valid.
+**The game/server will not start after editing.** Check the log for the named
+setting. Use `true`/`false` for switches (not `yes` or `on`), stay within the
+listed ranges, and do not use `NaN` or infinity. The invalid file is left
+unchanged so you can correct it.
 
-Disabling difficulty-based Wither health restores vanilla maximum health for
-new Withers; it does not reset health saved on existing Withers.
+**How do I reset a setting?** Stop the game/server and remove that property's
+line. On the next start, Patchwork adds the default. To reset everything,
+back up the file and remove it; Patchwork creates a fresh file at startup.
+
+**Will an update overwrite my settings?** No. New settings are added with their
+defaults while existing values and unknown properties are preserved.
 
 [Feature overview](../README.md)
