@@ -38,6 +38,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import java.util.Objects;
 
 public class SoulGolem extends IronGolem implements OwnableEntity, RangedAttackMob, Shearable {
 	private static final EntityDataAccessor<Boolean> HAS_LANTERN = SynchedEntityData.defineId(SoulGolem.class,
@@ -92,15 +93,19 @@ public class SoulGolem extends IronGolem implements OwnableEntity, RangedAttackM
 	}
 
 	public boolean isProtected(LivingEntity target) {
-		if (target == this || (owner != null && owner.matches(target)) || isAlliedTo(target)) {
+		EntityReference<LivingEntity> ownerReference = getOwnerReference();
+		if (target == this || (ownerReference != null && ownerReference.matches(target)) || isAlliedTo(target)) {
 			return true;
 		}
 		LivingEntity builder = getOwner();
 		if (builder != null && builder.isAlliedTo(target)) {
 			return true;
 		}
-		return owner != null && target instanceof OwnableEntity pet && pet.getOwnerReference() != null
-				&& pet.getOwnerReference().getUUID().equals(owner.getUUID());
+		if (ownerReference != null && target instanceof OwnableEntity pet) {
+			EntityReference<LivingEntity> petOwner = pet.getOwnerReference();
+			return petOwner != null && Objects.equals(petOwner.getUUID(), ownerReference.getUUID());
+		}
+		return false;
 	}
 
 	@Override
