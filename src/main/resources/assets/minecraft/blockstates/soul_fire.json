@@ -1,0 +1,78 @@
+{
+	"multipart": [
+		{
+			"apply": [
+				{ "model": "minecraft:block/soul_fire_floor0" },
+				{ "model": "minecraft:block/soul_fire_floor1" }
+			],
+			"when": {
+				"OR": [
+					{ "patchwork_charge_placed": "false" },
+					{ "patchwork_charge_direction": "up" }
+				]
+			}
+		},
+		{
+			"apply": [
+				{ "model": "minecraft:block/soul_fire_side0" },
+				{ "model": "minecraft:block/soul_fire_side1" },
+				{ "model": "minecraft:block/soul_fire_side_alt0" },
+				{ "model": "minecraft:block/soul_fire_side_alt1" }
+			],
+			"when": {
+				"OR": [
+					{ "patchwork_charge_placed": "false" },
+					{ "patchwork_charge_direction": "up" }
+				]
+			}
+		},
+		{
+			"apply": [
+				{ "model": "minecraft:block/soul_fire_side0" },
+				{ "model": "minecraft:block/soul_fire_side1" },
+				{ "model": "minecraft:block/soul_fire_side_alt0" },
+				{ "model": "minecraft:block/soul_fire_side_alt1" }
+			],
+			"when": {
+				"patchwork_charge_placed": "true",
+				"patchwork_charge_direction": "north"
+			}
+		},
+		{
+			"apply": [
+				{ "model": "minecraft:block/soul_fire_side0", "y": 90 },
+				{ "model": "minecraft:block/soul_fire_side1", "y": 90 },
+				{ "model": "minecraft:block/soul_fire_side_alt0", "y": 90 },
+				{ "model": "minecraft:block/soul_fire_side_alt1", "y": 90 }
+			],
+			"when": {
+				"patchwork_charge_placed": "true",
+				"patchwork_charge_direction": "east"
+			}
+		},
+		{
+			"apply": [
+				{ "model": "minecraft:block/soul_fire_side0", "y": 180 },
+				{ "model": "minecraft:block/soul_fire_side1", "y": 180 },
+				{ "model": "minecraft:block/soul_fire_side_alt0", "y": 180 },
+				{ "model": "minecraft:block/soul_fire_side_alt1", "y": 180 }
+			],
+			"when": {
+				"patchwork_charge_placed": "true",
+				"patchwork_charge_direction": "south"
+			}
+		},
+		{
+			"apply": [
+				{ "model": "minecraft:block/soul_fire_side0", "y": 270 },
+				{ "model": "minecraft:block/soul_fire_side1", "y": 270 },
+				{ "model": "minecraft:block/soul_fire_side_alt0", "y": 270 },
+				{ "model": "minecraft:block/soul_fire_side_alt1", "y": 270 }
+			],
+			"when": {
+				"patchwork_charge_placed": "true",
+				"patchwork_charge_direction": "west"
+			}
+		}
+	]
+}

@@ -61,6 +61,12 @@ final class PatchworkClientArtworkGameTests {
 				var textures = new ArrayList<String>();
 				textures.addAll(List.of("block/wax_block", "block/paeonia", "block/charcoal_block",
 						"block/soul_jack_o_lantern", "item/soul_golem_spawn_egg", "item/soul_fire_charge"));
+				for (String stage : List.of("copper", "exposed_copper", "weathered_copper", "oxidized_copper",
+						"waxed_copper", "waxed_exposed_copper", "waxed_weathered_copper",
+						"waxed_oxidized_copper")) {
+					textures.add("item/" + stage + "_campfire");
+					textures.add("item/unlit_" + stage + "_campfire");
+				}
 				for (String name : List.of("unlit_lantern", "unlit_soul_lantern", "unlit_copper_lantern",
 						"unlit_exposed_copper_lantern", "unlit_weathered_copper_lantern",
 						"unlit_oxidized_copper_lantern")) {
@@ -83,6 +89,9 @@ final class PatchworkClientArtworkGameTests {
 							throw new AssertionError("Texture has incorrect dimensions: " + name);
 						}
 						verifyVanillaTextureVariant(client.getResourceManager(), name, image);
+						if (name.startsWith("item/") && name.endsWith("_campfire")) {
+							verifyCampfireInventorySprite(client.getResourceManager(), name, image);
+						}
 						if (name.equals("block/exposed_copper_torch")) {
 							verifyCopperTorchOxidationTextures(client.getResourceManager());
 						}
@@ -122,6 +131,11 @@ final class PatchworkClientArtworkGameTests {
 									}
 								}
 							}
+							for (int[] soulMark : new int[][] { { 13, 30 }, { 14, 30 }, { 24, 33 }, { 25, 33 } }) {
+								if (image.getRGB(soulMark[0], soulMark[1]) != 0xFF52D3BE) {
+									throw new AssertionError("Soul Golem base is missing its Soul Sand markings");
+								}
+							}
 						}
 					} catch (IOException exception) {
 						throw new AssertionError("Could not decode texture: " + name, exception);
@@ -143,6 +157,7 @@ final class PatchworkClientArtworkGameTests {
 				for (var age : net.minecraft.world.level.block.WeatheringCopper.WeatherState.values()) {
 					lanterns.add(UnlitLanterns.COPPER_LANTERN.weathering().pick(age));
 				}
+
 				for (int index = 0; index < lanterns.size(); index++) {
 					level.setBlockAndUpdate(new BlockPos(index * 2 - 5, 101, -2),
 							lanterns.get(index).defaultBlockState());
@@ -160,6 +175,44 @@ final class PatchworkClientArtworkGameTests {
 			context.waitTicks(10);
 			world.getConnection().waitForChunksRender();
 			context.takeScreenshot("original-lantern-and-copper-torch-artwork");
+		}
+	}
+
+	/** Checks custom copper campfire icons against vanilla's inventory sprite silhouette. */
+	private static void verifyCampfireInventorySprite(
+			net.minecraft.server.packs.resources.ResourceManager resources, String name,
+			java.awt.image.BufferedImage image) throws IOException {
+		var reference = resources.getResource(net.minecraft.resources.Identifier.withDefaultNamespace(
+				"textures/item/campfire.png")).orElseThrow();
+		boolean unlit = name.contains("/unlit_");
+		try (var stream = reference.open()) {
+			var original = ImageIO.read(stream);
+			if (original == null || original.getWidth() != image.getWidth()
+					|| original.getHeight() != image.getHeight()) {
+				throw new AssertionError("Vanilla campfire item texture dimensions changed");
+			}
+			for (int y = 0; y < image.getHeight(); y++) {
+				for (int x = 0; x < image.getWidth(); x++) {
+					int expected = original.getRGB(x, y);
+					int actual = image.getRGB(x, y);
+					int red = (expected >> 16) & 255;
+					int green = (expected >> 8) & 255;
+					int blue = expected & 255;
+					boolean flame = y <= 8 && (expected >>> 24) != 0 && red >= 150 && green >= 50 && blue <= 135
+							&& red > green * 1.17 && green > blue * 1.15;
+					if (flame && unlit) {
+						if ((actual >>> 24) != 0) {
+							throw new AssertionError("Unlit campfire icon retains flame pixels: " + name);
+						}
+					} else if (flame) {
+						if ((actual >>> 24) != (expected >>> 24) || actual == expected) {
+							throw new AssertionError("Copper campfire icon did not recolor vanilla flames: " + name);
+						}
+					} else if (actual != expected) {
+						throw new AssertionError("Campfire icon changed vanilla log or transparent pixels: " + name);
+					}
+				}
+			}
 		}
 	}
 

@@ -1,6 +1,6 @@
 {
 	"model": {
 		"type": "minecraft:model",
-		"model": "patchwork:block/exposed_copper_campfire"
+		"model": "patchwork:item/exposed_copper_campfire"
 	}
 }

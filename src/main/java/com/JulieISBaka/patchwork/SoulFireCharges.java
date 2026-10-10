@@ -73,7 +73,11 @@ public final class SoulFireCharges {
 						if (light) {
 							context.getLevel().setBlockAndUpdate(pos, state.setValue(BlockStateProperties.LIT, true));
 						} else {
-							context.getLevel().setBlockAndUpdate(firePos, SoulFireSupport.chargeFire());
+							Direction supportDirection = context.getClickedFace().getAxis().isHorizontal()
+									? context.getClickedFace().getOpposite()
+									: Direction.UP;
+							context.getLevel().setBlockAndUpdate(firePos,
+									SoulFireSupport.chargeFire(supportDirection));
 						}
 						context.getLevel().playSound(null, pos, SoundEvents.FIRECHARGE_USE, SoundSource.BLOCKS, 1.0F,
 								1.0F);
@@ -173,11 +177,15 @@ public final class SoulFireCharges {
 			return;
 		}
 		BlockPos pos = struck.relative(hit.getDirection());
+		Direction supportDirection = hit.getDirection().getAxis().isHorizontal()
+				? hit.getDirection().getOpposite()
+				: Direction.UP;
 		if (!canPlaceFire(level, pos) && hit.getDirection().getAxis().isHorizontal()) {
 			pos = struck.above();
+			supportDirection = Direction.UP;
 		}
 		if (canPlaceFire(level, pos)) {
-			level.setBlockAndUpdate(pos, SoulFireSupport.chargeFire());
+			level.setBlockAndUpdate(pos, SoulFireSupport.chargeFire(supportDirection));
 		}
 	}
 }

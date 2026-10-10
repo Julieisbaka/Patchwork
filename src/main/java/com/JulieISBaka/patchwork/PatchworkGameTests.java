@@ -1174,7 +1174,10 @@ public class PatchworkGameTests {
 				var result = SoulFireCharges.ITEM.useOn(new UseOnContext(player, InteractionHand.MAIN_HAND, hit));
 				test.assertTrue(result == InteractionResult.SUCCESS && player.getMainHandItem().getCount() == 1,
 						"Soul charge block use failed on " + block + " face " + face);
-				test.assertTrue(test.getBlockState(fire).equals(SoulFireSupport.chargeFire()),
+				var expectedFire = face.getAxis().isHorizontal()
+						? SoulFireSupport.chargeFire(face.getOpposite())
+						: SoulFireSupport.chargeFire();
+				test.assertTrue(test.getBlockState(fire).equals(expectedFire),
 						"Soul fire was not placed on the clicked flammable face");
 				test.setBlock(fire.relative(face), Blocks.GLASS);
 				test.assertBlockPresent(Blocks.SOUL_FIRE, fire);
@@ -1183,7 +1186,7 @@ public class PatchworkGameTests {
 				test.assertBlockPresent(Blocks.AIR, fire);
 				test.setBlock(support, block);
 				SoulFireCharges.ignite(test.getLevel(), hit);
-				test.assertTrue(test.getBlockState(fire).equals(SoulFireSupport.chargeFire()),
+				test.assertTrue(test.getBlockState(fire).equals(expectedFire),
 						"Soul projectile ignition failed on " + block + " face " + face);
 				test.assertBlockPresent(block, support);
 				test.setBlock(fire, Blocks.AIR);
@@ -1595,7 +1598,7 @@ public class PatchworkGameTests {
 	public void lightVariantsUnlitItemsPlacementStackingAndIgnition(GameTestHelper test) {
 		Player player = test.makeMockPlayer(GameType.SURVIVAL);
 		test.setBlock(CENTER.below(), Blocks.STONE);
-		test.assertTrue(LightVariants.unlitItems().size() == 36, "Missing unlit candle or campfire variants");
+		test.assertTrue(LightVariants.unlitItems().size() == 10, "Missing unlit campfire variants");
 		for (var entry : LightVariants.unlitItems().entrySet()) {
 			var block = entry.getKey();
 			var item = entry.getValue();
@@ -1608,27 +1611,6 @@ public class PatchworkGameTests {
 			test.assertTrue(test.getBlockState(CENTER).is(block)
 					&& !test.getBlockState(CENTER).getValue(BlockStateProperties.LIT),
 					"Unlit item placed wrong block or a lit block: " + item);
-			if (block instanceof net.minecraft.world.level.block.CandleBlock) {
-				var hit = new BlockHitResult(Vec3.atCenterOf(test.absolutePos(CENTER)), Direction.UP,
-						test.absolutePos(CENTER), false);
-				for (int count = 2; count <= 4; count++) {
-					test.assertTrue(item.useOn(new UseOnContext(player, InteractionHand.MAIN_HAND, hit)).consumesAction(),
-							"Unlit candle failed stacking");
-					test.assertTrue(test.getBlockState(CENTER).getValue(net.minecraft.world.level.block.CandleBlock.CANDLES)
-							== count, "Wrong stacked candle count");
-				}
-				var drops = Block.getDrops(test.getBlockState(CENTER), test.getLevel(), test.absolutePos(CENTER), null);
-				test.assertTrue(drops.size() == 1 && drops.getFirst().is(item) && drops.getFirst().getCount() == 4,
-						"Unlit candle drops for " + test.getBlockState(CENTER) + " (canonical " + block.asItem()
-								+ ") were " + drops + ", expected 4 " + item);
-				test.setBlock(CENTER, Blocks.CAKE);
-				player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(item));
-				test.getBlockState(CENTER).useItemOn(player.getMainHandItem(), test.getLevel(), player,
-						InteractionHand.MAIN_HAND, hit);
-				test.assertTrue(test.getBlockState(CENTER).equals(
-						net.minecraft.world.level.block.CandleCakeBlock.byCandle((net.minecraft.world.level.block.CandleBlock) block)),
-						"Unlit candle did not add its matching candle to cake");
-			}
 			player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.FLINT_AND_STEEL));
 			useTorchItem(test, player);
 			test.assertTrue(test.getBlockState(CENTER).getValue(BlockStateProperties.LIT), "Light variant did not ignite");

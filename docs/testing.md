@@ -150,9 +150,10 @@ starting successfully is not by itself evidence that the selected tests ran.
   inventories survive oxidation, waxing, and scraping.
   Every copper campfire cooks raw beef and preserves its variant/lit state in
   Silk Touch drops; ordinary drops remain two charcoal.
-- All 36 unlit candle/campfire items: extinguished placement, candle stacking,
-  candle-on-cake placement, normal/soul ignition, waterlogged campfire ignition
-  rejection, candle drop counts, and reversible crafting conversions.
+- All ten unlit campfire items: extinguished placement, normal/soul ignition,
+  waterlogged campfire ignition rejection, drops, and reversible crafting
+  conversions. Candles are omitted because vanilla candles are already unlit
+  by default.
   Client checks cover all new block states and item models, vanilla texture
   silhouettes, animation-sheet dimensions, and an in-game light-family screenshot.
 - All ten unlit lantern conversions, relighting/drops, waterlogging,

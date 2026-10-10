@@ -27,13 +27,14 @@ public abstract class SoulFireSupportMixin extends BaseFireBlock {
 
 	@Inject(method = "<init>", at = @At("RETURN"))
 	private void patchwork$ordinaryFireDefault(BlockBehaviour.Properties properties, CallbackInfo ci) {
-		registerDefaultState(defaultBlockState().setValue(SoulFireSupport.CHARGE_PLACED, false));
+		registerDefaultState(defaultBlockState().setValue(SoulFireSupport.CHARGE_PLACED, false)
+				.setValue(SoulFireSupport.CHARGE_DIRECTION, Direction.UP));
 	}
 
 	@Override
 	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
 		super.createBlockStateDefinition(builder);
-		builder.add(SoulFireSupport.CHARGE_PLACED);
+		builder.add(SoulFireSupport.CHARGE_PLACED, SoulFireSupport.CHARGE_DIRECTION);
 	}
 
 	@Inject(method = "canSurvive", at = @At("HEAD"), cancellable = true)

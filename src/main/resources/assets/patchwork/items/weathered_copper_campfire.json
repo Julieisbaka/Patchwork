@@ -1,6 +1,6 @@
 {
 	"model": {
 		"type": "minecraft:model",
-		"model": "patchwork:block/weathered_copper_campfire"
+		"model": "patchwork:item/weathered_copper_campfire"
 	}
 }

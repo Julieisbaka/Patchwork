@@ -13,7 +13,6 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -21,7 +20,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -73,13 +71,6 @@ public final class LightVariants {
 		for (var block : COPPER_CAMPFIRES.asList()) {
 			BlockEntityTypes.CAMPFIRE.addValidBlock(block);
 		}
-		registerUnlitItem(Blocks.CANDLE);
-		for (DyeColor color : DyeColor.values()) {
-			registerUnlitItem(BuiltInRegistries.BLOCK.getValue(
-					Identifier.withDefaultNamespace(color.getName() + "_candle")));
-		}
-		registerUnlitItem(SOUL_CANDLE);
-		COPPER_CANDLES.forEach(LightVariants::registerUnlitItem);
 		registerUnlitItem(Blocks.CAMPFIRE);
 		registerUnlitItem(Blocks.SOUL_CAMPFIRE);
 		COPPER_CAMPFIRES.forEach(LightVariants::registerUnlitItem);
