@@ -3,6 +3,7 @@ package com.JulieISBaka.patchwork.mixin;
 import com.JulieISBaka.patchwork.HoglinLaunchTarget;
 import com.JulieISBaka.patchwork.Patchwork;
 import com.JulieISBaka.patchwork.PatchworkConfig;
+import com.JulieISBaka.patchwork.NumericSetting;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
@@ -23,7 +24,7 @@ public class HoglinImpactMixin implements HoglinLaunchTarget {
 
 	@Override
 	public void patchwork$trackHoglinLaunch() {
-		this.patchwork$impactTicks = 20;
+		this.patchwork$impactTicks = NumericSetting.HOGLIN_IMPACT_WINDOW.intValue();
 	}
 
 	@Override
@@ -36,7 +37,8 @@ public class HoglinImpactMixin implements HoglinLaunchTarget {
 			this.patchwork$impactTicks = 0;
 		} else if (player.horizontalCollision || (player.verticalCollision && !player.verticalCollisionBelow)) {
 			this.patchwork$impactTicks = 0;
-			player.hurtServer(player.level(), player.damageSources().source(PATCHWORK$IMPACT), 2.0F);
+			player.hurtServer(player.level(), player.damageSources().source(PATCHWORK$IMPACT),
+					NumericSetting.HOGLIN_IMPACT_DAMAGE.floatValue());
 		}
 	}
 

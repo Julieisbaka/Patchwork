@@ -50,8 +50,9 @@ public class SoulFireball extends LargeFireball {
 			Entity target = entityHit.getEntity();
 			if (!(getOwner() instanceof SoulGolem golem && target instanceof LivingEntity living
 					&& golem.isProtected(living))
-					&& target.hurtServer(level, damageSources().fireball(this, getOwner()), 3.0F)) {
-				target.igniteForSeconds(2.0F);
+					&& target.hurtServer(level, damageSources().fireball(this, getOwner()),
+							NumericSetting.SOUL_FIRE_CHARGE_DAMAGE.floatValue())) {
+				target.igniteForSeconds(NumericSetting.SOUL_FIRE_CHARGE_BURN_SECONDS.floatValue());
 				if (getOwner() instanceof LivingEntity shooter) {
 					shooter.setLastHurtMob(target);
 				}

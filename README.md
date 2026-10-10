@@ -3,6 +3,9 @@
 Patchwork is a Fabric mod for Minecraft Java Edition 26.3. It brings together
 building and crafting additions, creature behaviors, and small quality-of-life
 changes. Most gameplay features can be enabled or disabled individually.
+Over 50 gameplay tuning settings cover animal food searches, mob ranges and
+timing, damage, cooldowns, and more, in both the properties file and Mod Menu.
+See the [configuration guide](docs/configuration.md) for defaults and ranges.
 
 ## Features
 

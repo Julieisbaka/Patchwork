@@ -62,7 +62,8 @@ public class SoulGolem extends IronGolem implements OwnableEntity, RangedAttackM
 	protected void registerGoals() {
 		super.registerGoals();
 		goalSelector.removeAllGoals(goal -> goal instanceof MeleeAttackGoal || goal instanceof MoveTowardsTargetGoal);
-		goalSelector.addGoal(1, new RangedAttackGoal(this, 1.0, 40, 16.0F));
+		goalSelector.addGoal(1, new RangedAttackGoal(this, 1.0,
+				NumericSetting.SOUL_GOLEM_ATTACK_INTERVAL.intValue(), NumericSetting.SOUL_GOLEM_ATTACK_RANGE.floatValue()));
 		targetSelector.removeAllGoals(goal -> true);
 		targetSelector.addGoal(0, new OwnerCombatGoal(true));
 		targetSelector.addGoal(1, new OwnerCombatGoal(false));
@@ -166,7 +167,7 @@ public class SoulGolem extends IronGolem implements OwnableEntity, RangedAttackM
 			if (owner == null) {
 				setOwner(player);
 			}
-			heal(25.0F);
+			heal(NumericSetting.SOUL_GOLEM_HEALING.floatValue());
 			stack.consume(1, player);
 			playSound(SoundEvents.SOUL_SOIL_PLACE, 1.0F, 1.0F + (random.nextFloat() - random.nextFloat()) * 0.2F);
 		}

@@ -1,6 +1,7 @@
 package com.JulieISBaka.patchwork.mixin;
 
 import com.JulieISBaka.patchwork.PatchworkConfig;
+import com.JulieISBaka.patchwork.NumericSetting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -41,7 +42,8 @@ public class SkeletonCoverMixin {
 			return;
 		}
 		LivingEntity target = skeleton.getTarget();
-		if (!(target instanceof Player) || !target.isAlive() || skeleton.distanceToSqr(target) > 36.0
+		if (!(target instanceof Player) || !target.isAlive()
+				|| skeleton.distanceToSqr(target) > NumericSetting.SKELETON_COVER_TARGET_DISTANCE.squared()
 				|| !skeleton.isHolding(net.minecraft.world.item.Items.BOW)) {
 			patchwork$clear();
 			return;
@@ -55,11 +57,11 @@ public class SkeletonCoverMixin {
 		}
 		if (attackTime > 0 && !skeleton.isUsingItem()) {
 			skeleton.getNavigation().moveTo(patchwork$cover.getX() + 0.5, patchwork$cover.getY(),
-					patchwork$cover.getZ() + 0.5, 1.15);
+					patchwork$cover.getZ() + 0.5, NumericSetting.SKELETON_COVER_MOVEMENT_SPEED.get());
 		} else {
 			if (patchwork$peek != null && skeleton.blockPosition().distSqr(patchwork$peek) > 1) {
 				skeleton.getNavigation().moveTo(patchwork$peek.getX() + 0.5, patchwork$peek.getY(),
-						patchwork$peek.getZ() + 0.5, 1.15);
+						patchwork$peek.getZ() + 0.5, NumericSetting.SKELETON_COVER_MOVEMENT_SPEED.get());
 			} else {
 				patchwork$clear();
 			}

@@ -1,6 +1,7 @@
 package com.JulieISBaka.patchwork.mixin;
 
 import com.JulieISBaka.patchwork.PatchworkConfig;
+import com.JulieISBaka.patchwork.NumericSetting;
 import com.JulieISBaka.patchwork.UnlitTorches;
 import com.JulieISBaka.patchwork.UnlitLanterns;
 import net.minecraft.core.BlockPos;
@@ -39,30 +40,32 @@ public class BreezeShockwaveMixin {
 				|| level.getGameTime() < this.patchwork$nextShockwaveTick) {
 			return;
 		}
-		this.patchwork$nextShockwaveTick = level.getGameTime() + 200;
+		this.patchwork$nextShockwaveTick = level.getGameTime() + NumericSetting.BREEZE_SHOCKWAVE_COOLDOWN.intValue();
+		int radius = NumericSetting.BREEZE_SHOCKWAVE_RADIUS.intValue();
 		Vec3 center = breeze.position();
 		level.sendParticles(ParticleTypes.GUST_EMITTER_LARGE, center.x, center.y + 0.5, center.z, 1, 0.0, 0.0, 0.0,
 				0.0);
 		level.playSound(null, breeze.blockPosition(), SoundEvents.BREEZE_WIND_CHARGE_BURST.value(), SoundSource.HOSTILE,
 				1.0F, 1.0F);
 
-		for (Entity entity : level.getEntitiesOfClass(Entity.class, breeze.getBoundingBox().inflate(5.0))) {
+		for (Entity entity : level.getEntitiesOfClass(Entity.class, breeze.getBoundingBox().inflate(radius))) {
 			Vec3 direction = entity.position().subtract(center);
-			if (entity == breeze || direction.lengthSqr() > 25.0 || direction.lengthSqr() < 0.01) {
+			if (entity == breeze || direction.lengthSqr() > radius * radius || direction.lengthSqr() < 0.01) {
 				continue;
 			}
 			Vec3 horizontal = new Vec3(direction.x, 0.0, direction.z);
 			if (horizontal.lengthSqr() > 0.01) {
-				Vec3 push = horizontal.normalize().scale(1.2);
-				entity.push(push.x, 0.25, push.z);
+				Vec3 push = horizontal.normalize().scale(NumericSetting.BREEZE_HORIZONTAL_PUSH.get());
+				entity.push(push.x, NumericSetting.BREEZE_VERTICAL_PUSH.get(), push.z);
 			}
 		}
 		if (!level.getGameRules().get(GameRules.MOB_GRIEFING)) {
 			return;
 		}
 		BlockPos origin = breeze.blockPosition();
-		for (BlockPos pos : BlockPos.betweenClosed(origin.offset(-5, -5, -5), origin.offset(5, 5, 5))) {
-			if (pos.distSqr(origin) > 25.0) {
+		for (BlockPos pos : BlockPos.betweenClosed(origin.offset(-radius, -radius, -radius),
+				origin.offset(radius, radius, radius))) {
+			if (pos.distSqr(origin) > radius * radius) {
 				continue;
 			}
 			BlockState state = level.getBlockState(pos);

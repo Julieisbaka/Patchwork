@@ -1,6 +1,7 @@
 package com.JulieISBaka.patchwork.mixin;
 
 import com.JulieISBaka.patchwork.PatchworkConfig;
+import com.JulieISBaka.patchwork.NumericSetting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
@@ -27,7 +28,8 @@ public class EndermanDefenseMixin {
 		BlockState carried = enderman.getCarriedBlock();
 		if (!PatchworkConfig.settings().endermanDefense() || !cir.getReturnValue() || !enderman.isAlive()
 				|| carried == null || !(source.getEntity() instanceof LivingEntity attacker)
-				|| !level.getGameRules().get(GameRules.MOB_GRIEFING) || enderman.getRandom().nextInt(3) != 0) {
+				|| !level.getGameRules().get(GameRules.MOB_GRIEFING)
+				|| enderman.getRandom().nextFloat() >= NumericSetting.ENDERMAN_DEFENSE_CHANCE.get()) {
 			return;
 		}
 

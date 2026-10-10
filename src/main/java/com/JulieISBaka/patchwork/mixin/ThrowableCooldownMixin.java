@@ -1,5 +1,6 @@
 package com.JulieISBaka.patchwork.mixin;
 
+import com.JulieISBaka.patchwork.NumericSetting;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -19,7 +20,7 @@ public abstract class ThrowableCooldownMixin {
 			CallbackInfoReturnable<InteractionResult> cir) {
 		if (cir.getReturnValue().consumesAction()) {
 			Item item = (Item) (Object) this;
-			player.getCooldowns().addCooldown(item.getDefaultInstance(), 2);
+			player.getCooldowns().addCooldown(item.getDefaultInstance(), NumericSetting.THROWABLE_COOLDOWN.intValue());
 		}
 	}
 }

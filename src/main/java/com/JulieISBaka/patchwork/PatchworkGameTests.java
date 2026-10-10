@@ -65,6 +65,9 @@ public class PatchworkGameTests {
 				baseline.load(reader);
 			}
 			for (var component : PatchworkConfig.Settings.class.getRecordComponents()) {
+				if (component.getType() == java.util.Map.class) {
+					continue;
+				}
 				Object expected = component.getType() == boolean.class
 						? !component.getName().equals("creeperChainReactions") : 32;
 				test.assertTrue(component.getAccessor().invoke(defaults).equals(expected),
@@ -77,6 +80,9 @@ public class PatchworkGameTests {
 			baseline.setProperty("callHornRecallRadius", "64");
 			baseline.setProperty("customOption", "keep-me");
 			for (var component : PatchworkConfig.Settings.class.getRecordComponents()) {
+				if (component.getType() == java.util.Map.class) {
+					continue;
+				}
 				var incomplete = new java.util.Properties();
 				incomplete.putAll(baseline);
 				incomplete.remove(component.getName());
@@ -106,6 +112,9 @@ public class PatchworkGameTests {
 			java.nio.file.Files.writeString(path, "");
 			test.assertTrue(PatchworkConfig.read(path).equals(defaults), "Empty existing config did not gain defaults");
 			for (var component : PatchworkConfig.Settings.class.getRecordComponents()) {
+				if (component.getType() == java.util.Map.class) {
+					continue;
+				}
 				var invalidValues = component.getType() == boolean.class
 						? java.util.List.of("yes", "") : java.util.List.of("15", "257", "32.5", "not-a-number", "");
 				for (String invalid : invalidValues) {
@@ -131,6 +140,141 @@ public class PatchworkGameTests {
 		} finally {
 			java.nio.file.Files.deleteIfExists(path);
 			java.nio.file.Files.delete(directory);
+		}
+	}
+
+	@GameTest
+	public void numericConfigurationMigrationValidationAndSave(GameTestHelper test) throws Exception {
+		var directory = java.nio.file.Files.createTempDirectory("patchwork-numeric-config-test-");
+		var path = directory.resolve("patchwork.properties");
+		try {
+			var defaults = PatchworkConfig.read(path);
+			var baseline = new java.util.Properties();
+			try (var reader = java.nio.file.Files.newBufferedReader(path)) {
+				baseline.load(reader);
+			}
+			baseline.setProperty("customOption", "keep-me");
+			for (NumericSetting setting : NumericSetting.values()) {
+				test.assertTrue(defaults.numericValues().get(setting) == setting.defaultValue()
+						&& baseline.getProperty(setting.key()).equals(setting.format(setting.defaultValue())),
+						"Wrong numeric default: " + setting.key());
+				var incomplete = new java.util.Properties();
+				incomplete.putAll(baseline);
+				incomplete.remove(setting.key());
+				try (var writer = java.nio.file.Files.newBufferedWriter(path)) {
+					incomplete.store(writer, "Numeric migration regression");
+				}
+				var migrated = PatchworkConfig.read(path);
+				test.assertTrue(migrated.numericValues().get(setting) == setting.defaultValue(),
+						"Missing numeric setting was not defaulted: " + setting.key());
+				var persisted = new java.util.Properties();
+				try (var reader = java.nio.file.Files.newBufferedReader(path)) {
+					persisted.load(reader);
+				}
+				test.assertTrue(persisted.getProperty(setting.key()).equals(setting.format(setting.defaultValue())),
+						"Numeric migration was not saved: " + setting.key());
+				for (String key : incomplete.stringPropertyNames()) {
+					test.assertTrue(incomplete.getProperty(key).equals(persisted.getProperty(key)),
+							"Numeric migration changed an existing property: " + key);
+				}
+				var invalidValues = new java.util.ArrayList<>(java.util.List.of("", "no", "NaN", "Infinity",
+						"-Infinity", Double.toString(setting.minimum() - 1), Double.toString(setting.maximum() + 1)));
+				if (setting.integer()) {
+					invalidValues.add("1.5");
+					invalidValues.add("10.0");
+				}
+				for (String invalid : invalidValues) {
+					var properties = new java.util.Properties();
+					properties.putAll(baseline);
+					properties.remove("animalDroppedFood");
+					properties.setProperty(setting.key(), invalid);
+					try (var writer = java.nio.file.Files.newBufferedWriter(path)) {
+						properties.store(writer, "Invalid numeric config must not be rewritten");
+					}
+					var before = java.nio.file.Files.readAllBytes(path);
+					boolean rejected = false;
+					try {
+						PatchworkConfig.read(path);
+					} catch (IllegalArgumentException e) {
+						rejected = e.getMessage().contains(setting.key());
+					}
+					test.assertTrue(rejected && java.util.Arrays.equals(before, java.nio.file.Files.readAllBytes(path)),
+							"Invalid numeric setting was accepted or rewritten: " + setting.key() + "=" + invalid);
+				}
+				for (double boundary : new double[] { setting.minimum(), setting.maximum() }) {
+					var properties = new java.util.Properties();
+					properties.putAll(baseline);
+					properties.setProperty(setting.key(), setting.format(boundary));
+					// Keep the paired distance valid when testing either boundary independently.
+					properties.setProperty("spiderWebMinDistance",
+							setting == NumericSetting.SPIDER_WEB_MIN_DISTANCE ? setting.format(boundary) : "0.0");
+					properties.setProperty("spiderWebMaxDistance",
+							setting == NumericSetting.SPIDER_WEB_MAX_DISTANCE ? setting.format(boundary) : "64.0");
+					try (var writer = java.nio.file.Files.newBufferedWriter(path)) {
+						properties.store(writer, "Numeric boundary and save regression");
+					}
+					var loaded = PatchworkConfig.read(path);
+					test.assertTrue(loaded.numericValues().get(setting) == boundary,
+							"Valid boundary rejected: " + setting.key());
+					PatchworkConfig.save(path, loaded);
+					test.assertTrue(PatchworkConfig.read(path).equals(loaded), "Numeric settings did not round-trip");
+					try (var reader = java.nio.file.Files.newBufferedReader(path)) {
+						persisted.clear();
+						persisted.load(reader);
+					}
+					test.assertTrue("keep-me".equals(persisted.getProperty("customOption")),
+							"Saving numeric settings removed an unknown property");
+				}
+			}
+			baseline.setProperty("spiderWebMinDistance", "9.0");
+			baseline.setProperty("spiderWebMaxDistance", "8.0");
+			baseline.remove("animalDroppedFood");
+			try (var writer = java.nio.file.Files.newBufferedWriter(path)) {
+				baseline.store(writer, "Invalid paired distances");
+			}
+			var before = java.nio.file.Files.readAllBytes(path);
+			boolean rejected = false;
+			try {
+				PatchworkConfig.read(path);
+			} catch (IllegalArgumentException e) {
+				rejected = e.getMessage().contains("spiderWebMinDistance");
+			}
+			test.assertTrue(rejected && java.util.Arrays.equals(before, java.nio.file.Files.readAllBytes(path)),
+					"Invalid paired distances were accepted or rewritten");
+			test.succeed();
+		} finally {
+			java.nio.file.Files.deleteIfExists(path);
+			java.nio.file.Files.delete(directory);
+		}
+	}
+
+	@GameTest
+	public void animalFoodUsesConfiguredRadiusAndToggle(GameTestHelper test) {
+		boolean original = test.getLevel().getGameRules().get(GameRules.MOB_GRIEFING);
+		test.getLevel().getGameRules().set(GameRules.MOB_GRIEFING, true, test.getLevel().getServer());
+		try {
+			var animal = test.spawn(EntityTypes.COW, CENTER);
+			animal.setNoAi(true);
+			double radius = NumericSetting.ANIMAL_FOOD_SEARCH_RADIUS.get();
+			ItemEntity food = new ItemEntity(test.getLevel(), animal.getX() + radius + 2, animal.getY(), animal.getZ(),
+					new ItemStack(Items.WHEAT, 2));
+			food.setNoPickUpDelay();
+			test.assertTrue(test.getLevel().addFreshEntity(food), "Could not spawn food for configured radius test");
+			AnimalFoodGoal outside = new AnimalFoodGoal(animal);
+			test.assertTrue(!outside.canUse(), "Animal searched beyond its configured food radius");
+			food.setPos(animal.getX() + radius * 0.75, animal.getY(), animal.getZ());
+			AnimalFoodGoal inside = new AnimalFoodGoal(animal);
+			boolean enabled = PatchworkConfig.settings().animalDroppedFood();
+			test.assertTrue(inside.canUse() == enabled, "Animal food radius or feature toggle was ignored");
+			if (enabled) {
+				test.assertTrue(inside.canContinueToUse(), "Food inside configured radius was not pursued");
+				food.setPos(animal.getX() + radius + 1, animal.getY(), animal.getZ());
+				test.assertTrue(!inside.canContinueToUse(), "Animal pursued food outside configured radius");
+			}
+			food.discard();
+			test.succeed();
+		} finally {
+			test.getLevel().getGameRules().set(GameRules.MOB_GRIEFING, original, test.getLevel().getServer());
 		}
 	}
 

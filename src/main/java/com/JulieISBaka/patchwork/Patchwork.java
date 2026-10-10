@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 public class Patchwork implements ModInitializer {
 	public static final String MOD_ID = "patchwork";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
-	private static final int SLIMEBALL_COOLDOWN_TICKS = 20;
 	public static final String THROWN_FIRE_CHARGE_TAG = "patchwork:thrown_fire_charge";
 	private static final ResourceConditionType<ChainmailCondition> CHAINMAIL_CONDITION = ResourceConditionType
 			.create(id("chainmail_recipes"), MapCodec.unit(new ChainmailCondition()));
@@ -118,8 +117,10 @@ public class Patchwork implements ModInitializer {
 					|| !state.is(BlockTags.FLOWERS)) {
 				return;
 			}
-			for (BlockPos nearby : BlockPos.betweenClosed(pos.offset(-4, -4, -4), pos.offset(4, 4, 4))) {
-				if (nearby.distSqr(pos) > 16.0 || !serverLevel.getBlockState(nearby).is(BlockTags.BEEHIVES)
+			int radius = NumericSetting.BEE_DEFENSE_RADIUS.intValue();
+			for (BlockPos nearby : BlockPos.betweenClosed(pos.offset(-radius, -radius, -radius),
+					pos.offset(radius, radius, radius))) {
+				if (nearby.distSqr(pos) > radius * radius || !serverLevel.getBlockState(nearby).is(BlockTags.BEEHIVES)
 						|| !(serverLevel.getBlockEntity(nearby) instanceof BeehiveBlockEntity hive) || hive.isEmpty()
 						|| hive.isSedated()) {
 					continue;
@@ -144,7 +145,7 @@ public class Patchwork implements ModInitializer {
 			}
 
 			player.awardStat(Stats.ITEM_USED.get(Items.SLIME_BALL));
-			player.getCooldowns().addCooldown(stack, SLIMEBALL_COOLDOWN_TICKS);
+			player.getCooldowns().addCooldown(stack, NumericSetting.SLIMEBALL_COOLDOWN.intValue());
 			stack.consume(1, player);
 			return InteractionResult.SUCCESS;
 		});

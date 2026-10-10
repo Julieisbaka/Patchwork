@@ -1,6 +1,7 @@
 package com.JulieISBaka.patchwork.mixin;
 
 import com.JulieISBaka.patchwork.PatchworkConfig;
+import com.JulieISBaka.patchwork.NumericSetting;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -18,8 +19,9 @@ public abstract class CaveSpiderNauseaMixin {
 	private void patchwork$inflictNausea(ServerLevel level, Entity target, CallbackInfoReturnable<Boolean> cir) {
 		if (PatchworkConfig.settings().caveSpiderNausea() && cir.getReturnValue()
 				&& target instanceof LivingEntity living
-				&& ((CaveSpider) (Object) this).getRandom().nextFloat() < 0.2F) {
-			living.addEffect(new MobEffectInstance(MobEffects.NAUSEA, 100), (CaveSpider) (Object) this);
+				&& ((CaveSpider) (Object) this).getRandom().nextFloat() < NumericSetting.CAVE_SPIDER_NAUSEA_CHANCE.get()) {
+			living.addEffect(new MobEffectInstance(MobEffects.NAUSEA,
+					NumericSetting.CAVE_SPIDER_NAUSEA_DURATION.intValue()), (CaveSpider) (Object) this);
 		}
 	}
 }

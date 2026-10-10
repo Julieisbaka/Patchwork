@@ -12,8 +12,6 @@ import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.gameevent.GameEvent;
 
 public final class AnimalFoodGoal extends Goal {
-	private static final double SEARCH_RADIUS = 8.0;
-	private static final double EAT_DISTANCE_SQR = 2.25;
 	private final Animal animal;
 	private ItemEntity food;
 	private int nextSearchTick;
@@ -30,9 +28,9 @@ public final class AnimalFoodGoal extends Goal {
 				|| this.animal.tickCount < this.nextSearchTick) {
 			return false;
 		}
-		this.nextSearchTick = this.animal.tickCount + 10;
+		this.nextSearchTick = this.animal.tickCount + NumericSetting.ANIMAL_FOOD_SEARCH_INTERVAL.intValue();
 		this.food = this.animal.level().getEntitiesOfClass(ItemEntity.class,
-				this.animal.getBoundingBox().inflate(SEARCH_RADIUS), this::isEdible).stream()
+				this.animal.getBoundingBox().inflate(NumericSetting.ANIMAL_FOOD_SEARCH_RADIUS.get()), this::isEdible).stream()
 				.min(Comparator.comparingDouble(this.animal::distanceToSqr)).orElse(null);
 		return this.food != null;
 	}
@@ -40,7 +38,7 @@ public final class AnimalFoodGoal extends Goal {
 	@Override
 	public boolean canContinueToUse() {
 		return this.canEat() && this.isEdible(this.food)
-				&& this.animal.distanceToSqr(this.food) <= SEARCH_RADIUS * SEARCH_RADIUS;
+				&& this.animal.distanceToSqr(this.food) <= NumericSetting.ANIMAL_FOOD_SEARCH_RADIUS.squared();
 	}
 
 	@Override
@@ -50,9 +48,9 @@ public final class AnimalFoodGoal extends Goal {
 
 	@Override
 	public void tick() {
-		if (this.animal.distanceToSqr(this.food) <= EAT_DISTANCE_SQR) {
+		if (this.animal.distanceToSqr(this.food) <= NumericSetting.ANIMAL_FOOD_EAT_DISTANCE.squared()) {
 			this.eat();
-		} else if (this.animal.tickCount % 10 == 0) {
+		} else if (this.animal.tickCount % NumericSetting.ANIMAL_FOOD_REPATH_INTERVAL.intValue() == 0) {
 			this.moveToFood();
 		}
 	}
@@ -64,7 +62,8 @@ public final class AnimalFoodGoal extends Goal {
 	}
 
 	private boolean canEat() {
-		return this.animal.isAlive() && this.animal.level() instanceof ServerLevel serverLevel
+		return PatchworkConfig.settings().animalDroppedFood() && this.animal.isAlive()
+				&& this.animal.level() instanceof ServerLevel serverLevel
 				&& serverLevel.getGameRules().get(GameRules.MOB_GRIEFING);
 	}
 
@@ -75,7 +74,7 @@ public final class AnimalFoodGoal extends Goal {
 
 	private void moveToFood() {
 		if (this.food != null) {
-			this.animal.getNavigation().moveTo(this.food, 1.1);
+			this.animal.getNavigation().moveTo(this.food, NumericSetting.ANIMAL_FOOD_MOVEMENT_SPEED.get());
 		}
 	}
 
@@ -97,7 +96,7 @@ public final class AnimalFoodGoal extends Goal {
 		if (thrower instanceof ServerPlayer player) {
 			Patchwork.awardAdvancement(player, "adventure/creature_comforts", "animal_ate_dropped_food");
 		}
-		this.nextEatTick = this.animal.tickCount + 40;
+		this.nextEatTick = this.animal.tickCount + NumericSetting.ANIMAL_FOOD_EAT_COOLDOWN.intValue();
 		this.food = null;
 		this.animal.getNavigation().stop();
 	}

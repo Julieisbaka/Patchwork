@@ -6,6 +6,8 @@ import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
+import java.util.EnumMap;
+import java.util.Map;
 import net.fabricmc.loader.api.FabricLoader;
 
 public final class PatchworkConfig {
@@ -15,7 +17,7 @@ public final class PatchworkConfig {
 	private static final String RECALL_RADIUS_KEY = "callHornRecallRadius";
 	private static volatile Settings settings = new Settings(true, true, true, true, true, true, true, true, true, true,
 			false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
-			true, true, DEFAULT_RECALL_RADIUS);
+			true, true, DEFAULT_RECALL_RADIUS, true, NumericSetting.defaults());
 
 	public record Settings(boolean witherDifficultyHealth, boolean witherBirthExplosion, boolean chainmailRecipes,
 			boolean wolfBanners, boolean ownerSweepProtection, boolean shulkerDyeing, boolean throwableSlimeballs,
@@ -25,7 +27,21 @@ public final class PatchworkConfig {
 			boolean potionCauldrons, boolean pumpkinLanterns, boolean experienceClumping, boolean sweetBerryTrades,
 			boolean elytraDyeing, boolean stoneToolMaterials, boolean playerHeadRecipe, boolean spiderCeilingClimbing,
 			boolean caveSpiderNausea, boolean loyalTridentVoidReturn, boolean patchworkAdvancements,
-			int callHornRecallRadius) {
+			int callHornRecallRadius, boolean animalDroppedFood, Map<NumericSetting, Double> numericValues) {
+		public Settings {
+			numericValues = Map.copyOf(numericValues);
+			for (NumericSetting setting : NumericSetting.values()) {
+				Double value = numericValues.get(setting);
+				if (value == null) {
+					throw new IllegalArgumentException("Missing numeric setting: " + setting.key());
+				}
+				setting.validate(value);
+			}
+			if (numericValues.get(NumericSetting.SPIDER_WEB_MIN_DISTANCE)
+					> numericValues.get(NumericSetting.SPIDER_WEB_MAX_DISTANCE)) {
+				throw new IllegalArgumentException("spiderWebMinDistance must not exceed spiderWebMaxDistance");
+			}
+		}
 	}
 
 	private PatchworkConfig() {
@@ -108,15 +124,22 @@ public final class PatchworkConfig {
 		boolean caveSpiderNausea = enabled(properties, "caveSpiderNausea", path);
 		boolean loyalTridentVoidReturn = enabled(properties, "loyalTridentVoidReturn", path);
 		boolean patchworkAdvancements = enabled(properties, "patchworkAdvancements", path);
-
-		if (properties.size() != originalPropertyCount) {
-			try (Writer writer = Files.newBufferedWriter(path)) {
-				properties.store(writer,
-						"Patchwork features: true/false; callHornRecallRadius: 16-256 blocks. Restart to apply.");
-			} catch (IOException e) {
-				throw new IllegalStateException("Unable to write Patchwork config: " + path, e);
+		boolean animalDroppedFood = enabled(properties, "animalDroppedFood", path);
+		Map<NumericSetting, Double> numericValues = new EnumMap<>(NumericSetting.class);
+		for (NumericSetting setting : NumericSetting.values()) {
+			String text = properties.getProperty(setting.key());
+			if (text == null) {
+				text = setting.format(setting.defaultValue());
+				properties.setProperty(setting.key(), text);
+				Patchwork.LOGGER.info("Adding missing Patchwork setting {}={} to {}", setting.key(), text, path);
+			}
+			try {
+				numericValues.put(setting, setting.parse(text));
+			} catch (IllegalArgumentException e) {
+				throw new IllegalArgumentException("Invalid Patchwork config in " + path + ": " + e.getMessage(), e);
 			}
 		}
+
 		Settings loaded = new Settings(witherDifficultyHealth, witherBirthExplosion, chainmailRecipes, wolfBanners,
 				ownerSweepProtection, shulkerDyeing, throwableSlimeballs, callHornRecall, cauldronCleaning,
 				beesDefendFlowers, creeperChainReactions, endermanDefense, spiderWebs, throwableFireCharges,
@@ -124,17 +147,28 @@ public final class PatchworkConfig {
 				potionCauldrons,
 				pumpkinLanterns, experienceClumping, sweetBerryTrades, elytraDyeing, stoneToolMaterials,
 				playerHeadRecipe, spiderCeilingClimbing, caveSpiderNausea, loyalTridentVoidReturn,
-				patchworkAdvancements, radius);
+				patchworkAdvancements, radius, animalDroppedFood, numericValues);
+		if (properties.size() != originalPropertyCount) {
+			try (Writer writer = Files.newBufferedWriter(path)) {
+				properties.store(writer,
+						"Patchwork settings. See docs/configuration.md for ranges and units. Restart to apply.");
+			} catch (IOException e) {
+				throw new IllegalStateException("Unable to write Patchwork config: " + path, e);
+			}
+		}
 		Patchwork.LOGGER.info("Patchwork config loaded from {}", path);
 		return loaded;
 	}
 
 	public static void save(Settings updated) {
+		save(FabricLoader.getInstance().getConfigDir().resolve("patchwork.properties"), updated);
+	}
+
+	static void save(Path path, Settings updated) {
 		int radius = updated.callHornRecallRadius();
 		if (radius < MIN_RECALL_RADIUS || radius > MAX_RECALL_RADIUS) {
 			throw new IllegalArgumentException(RECALL_RADIUS_KEY + " must be from 16 to 256: " + radius);
 		}
-		Path path = FabricLoader.getInstance().getConfigDir().resolve("patchwork.properties");
 		Properties properties = new Properties();
 		try {
 			try (Reader reader = Files.newBufferedReader(path)) {
@@ -171,9 +205,13 @@ public final class PatchworkConfig {
 			properties.setProperty("loyalTridentVoidReturn", Boolean.toString(updated.loyalTridentVoidReturn()));
 			properties.setProperty("patchworkAdvancements", Boolean.toString(updated.patchworkAdvancements()));
 			properties.setProperty(RECALL_RADIUS_KEY, Integer.toString(radius));
+			properties.setProperty("animalDroppedFood", Boolean.toString(updated.animalDroppedFood()));
+			for (NumericSetting setting : NumericSetting.values()) {
+				properties.setProperty(setting.key(), setting.format(updated.numericValues().get(setting)));
+			}
 			try (Writer writer = Files.newBufferedWriter(path)) {
 				properties.store(writer,
-						"Patchwork features: true/false; callHornRecallRadius: 16-256 blocks. Restart to apply.");
+						"Patchwork settings. See docs/configuration.md for ranges and units. Restart to apply.");
 			}
 		} catch (IOException e) {
 			throw new IllegalStateException("Unable to save Patchwork config: " + path, e);

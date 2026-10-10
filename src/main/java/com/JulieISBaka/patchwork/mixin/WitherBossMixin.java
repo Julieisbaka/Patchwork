@@ -1,6 +1,7 @@
 package com.JulieISBaka.patchwork.mixin;
 
 import com.JulieISBaka.patchwork.PatchworkConfig;
+import com.JulieISBaka.patchwork.NumericSetting;
 import java.util.Objects;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Difficulty;
@@ -45,7 +46,8 @@ public abstract class WitherBossMixin {
 				new EntityBasedExplosionDamageCalculator(source) {
 					@Override
 					public float getEntityDamageAmount(Explosion explosion, Entity entity, float exposure) {
-						return super.getEntityDamageAmount(explosion, entity, exposure) + 3.0F;
+						return super.getEntityDamageAmount(explosion, entity, exposure)
+								+ NumericSetting.WITHER_BIRTH_BONUS_DAMAGE.floatValue();
 					}
 				}, x, y, z, radius, fire, interaction);
 	}
@@ -54,9 +56,9 @@ public abstract class WitherBossMixin {
 		WitherBoss wither = (WitherBoss) (Object) this;
 		AttributeInstance maxHealth = Objects.requireNonNull(wither.getAttribute(Attributes.MAX_HEALTH));
 		double targetHealth = switch (difficulty) {
-			case EASY, PEACEFUL -> 300.0;
-			case NORMAL -> 450.0;
-			case HARD -> 600.0;
+			case EASY, PEACEFUL -> NumericSetting.WITHER_EASY_HEALTH.get();
+			case NORMAL -> NumericSetting.WITHER_NORMAL_HEALTH.get();
+			case HARD -> NumericSetting.WITHER_HARD_HEALTH.get();
 		};
 
 		if (maxHealth.getBaseValue() != targetHealth) {

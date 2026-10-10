@@ -1,6 +1,7 @@
 package com.JulieISBaka.patchwork.mixin;
 
 import com.JulieISBaka.patchwork.PatchworkConfig;
+import com.JulieISBaka.patchwork.NumericSetting;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.player.Player;
@@ -56,9 +57,10 @@ public abstract class ExperienceOrbMixin {
 				|| !(self.level() instanceof ServerLevel level) || level.getGameTime() < patchwork$nextMergeTick) {
 			return;
 		}
-		patchwork$nextMergeTick = level.getGameTime() + 20;
-		for (ExperienceOrb other : level.getEntitiesOfClass(ExperienceOrb.class, self.getBoundingBox().inflate(2.0),
-				orb -> orb != self && !orb.isRemoved() && self.distanceToSqr(orb) <= 4.0)) {
+		patchwork$nextMergeTick = level.getGameTime() + NumericSetting.EXPERIENCE_MERGE_INTERVAL.intValue();
+		double radius = NumericSetting.EXPERIENCE_MERGE_RADIUS.get();
+		for (ExperienceOrb other : level.getEntitiesOfClass(ExperienceOrb.class, self.getBoundingBox().inflate(radius),
+				orb -> orb != self && !orb.isRemoved() && self.distanceToSqr(orb) <= radius * radius)) {
 			ExperienceOrbAccessor otherData = (ExperienceOrbAccessor) other;
 			long total = (long) getValue() * count + (long) other.getValue() * otherData.patchwork$count();
 			if (total > 0 && total <= Integer.MAX_VALUE) {

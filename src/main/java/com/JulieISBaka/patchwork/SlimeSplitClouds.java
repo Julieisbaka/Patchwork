@@ -21,7 +21,6 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 public final class SlimeSplitClouds {
-	private static final int LIFETIME_TICKS = 100;
 	private static final DustParticleOptions SLIME_DUST = new DustParticleOptions(0x66C536, 1.2F);
 	private static final Map<ServerLevel, List<Cloud>> CLOUDS = new HashMap<>();
 
@@ -43,9 +42,10 @@ public final class SlimeSplitClouds {
 		}
 
 		BlockPos origin = ground.getBlockPos().above();
-		List<BlockPos> tiles = new ArrayList<>(9);
-		for (int x = -1; x <= 1; x++) {
-			for (int z = -1; z <= 1; z++) {
+		int radius = NumericSetting.SLIME_CLOUD_RADIUS.intValue();
+		List<BlockPos> tiles = new ArrayList<>();
+		for (int x = -radius; x <= radius; x++) {
+			for (int z = -radius; z <= radius; z++) {
 				BlockPos tile = origin.offset(x, 0, z);
 				if (level.getBlockState(tile).isAir()
 						&& level.getBlockState(tile.below()).isFaceSturdy(level, tile.below(), Direction.UP)) {
@@ -55,7 +55,8 @@ public final class SlimeSplitClouds {
 		}
 		if (!tiles.isEmpty()) {
 			CLOUDS.computeIfAbsent(level, unused -> new ArrayList<>())
-					.add(new Cloud(List.copyOf(tiles), level.getGameTime() + LIFETIME_TICKS));
+					.add(new Cloud(List.copyOf(tiles),
+							level.getGameTime() + NumericSetting.SLIME_CLOUD_LIFETIME.intValue()));
 		}
 	}
 
@@ -85,7 +86,8 @@ public final class SlimeSplitClouds {
 						.anyMatch(tile -> player.getX() >= tile.getX() && player.getX() < tile.getX() + 1
 								&& player.getZ() >= tile.getZ() && player.getZ() < tile.getZ() + 1
 								&& Math.abs(player.getY() - tile.getY()) < 0.6)) {
-					player.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 10, 1, false, false));
+					player.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 10,
+							NumericSetting.SLIME_CLOUD_EFFECT_AMPLIFIER.intValue(), false, false));
 				}
 			}
 		}

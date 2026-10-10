@@ -1,6 +1,7 @@
 package com.JulieISBaka.patchwork.mixin;
 
 import com.JulieISBaka.patchwork.PatchworkConfig;
+import com.JulieISBaka.patchwork.NumericSetting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -20,13 +21,15 @@ public class SpiderWebMixin {
 	private void patchwork$spinWeb(CallbackInfo ci) {
 		Spider spider = (Spider) (Object) this;
 		if (!PatchworkConfig.settings().spiderWebs() || !(spider.level() instanceof ServerLevel level)
-				|| !spider.isAlive() || spider.tickCount % 100 != 0
+				|| !spider.isAlive() || spider.tickCount % NumericSetting.SPIDER_WEB_INTERVAL.intValue() != 0
 				|| !level.getGameRules().get(GameRules.MOB_GRIEFING)) {
 			return;
 		}
 		LivingEntity target = spider.getTarget();
-		if (target == null || !target.isAlive() || spider.distanceToSqr(target) > 64.0
-				|| spider.distanceToSqr(target) < 4.0 || spider.getRandom().nextInt(4) != 0) {
+		if (target == null || !target.isAlive()
+				|| spider.distanceToSqr(target) > NumericSetting.SPIDER_WEB_MAX_DISTANCE.squared()
+				|| spider.distanceToSqr(target) < NumericSetting.SPIDER_WEB_MIN_DISTANCE.squared()
+				|| spider.getRandom().nextFloat() >= NumericSetting.SPIDER_WEB_CHANCE.get()) {
 			return;
 		}
 		BlockPos pos = target.blockPosition();

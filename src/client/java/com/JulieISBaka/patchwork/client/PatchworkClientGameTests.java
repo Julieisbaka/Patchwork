@@ -4,6 +4,8 @@ import com.JulieISBaka.patchwork.CopperTorches;
 import com.JulieISBaka.patchwork.GardenBlocks;
 import com.JulieISBaka.patchwork.LightVariants;
 import com.JulieISBaka.patchwork.Patchwork;
+import com.JulieISBaka.patchwork.PatchworkConfig;
+import com.JulieISBaka.patchwork.NumericSetting;
 import com.JulieISBaka.patchwork.PotionCauldronEntity;
 import com.JulieISBaka.patchwork.PotionCauldrons;
 import com.JulieISBaka.patchwork.RabbitPet;
@@ -22,6 +24,11 @@ import javax.imageio.ImageIO;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.OptionsList;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
@@ -38,11 +45,83 @@ import net.minecraft.world.level.block.LayeredCauldronBlock;
 public class PatchworkClientGameTests implements FabricClientGameTest {
 	@Override
 	public void runTest(ClientGameTestContext context) {
+		testConfigurationScreen(context);
+		if (Boolean.getBoolean("patchwork.configScreenTestOnly")) {
+			return;
+		}
 		testPetsAndRendererMigration(context);
 		testPotionFirstFillTint(context);
 		testSoulAndLightModels(context);
 		testGardenAndArtwork(context);
 		testNewLightVariants(context);
+	}
+
+	private static void testConfigurationScreen(ClientGameTestContext context) {
+		context.runOnClient(client -> {
+			Screen parent = new Screen(Component.literal("Configuration test")) {
+			};
+			PatchworkConfigScreen screen = new PatchworkConfigScreen(parent);
+			client.gui.setScreen(screen);
+			OptionsList options = screen.children().stream().filter(OptionsList.class::isInstance)
+					.map(OptionsList.class::cast).findFirst().orElseThrow();
+			List<EditBox> inputs = options.children().stream().flatMap(entry -> entry.children().stream())
+					.filter(EditBox.class::isInstance).map(EditBox.class::cast).toList();
+			if (inputs.size() != NumericSetting.values().length + 1) {
+				throw new AssertionError("Configuration screen is missing numeric inputs");
+			}
+			Button save = screen.children().stream().filter(Button.class::isInstance).map(Button.class::cast)
+					.filter(button -> button.getMessage().getString().equals(Component.translatable("patchwork.config.save").getString()))
+					.findFirst().orElseThrow();
+			if (!save.active) {
+				throw new AssertionError("Valid loaded configuration cannot be saved");
+			}
+			for (NumericSetting setting : NumericSetting.values()) {
+				Component label = Component.translatable("patchwork.config." + setting.key());
+				if (label.getString().equals("patchwork.config." + setting.key())) {
+					throw new AssertionError("Numeric setting label is not translated: " + setting.key());
+				}
+				EditBox input = inputs.get(setting.ordinal() + 1);
+				String original = input.getValue();
+				input.setValue("NaN");
+				if (save.active) {
+					throw new AssertionError("Invalid numeric field did not disable Save: " + setting.key());
+				}
+				input.setValue(original);
+				if (!save.active) {
+					throw new AssertionError("Correcting a numeric field did not re-enable Save: " + setting.key());
+				}
+			}
+			EditBox minimum = inputs.get(NumericSetting.SPIDER_WEB_MIN_DISTANCE.ordinal() + 1);
+			String originalMinimum = minimum.getValue();
+			minimum.setValue("64");
+			if (save.active) {
+				throw new AssertionError("Invalid paired Spider distances did not disable Save");
+			}
+			minimum.setValue(originalMinimum);
+			EditBox animalRadius = inputs.get(NumericSetting.ANIMAL_FOOD_SEARCH_RADIUS.ordinal() + 1);
+			animalRadius.setValue("16.5");
+			save.onPress();
+			if (PatchworkConfig.read().numericValues().get(NumericSetting.ANIMAL_FOOD_SEARCH_RADIUS) != 16.5) {
+				throw new AssertionError("Config screen did not persist a fractional food radius");
+			}
+			PatchworkConfigScreen reopened = new PatchworkConfigScreen(parent);
+			client.gui.setScreen(reopened);
+			OptionsList reloadedOptions = reopened.children().stream().filter(OptionsList.class::isInstance)
+					.map(OptionsList.class::cast).findFirst().orElseThrow();
+			List<EditBox> reloadedInputs = reloadedOptions.children().stream()
+					.flatMap(entry -> entry.children().stream()).filter(EditBox.class::isInstance)
+					.map(EditBox.class::cast).toList();
+			EditBox reloadedRadius = reloadedInputs.get(NumericSetting.ANIMAL_FOOD_SEARCH_RADIUS.ordinal() + 1);
+			if (!reloadedRadius.getValue().equals("16.5")) {
+				throw new AssertionError("Reopened config screen did not restore saved numeric settings");
+			}
+			reloadedRadius.setValue("20");
+			reopened.onClose();
+			if (PatchworkConfig.read().numericValues().get(NumericSetting.ANIMAL_FOOD_SEARCH_RADIUS) != 16.5) {
+				throw new AssertionError("Cancelling the config screen saved unsaved edits");
+			}
+			client.gui.setScreen(parent);
+		});
 	}
 
 	private static void testNewLightVariants(ClientGameTestContext context) {

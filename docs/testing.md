@@ -57,6 +57,15 @@ directories with separate configurations.
   each missing setting, preservation of custom/unknown values, unchanged complete
   files, and rejection of invalid booleans/radii without modifying the file.
   Select with `patchwork:*configuration_automatically*`.
+- Every numeric setting's default, missing-key migration, exact lower/upper
+  bounds, invalid/fractional/non-finite rejection, save/read round-trips,
+  unknown-property preservation, and invalid paired Spider distances without
+  rewriting the file. Select with `patchwork:*numeric_configuration*`.
+- Animal dropped-food search/pursuit radius and enabled/disabled behavior.
+  Select with `patchwork:*animal_food_uses_configured*`; also run with a
+  non-default radius and `animalDroppedFood=false` in separate run directories.
+  Gameplay tests with exact historical damage/timing expectations otherwise
+  require the default numeric values.
 - Rabbit carrot taming in either hand, baby/Creative behavior, exclusive owner
   commands, unchanged breeding, ownership/stay save-load and legacy wild saves,
   actual stay/follow movement, owner avoidance, safe/unsupported/leashed teleport

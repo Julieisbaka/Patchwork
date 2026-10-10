@@ -47,9 +47,10 @@ public final class SoulFireCharges {
 					SoulFireball projectile = new SoulFireball(PROJECTILE, level);
 					projectile.setPos(pos.x(), pos.y(), pos.z());
 					projectile.setItem(stack);
-					projectile.accelerationPower = 0.03;
+					projectile.accelerationPower = NumericSetting.FIRE_CHARGE_ACCELERATION.get();
 					projectile.setDeltaMovement(
-							new Vec3(direction.getStepX(), direction.getStepY(), direction.getStepZ()).scale(0.65));
+							new Vec3(direction.getStepX(), direction.getStepY(), direction.getStepZ())
+									.scale(NumericSetting.FIRE_CHARGE_SPEED.get()));
 					return projectile;
 				}
 
@@ -95,8 +96,8 @@ public final class SoulFireCharges {
 		SoulFireball projectile = new SoulFireball(PROJECTILE, level);
 		projectile.setOwner(shooter);
 		projectile.setPos(origin);
-		projectile.accelerationPower = 0.03;
-		projectile.setDeltaMovement(direction.normalize().scale(0.65));
+		projectile.accelerationPower = NumericSetting.FIRE_CHARGE_ACCELERATION.get();
+		projectile.setDeltaMovement(direction.normalize().scale(NumericSetting.FIRE_CHARGE_SPEED.get()));
 		projectile.setItem(new ItemStack(ITEM));
 		if (!level.addFreshEntity(projectile)) {
 			throw new IllegalStateException("Could not spawn Soul Fire Charge at " + origin);
@@ -114,7 +115,7 @@ public final class SoulFireCharges {
 		}
 		Vec3 eye = player.getEyePosition();
 		Vec3 direction = player.getLookAngle();
-		if (level.clip(new ClipContext(eye, eye.add(direction.scale(5.0)), ClipContext.Block.OUTLINE,
+		if (level.clip(new ClipContext(eye, eye.add(direction.scale(NumericSetting.FIRE_CHARGE_CLEARANCE.get())), ClipContext.Block.OUTLINE,
 				ClipContext.Fluid.NONE, player)).getType() != HitResult.Type.MISS) {
 			return InteractionResult.CONSUME;
 		}
@@ -123,9 +124,9 @@ public final class SoulFireCharges {
 				shoot(serverLevel, player, eye.add(direction), direction);
 			} else {
 				LargeFireball fireball = new LargeFireball(serverLevel, player, direction, 0);
-				fireball.accelerationPower = 0.03;
+				fireball.accelerationPower = NumericSetting.FIRE_CHARGE_ACCELERATION.get();
 				fireball.setPos(eye.add(direction));
-				fireball.setDeltaMovement(direction.scale(0.65));
+				fireball.setDeltaMovement(direction.scale(NumericSetting.FIRE_CHARGE_SPEED.get()));
 				fireball.addTag(Patchwork.THROWN_FIRE_CHARGE_TAG);
 				fireball.setItem(stack);
 				if (!serverLevel.addFreshEntity(fireball)) {
@@ -136,7 +137,7 @@ public final class SoulFireCharges {
 					SoundSource.PLAYERS, 1.0F, 1.0F);
 		}
 		player.awardStat(Stats.ITEM_USED.get(stack.getItem()));
-		player.getCooldowns().addCooldown(stack, 30);
+		player.getCooldowns().addCooldown(stack, NumericSetting.FIRE_CHARGE_COOLDOWN.intValue());
 		stack.consume(1, player);
 		return InteractionResult.SUCCESS;
 	}

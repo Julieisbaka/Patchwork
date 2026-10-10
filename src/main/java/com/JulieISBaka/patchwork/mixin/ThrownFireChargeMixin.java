@@ -1,6 +1,7 @@
 package com.JulieISBaka.patchwork.mixin;
 
 import com.JulieISBaka.patchwork.Patchwork;
+import com.JulieISBaka.patchwork.NumericSetting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
@@ -25,7 +26,8 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public class ThrownFireChargeMixin {
 	@ModifyConstant(method = "onHitEntity", constant = @Constant(floatValue = 6.0F))
 	private float patchwork$directDamage(float damage) {
-		return ((LargeFireball) (Object) this).entityTags().contains(Patchwork.THROWN_FIRE_CHARGE_TAG) ? 2.0F : damage;
+		return ((LargeFireball) (Object) this).entityTags().contains(Patchwork.THROWN_FIRE_CHARGE_TAG)
+				? NumericSetting.FIRE_CHARGE_DAMAGE.floatValue() : damage;
 	}
 
 	@Redirect(method = "onHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;explode(Lnet/minecraft/world/entity/Entity;DDDFZLnet/minecraft/world/level/Level$ExplosionInteraction;)V"))
