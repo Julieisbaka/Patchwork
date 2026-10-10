@@ -27,6 +27,18 @@ ignoring capitalization and surrounding whitespace. Values such as `yes`,
 Its default is 32 blocks. Every boolean defaults to `true` except
 `creeperChainReactions`, which defaults to `false`.
 
+Gameplay tuning values use the validated ranges and units in the
+[configuration guide](configuration.md). Tick counts and other integer
+settings reject fractional values. Decimal settings accept finite numbers;
+NaN and infinity are invalid. Spider web minimum distance must not exceed
+maximum distance. All tuning defaults retain the previous gameplay values.
+
+Numeric definitions share a single key/default/range catalog used by file
+loading, saving, the Mod Menu editor, and gameplay. Loaded numeric maps are
+immutable. Missing keys are added only after the complete configuration has
+passed validation, so invalid numeric values or distance combinations do not
+rewrite the original file. Unknown properties survive migration and saving.
+
 ## Applying changes
 
 Restart the affected game or server after editing settings. Editing the file
@@ -55,9 +67,10 @@ wolves or changing the server's banner interactions.
 | `breezeTorchExtinguishing` | Requires `breezeShockwave` to be enabled for Breeze gusts to extinguish torches and lanterns. |
 | `callHornRecallRadius` | Controls recall distance only when `callHornRecall` is enabled. |
 | `ownerSweepProtection` | Protects the attacking owner's wolves, cats, and tamed rabbits from sword sweep damage; it does not disable direct attacks. |
-| `mobGriefing` | Governs Enderman defensive placement, Spider webs, Breeze extinguishing, and Soul Golem projectile block ignition. |
+| `animalDroppedFood` | Enables seeking/eating dropped breeding food; its radius, eating distance, timing, and movement speed are configurable. |
+| `mobGriefing` | Governs animal dropped-food feeding, Enderman defensive placement, Spider webs, Breeze extinguishing, and Soul Golem projectile block ignition. |
 | `spiderCeilingClimbing` | Controls spider and cave-spider ceiling adhesion and traversal. |
-| `caveSpiderNausea` | Controls the cave spider's 20% melee nausea chance. |
+| `caveSpiderNausea` | Enables melee nausea using the configured chance and duration (defaults: 20%, 100 ticks). |
 | `patchworkAdvancements` | Controls Patchwork advancement resources and gameplay-triggered custom awards. |
 
 Player-thrown Soul Fire Charges can still ignite blocks when `mobGriefing` is

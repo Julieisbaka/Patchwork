@@ -66,6 +66,11 @@ directories with separate configurations.
   non-default radius and `animalDroppedFood=false` in separate run directories.
   Gameplay tests with exact historical damage/timing expectations otherwise
   require the default numeric values.
+- Client config-screen coverage checks every numeric input and translation,
+  invalid fields and paired distances disabling Save, correction re-enabling
+  Save, fractional value persistence, reopening, and Cancel discarding edits.
+  Add `-Dpatchwork.configScreenTestOnly=true` to a client GameTest run to skip
+  the other client tests. The test restores the original config afterward.
 - Rabbit carrot taming in either hand, baby/Creative behavior, exclusive owner
   commands, unchanged breeding, ownership/stay save-load and legacy wild saves,
   actual stay/follow movement, owner avoidance, safe/unsupported/leashed teleport
