@@ -28,6 +28,8 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.OptionsList;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.components.events.ContainerEventHandler;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.core.BlockPos;
@@ -58,13 +60,24 @@ public class PatchworkClientGameTests implements FabricClientGameTest {
 
 	private static void testConfigurationScreen(ClientGameTestContext context) {
 		context.runOnClient(client -> {
+			var original = PatchworkConfig.read();
+			try {
+				verifyConfigurationScreen(client);
+			} finally {
+				PatchworkConfig.save(original);
+			}
+		});
+	}
+
+	private static void verifyConfigurationScreen(net.minecraft.client.Minecraft client) {
 			Screen parent = new Screen(Component.literal("Configuration test")) {
 			};
 			PatchworkConfigScreen screen = new PatchworkConfigScreen(parent);
 			client.gui.setScreen(screen);
 			OptionsList options = screen.children().stream().filter(OptionsList.class::isInstance)
 					.map(OptionsList.class::cast).findFirst().orElseThrow();
-			List<EditBox> inputs = options.children().stream().flatMap(entry -> entry.children().stream())
+			List<? extends ContainerEventHandler> entries = options.children();
+			List<EditBox> inputs = entries.stream().flatMap(entry -> entry.children().stream())
 					.filter(EditBox.class::isInstance).map(EditBox.class::cast).toList();
 			if (inputs.size() != NumericSetting.values().length + 1) {
 				throw new AssertionError("Configuration screen is missing numeric inputs");
@@ -93,14 +106,18 @@ public class PatchworkClientGameTests implements FabricClientGameTest {
 			}
 			EditBox minimum = inputs.get(NumericSetting.SPIDER_WEB_MIN_DISTANCE.ordinal() + 1);
 			String originalMinimum = minimum.getValue();
-			minimum.setValue("64");
+			EditBox maximum = inputs.get(NumericSetting.SPIDER_WEB_MAX_DISTANCE.ordinal() + 1);
+			String originalMaximum = maximum.getValue();
+			maximum.setValue("8");
+			minimum.setValue("9");
 			if (save.active) {
 				throw new AssertionError("Invalid paired Spider distances did not disable Save");
 			}
 			minimum.setValue(originalMinimum);
+			maximum.setValue(originalMaximum);
 			EditBox animalRadius = inputs.get(NumericSetting.ANIMAL_FOOD_SEARCH_RADIUS.ordinal() + 1);
 			animalRadius.setValue("16.5");
-			save.onPress();
+			save.onPress(new KeyEvent(40, 0, 0));
 			if (PatchworkConfig.read().numericValues().get(NumericSetting.ANIMAL_FOOD_SEARCH_RADIUS) != 16.5) {
 				throw new AssertionError("Config screen did not persist a fractional food radius");
 			}
@@ -108,7 +125,8 @@ public class PatchworkClientGameTests implements FabricClientGameTest {
 			client.gui.setScreen(reopened);
 			OptionsList reloadedOptions = reopened.children().stream().filter(OptionsList.class::isInstance)
 					.map(OptionsList.class::cast).findFirst().orElseThrow();
-			List<EditBox> reloadedInputs = reloadedOptions.children().stream()
+			List<? extends ContainerEventHandler> reloadedEntries = reloadedOptions.children();
+			List<EditBox> reloadedInputs = reloadedEntries.stream()
 					.flatMap(entry -> entry.children().stream()).filter(EditBox.class::isInstance)
 					.map(EditBox.class::cast).toList();
 			EditBox reloadedRadius = reloadedInputs.get(NumericSetting.ANIMAL_FOOD_SEARCH_RADIUS.ordinal() + 1);
@@ -121,7 +139,6 @@ public class PatchworkClientGameTests implements FabricClientGameTest {
 				throw new AssertionError("Cancelling the config screen saved unsaved edits");
 			}
 			client.gui.setScreen(parent);
-		});
 	}
 
 	private static void testNewLightVariants(ClientGameTestContext context) {
