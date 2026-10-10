@@ -154,7 +154,8 @@ starting successfully is not by itself evidence that the selected tests ran.
   waterlogged campfire ignition rejection, drops, and reversible crafting
   conversions. Candles are omitted because vanilla candles are already unlit
   by default.
-  Client checks cover all new block states and item models, vanilla texture
+  Client checks cover all new block states and item models, vanilla campfire
+  inventory sprites, distinct oxidation-colored campfire flames, texture
   silhouettes, animation-sheet dimensions, and an in-game light-family screenshot.
 - All ten unlit lantern conversions, relighting/drops, waterlogging,
   weathering/waxing/scraping mappings, and Breeze extinguishing.

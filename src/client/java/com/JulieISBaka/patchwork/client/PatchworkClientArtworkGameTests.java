@@ -164,52 +164,6 @@ final class PatchworkClientArtworkGameTests {
 					lanterns.add(UnlitLanterns.COPPER_LANTERN.weathering().pick(age));
 				}
 
-				/** Ensures each copper oxidation stage visibly changes the campfire flame color. */
-				private static void verifyCampfireOxidationTextures(
-						net.minecraft.server.packs.resources.ResourceManager resources) throws IOException {
-					int[][] colors = new int[4][3];
-					String[] stages = { "copper", "exposed_copper", "weathered_copper", "oxidized_copper" };
-					for (int stage = 0; stage < stages.length; stage++) {
-						var resource = resources.getResource(Patchwork.id(
-								"textures/block/" + stages[stage] + "_campfire_fire.png")).orElseThrow();
-						try (var stream = resource.open()) {
-							var image = ImageIO.read(stream);
-							if (image == null) {
-								throw new AssertionError("Could not decode copper campfire flame texture: " + stages[stage]);
-							}
-							int count = 0;
-							for (int y = 0; y < image.getHeight(); y++) {
-								for (int x = 0; x < image.getWidth(); x++) {
-									int pixel = image.getRGB(x, y);
-									if ((pixel >>> 24) != 0) {
-										colors[stage][0] += (pixel >> 16) & 255;
-										colors[stage][1] += (pixel >> 8) & 255;
-										colors[stage][2] += pixel & 255;
-										count++;
-									}
-								}
-							}
-							if (count == 0) {
-								throw new AssertionError("Copper campfire flame texture is empty: " + stages[stage]);
-							}
-							for (int channel = 0; channel < 3; channel++) {
-								colors[stage][channel] /= count;
-							}
-						}
-					}
-					for (int first = 0; first < colors.length; first++) {
-						for (int second = first + 1; second < colors.length; second++) {
-							int red = colors[first][0] - colors[second][0];
-							int green = colors[first][1] - colors[second][1];
-							int blue = colors[first][2] - colors[second][2];
-							if (red * red + green * green + blue * blue < 400) {
-								throw new AssertionError("Copper campfire oxidation stages share indistinguishable flame colors: "
-										+ stages[first] + " and " + stages[second]);
-							}
-						}
-					}
-				}
-
 				for (int index = 0; index < lanterns.size(); index++) {
 					level.setBlockAndUpdate(new BlockPos(index * 2 - 5, 101, -2),
 							lanterns.get(index).defaultBlockState());
@@ -227,6 +181,52 @@ final class PatchworkClientArtworkGameTests {
 			context.waitTicks(10);
 			world.getConnection().waitForChunksRender();
 			context.takeScreenshot("original-lantern-and-copper-torch-artwork");
+		}
+	}
+
+	/** Ensures each copper oxidation stage visibly changes the campfire flame color. */
+	private static void verifyCampfireOxidationTextures(
+			net.minecraft.server.packs.resources.ResourceManager resources) throws IOException {
+		int[][] colors = new int[4][3];
+		String[] stages = { "copper", "exposed_copper", "weathered_copper", "oxidized_copper" };
+		for (int stage = 0; stage < stages.length; stage++) {
+			var resource = resources.getResource(Patchwork.id(
+					"textures/block/" + stages[stage] + "_campfire_fire.png")).orElseThrow();
+			try (var stream = resource.open()) {
+				var image = ImageIO.read(stream);
+				if (image == null) {
+					throw new AssertionError("Could not decode copper campfire flame texture: " + stages[stage]);
+				}
+				int count = 0;
+				for (int y = 0; y < image.getHeight(); y++) {
+					for (int x = 0; x < image.getWidth(); x++) {
+						int pixel = image.getRGB(x, y);
+						if ((pixel >>> 24) != 0) {
+							colors[stage][0] += (pixel >> 16) & 255;
+							colors[stage][1] += (pixel >> 8) & 255;
+							colors[stage][2] += pixel & 255;
+							count++;
+						}
+					}
+				}
+				if (count == 0) {
+					throw new AssertionError("Copper campfire flame texture is empty: " + stages[stage]);
+				}
+				for (int channel = 0; channel < 3; channel++) {
+					colors[stage][channel] /= count;
+				}
+			}
+		}
+		for (int first = 0; first < colors.length; first++) {
+			for (int second = first + 1; second < colors.length; second++) {
+				int red = colors[first][0] - colors[second][0];
+				int green = colors[first][1] - colors[second][1];
+				int blue = colors[first][2] - colors[second][2];
+				if (red * red + green * green + blue * blue < 400) {
+					throw new AssertionError("Copper campfire oxidation stages share indistinguishable flame colors: "
+							+ stages[first] + " and " + stages[second]);
+				}
+			}
 		}
 	}
 
