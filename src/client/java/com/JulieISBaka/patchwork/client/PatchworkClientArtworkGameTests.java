@@ -127,34 +127,8 @@ final class PatchworkClientArtworkGameTests {
 							}
 						}
 						if (name.equals("entity/soul_golem")) {
-							for (int y = 16; y < 36; y++) {
-								int start = y < 26 ? 10 : 0;
-								int end = y < 26 ? 30 : 40;
-								for (int x = start; x < end; x++) {
-									if ((image.getRGB(x, y) >>> 24) != 255) {
-										throw new AssertionError(
-												"Soul Golem torso UV is transparent at " + x + "," + y);
-									}
-								}
-							}
-							for (int y = 36; y < 48; y++) {
-								for (int x = 0; x < 48; x++) {
-									if ((image.getRGB(x, y) >>> 24) != 255) {
-										throw new AssertionError(
-												"Soul Golem lower-body UV is transparent at " + x + "," + y);
-									}
-								}
-							}
-							for (int[] soulMark : new int[][] { { 13, 30 }, { 14, 30 }, { 24, 33 }, { 25, 33 } }) {
-								if (image.getRGB(soulMark[0], soulMark[1]) != 0xFF52D3BE) {
-									throw new AssertionError("Soul Golem base is missing its Soul Sand markings");
-								}
-							}
-							for (int[] soulMark : new int[][] { { 13, 42 }, { 14, 42 }, { 24, 45 }, { 25, 45 } }) {
-								if (image.getRGB(soulMark[0], soulMark[1]) != 0xFF52D3BE) {
-									throw new AssertionError("Soul Golem lower body is missing its Soul Sand markings");
-								}
-							}
+							verifySoulGolemBodyTexture(image, 16, 10);
+							verifySoulGolemBodyTexture(image, 36, 12);
 						}
 					} catch (IOException exception) {
 						throw new AssertionError("Could not decode texture: " + name, exception);
@@ -321,6 +295,27 @@ final class PatchworkClientArtworkGameTests {
 					throw new AssertionError("Copper oxidation texture is not progressively dimmer: " + id);
 				}
 				previousBrightness = brightness;
+			}
+		}
+	}
+
+	/** Checks all six cube faces, including the lower-body sides at rows 48 through 59. */
+	private static void verifySoulGolemBodyTexture(java.awt.image.BufferedImage image, int textureY, int size) {
+		if (image.getRGB(13, 30) != 0xFF52D3BE || image.getRGB(14, 30) != 0xFF52D3BE) {
+			throw new AssertionError("Soul Golem torso is missing its Soul Sand markings");
+		}
+		for (int[] face : new int[][] { { size, textureY }, { size * 2, textureY },
+				{ 0, textureY + size }, { size, textureY + size },
+				{ size * 2, textureY + size }, { size * 3, textureY + size } }) {
+			for (int y = 0; y < size; y++) {
+				for (int x = 0; x < size; x++) {
+					int expected = image.getRGB(10 + x * 10 / size, 26 + y * 10 / size);
+					int actual = image.getRGB(face[0] + x, face[1] + y);
+					if ((actual >>> 24) != 255 || actual != expected) {
+						throw new AssertionError("Soul Golem face is missing its Soul Sand artwork at "
+								+ (face[0] + x) + "," + (face[1] + y));
+					}
+				}
 			}
 		}
 	}

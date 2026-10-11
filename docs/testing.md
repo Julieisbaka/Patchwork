@@ -115,13 +115,17 @@ starting successfully is not by itself evidence that the selected tests ran.
   drops, magenta dye recipe, actual feature placement, and biome registration
   in flower forests/meadows but not plains. Select these with `patchwork:*garden*`.
 - Client garden block/item models, supplied texture dimensions/transparency,
-  all original replacement texture resources, opaque Soul Golem torso UVs,
+  all original replacement texture resources, opaque Soul Golem body UVs
+  and Soul Sand artwork on all six faces of both body cubes (including the
+  lower-body sides at texture rows 48 through 59),
   and placed wax/flower/pot and lantern/copper-torch screenshots.
   Wax, Paeonia, charcoal, and soul pumpkin artwork is preserved. The regular
   unlit torch is losslessly reduced to 16x16, occupying the two central UV
   columns from row 6 through row 15. Other variants retain vanilla silhouettes,
   UV layout, metalwork, and wood grain. Unlit lanterns change only the flame,
-  while soul charges and the golem retain vanilla detail with changed colors.
+  while soul charges retain vanilla detail with changed colors. The golem keeps
+  its head and wooden arms, with the existing Soul Sand artwork covering both
+  body cubes instead of plain brown faces.
 
 - Soul Golem build combinations, invalid builds, torch lighting, head placement,
   spawn eggs, owner assignment, owner combat assistance/defense, ranged impact,
