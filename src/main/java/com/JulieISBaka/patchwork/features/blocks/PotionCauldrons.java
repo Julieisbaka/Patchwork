@@ -2,7 +2,7 @@ package com.JulieISBaka.patchwork.features.blocks;
 
 import com.JulieISBaka.patchwork.Patchwork;
 import com.JulieISBaka.patchwork.config.PatchworkConfig;
-import com.JulieISBaka.patchwork.features.items.PotionArrowItemAccessor;
+import com.JulieISBaka.patchwork.mixins.items.PotionArrowItemAccessor;
 import java.util.Set;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;

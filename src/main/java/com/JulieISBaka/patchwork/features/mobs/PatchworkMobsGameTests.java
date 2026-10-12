@@ -1,11 +1,13 @@
 package com.JulieISBaka.patchwork.features.mobs;
 
+import com.JulieISBaka.patchwork.mixins.mobs.RaidAccessor;
+
 import com.JulieISBaka.patchwork.Patchwork;
 import com.JulieISBaka.patchwork.config.PatchworkConfig;
 import com.JulieISBaka.patchwork.features.blocks.PumpkinLanterns;
 import com.JulieISBaka.patchwork.features.blocks.UnlitLanterns;
 import com.JulieISBaka.patchwork.features.blocks.UnlitTorches;
-import com.JulieISBaka.patchwork.features.combat.PlayerSweepAccessor;
+import com.JulieISBaka.patchwork.mixins.combat.PlayerSweepAccessor;
 import com.JulieISBaka.patchwork.features.items.SoulFireCharges;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.core.BlockPos;

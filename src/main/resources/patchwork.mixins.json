@@ -1,6 +1,6 @@
 {
 	"required": true,
-	"package": "com.JulieISBaka.patchwork.features",
+	"package": "com.JulieISBaka.patchwork.mixins",
 	"compatibilityLevel": "JAVA_25",
 	"mixins": [
 		"items.BannerDuplicateRecipeMixin",

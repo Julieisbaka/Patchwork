@@ -1,5 +1,7 @@
 package com.JulieISBaka.patchwork.features.gameplay;
 
+import com.JulieISBaka.patchwork.mixins.gameplay.ExperienceOrbAccessor;
+
 import com.JulieISBaka.patchwork.Patchwork;
 import com.JulieISBaka.patchwork.config.PatchworkConfig;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;

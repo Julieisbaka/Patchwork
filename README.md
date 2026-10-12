@@ -119,15 +119,18 @@ Patchwork currently supports **Minecraft Java Edition 26.3**. You will need:
 
 - Java 25 or newer
 - Fabric Loader 0.19.5 or newer
-- Fabric API for Minecraft 26.3
+- Fabric API 0.161.0+26.3
 
-1. Install Fabric Loader for Minecraft 26.3.
+1. Install [Fabric Loader](https://fabricmc.net/use/installer/) for Minecraft
+   26.3.
 2. Download the matching Patchwork jar from the
    [GitHub releases page](https://github.com/Julieisbaka/Patchwork/releases)
    and put it in your instance's `mods` folder.
-3. Put the matching Fabric API jar in the same `mods` folder.
-4. Launch the Fabric profile. Add Mod Menu if you want to change settings
-   from the in-game Mods screen; it is optional.
+3. Download [Fabric API](https://modrinth.com/mod/fabric-api) for Minecraft
+   26.3 and put it in the same `mods` folder.
+4. Launch the Fabric profile. Add [Mod Menu](https://modrinth.com/mod/modmenu)
+   21.0.0 or newer if you want to change settings from the in-game Mods
+   screen; it is optional.
 
 For multiplayer, install Patchwork and its required dependencies on the server
 and each player's client. The server's settings control gameplay for everyone;

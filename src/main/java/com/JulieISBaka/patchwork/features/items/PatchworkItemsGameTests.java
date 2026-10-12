@@ -1,5 +1,7 @@
 package com.JulieISBaka.patchwork.features.items;
 
+import com.JulieISBaka.patchwork.mixins.items.PotionArrowItemAccessor;
+
 import com.JulieISBaka.patchwork.Patchwork;
 import com.JulieISBaka.patchwork.config.PatchworkConfig;
 import com.JulieISBaka.patchwork.features.blocks.PotionCauldronEntity;
