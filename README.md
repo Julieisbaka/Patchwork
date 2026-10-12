@@ -44,7 +44,7 @@ See the [configuration guide](docs/configuration.md) for defaults and ranges.
 - **Garden and building blocks:** Craft reversible wax blocks from honeycomb,
   find Paeonia in flower forests and meadows, and use it in flower pots or to
   craft magenta dye. Charcoal blocks provide a compact fuel source.
-- **Woodcutter:** Process logs into planks, and planks into stairs, slabs,
+- **Saw:** Process logs into planks, and planks into stairs, slabs,
   fences, gates, doors, trapdoors, buttons, pressure plates, or signs in a
   stonecutter-style workstation. Modpacks can add variants to the
   `patchwork:woodcutting/<wood>_logs` and
@@ -106,6 +106,12 @@ Vanilla campfire and soul campfire drops are otherwise unchanged.
   riding zombie horses. Wither damage can turn regular skeletons into wither
   skeletons; pillagers can fire from 15 blocks, and witches can use jump boost
   and leap when attacking elevated targets.
+- **Boss encounters:** Ender dragons have 500 health, increased knockback
+  resistance, and 50% faster flight. Their fireballs deal direct impact damage;
+  every 30 seconds the dragon enrages nearby Endermen on the central island.
+  Guarded End Crystals receive obsidian reinforcement, their natural explosions
+  are stronger, and crystal explosions no longer hurt the dragon. The Wither
+  periodically summons up to four nearby Wither Skeletons to attack its target.
 - **Anvils and terrain:** Renaming an item preserves its prior-work repair cost.
   Mountain steep-surface rules now recognize slopes facing all directions
   (MC-258859).
