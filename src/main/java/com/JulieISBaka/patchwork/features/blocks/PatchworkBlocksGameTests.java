@@ -24,6 +24,7 @@ import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.CarvedPumpkinBlock;
 import net.minecraft.world.level.block.RedstoneTorchBlock;
 import net.minecraft.world.level.block.WallTorchBlock;
+import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -46,6 +47,17 @@ public final class PatchworkBlocksGameTests {
 		test.assertTrue(logRecipes.entries().stream().anyMatch(entry -> entry.recipe().recipe()
 				.map(holder -> holder.id().identifier().equals(Patchwork.id("woodcutter/oak_planks_from_logs")))
 				.orElse(false)), "Oak log to planks recipe was not loaded");
+		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		WoodcutterMenu menu = new WoodcutterMenu(0, player.getInventory(),
+				ContainerLevelAccess.create(test.getLevel(), test.absolutePos(CENTER)));
+		menu.container.setItem(0, new ItemStack(Items.OAK_PLANKS));
+		menu.slotsChanged(menu.container);
+		test.assertTrue(menu.getVisibleRecipes().entries().stream().anyMatch(entry -> entry.recipe().recipe()
+				.map(holder -> holder.id().identifier().equals(Patchwork.id("woodcutter/oak_stairs"))).orElse(false)),
+				"Saw menu did not display the oak stairs recipe");
+		test.assertTrue(menu.clickMenuButton(player, 0), "Saw menu did not select the oak stairs recipe");
+		test.assertTrue(menu.getSlot(1).getItem().is(Items.OAK_STAIRS),
+				"Saw menu selection did not produce oak stairs");
 		test.succeed();
 	}
 

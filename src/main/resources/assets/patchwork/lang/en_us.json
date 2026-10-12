@@ -1,7 +1,7 @@
 {
 	"block.patchwork.wax_block": "Wax Block",
-	"block.patchwork.woodcutter": "Woodcutter",
-	"container.patchwork.woodcutter": "Woodcutter",
+	"block.patchwork.woodcutter": "Saw",
+	"container.patchwork.woodcutter": "Saw",
 	"block.patchwork.paeonia": "Paeonia",
 	"block.patchwork.potted_paeonia": "Potted Paeonia",
 	"patchwork.config.title": "Patchwork Settings",

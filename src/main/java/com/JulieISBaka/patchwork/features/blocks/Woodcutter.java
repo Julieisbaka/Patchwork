@@ -11,6 +11,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
 
@@ -21,7 +22,8 @@ public final class Woodcutter {
 			Patchwork.id("woodcutter"));
 
 	public static final Block BLOCK = Registry.register(BuiltInRegistries.BLOCK, BLOCK_KEY,
-			new WoodcutterBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.STONECUTTER).setId(BLOCK_KEY)));
+			new WoodcutterBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.STONECUTTER).sound(SoundType.WOOD)
+					.setId(BLOCK_KEY)));
 	public static final Item ITEM = Registry.register(BuiltInRegistries.ITEM, ITEM_KEY,
 			new BlockItem(BLOCK, new Item.Properties().setId(ITEM_KEY).useBlockDescriptionPrefix()));
 	public static final MenuType<WoodcutterMenu> MENU_TYPE = Registry.register(BuiltInRegistries.MENU, MENU_KEY,

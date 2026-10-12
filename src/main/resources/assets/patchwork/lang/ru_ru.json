@@ -1,7 +1,7 @@
 {
 	"block.patchwork.wax_block": "Восковой блок",
-	"block.patchwork.woodcutter": "?????????",
-	"container.patchwork.woodcutter": "?????????",
+	"block.patchwork.woodcutter": "Пила",
+	"container.patchwork.woodcutter": "Пила",
 	"block.patchwork.paeonia": "Пион",
 	"block.patchwork.potted_paeonia": "Пион в горшке",
 	"patchwork.config.title": "Настройки Patchwork",

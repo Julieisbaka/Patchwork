@@ -1,7 +1,7 @@
 {
 	"block.patchwork.wax_block": "Bloque de cera",
-	"block.patchwork.woodcutter": "Cortadora de madera",
-	"container.patchwork.woodcutter": "Cortadora de madera",
+	"block.patchwork.woodcutter": "Sierra",
+	"container.patchwork.woodcutter": "Sierra",
 	"block.patchwork.paeonia": "Peonía",
 	"block.patchwork.potted_paeonia": "Peonía en maceta",
 	"patchwork.config.title": "Opciones de Patchwork",

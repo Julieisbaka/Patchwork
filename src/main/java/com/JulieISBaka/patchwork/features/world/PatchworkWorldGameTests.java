@@ -14,6 +14,17 @@ public final class PatchworkWorldGameTests {
 	private static final BlockPos CENTER = new BlockPos(3, 1, 3);
 
 	@GameTest
+	public void twoByTwoTreeBaseOffsetsDoNotStartAtMinusOne(GameTestHelper test) {
+		test.assertTrue(TreeFeatureOffsetFix.correctStartOffset(-1, 1) == 0,
+				"A one-block-wide trunk retained the -1 starting offset");
+		test.assertTrue(TreeFeatureOffsetFix.correctStartOffset(0, 1) == 0,
+				"Zero starting offset changed for a one-block-wide trunk");
+		test.assertTrue(TreeFeatureOffsetFix.correctStartOffset(-1, 2) == -1,
+				"Wide trunk starting offset changed unexpectedly");
+		test.succeed();
+	}
+
+	@GameTest
 	public void snowAccumulatesUnderAtMostTwoLeafLayers(GameTestHelper test) {
 		var level = (net.minecraft.server.level.ServerLevel) test.getLevel();
 		BlockPos target = test.absolutePos(CENTER);

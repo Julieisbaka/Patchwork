@@ -1,7 +1,7 @@
 {
 	"block.patchwork.wax_block": "Wachsblock",
-	"block.patchwork.woodcutter": "Holzschneider",
-	"container.patchwork.woodcutter": "Holzschneider",
+	"block.patchwork.woodcutter": "Säge",
+	"container.patchwork.woodcutter": "Säge",
 	"block.patchwork.paeonia": "Pfingstrose",
 	"block.patchwork.potted_paeonia": "Eingetopfte Pfingstrose",
 	"patchwork.config.title": "Patchwork-Einstellungen",

@@ -2,11 +2,13 @@ package com.JulieISBaka.patchwork.mixins.mobs;
 
 import com.JulieISBaka.patchwork.config.NumericSetting;
 import com.JulieISBaka.patchwork.config.PatchworkConfig;
+import com.JulieISBaka.patchwork.features.mobs.WitherMinions;
 import java.util.Objects;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
@@ -33,6 +35,19 @@ public abstract class WitherBossMixin {
 	private void patchwork$updateHealthForDifficulty(ServerLevel level, CallbackInfo ci) {
 		if (PatchworkConfig.settings().witherDifficultyHealth()) {
 			this.patchwork$updateHealth(level.getDifficulty());
+		}
+	}
+
+	@Inject(method = "customServerAiStep", at = @At("TAIL"))
+	private void patchwork$summonWitherSkeletons(ServerLevel level, CallbackInfo ci) {
+		WitherBoss wither = (WitherBoss) (Object) this;
+		if (wither.tickCount % 600 != 0) {
+			return;
+		}
+
+		LivingEntity target = wither.getTarget();
+		if (target != null && target.isAlive()) {
+			WitherMinions.summon(level, wither, target);
 		}
 	}
 
