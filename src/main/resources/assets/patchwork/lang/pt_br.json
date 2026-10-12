@@ -1,5 +1,7 @@
 {
 	"block.patchwork.wax_block": "Bloco de cera",
+	"block.patchwork.woodcutter": "Cortador de madeira",
+	"container.patchwork.woodcutter": "Cortador de madeira",
 	"block.patchwork.paeonia": "Peônia",
 	"block.patchwork.potted_paeonia": "Peônia no vaso",
 	"patchwork.config.title": "Configurações do Patchwork",

@@ -1,5 +1,7 @@
 {
 	"block.patchwork.wax_block": "Bloc de cire",
+	"block.patchwork.woodcutter": "Taille-bois",
+	"container.patchwork.woodcutter": "Taille-bois",
 	"block.patchwork.paeonia": "Pivoine",
 	"block.patchwork.potted_paeonia": "Pivoine en pot",
 	"patchwork.config.title": "Paramètres de Patchwork",

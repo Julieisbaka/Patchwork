@@ -1,0 +1,8 @@
+{
+	"type": "minecraft:stonecutting",
+	"ingredient": "#patchwork:woodcutting/poplar_planks",
+	"result": {
+		"id": "minecraft:poplar_pressure_plate",
+		"count": 1
+	}
+}

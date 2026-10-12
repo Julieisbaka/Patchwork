@@ -32,6 +32,7 @@
 		"RabbitMixin",
 		"RabbitAvoidOwnerMixin",
 		"ShulkerVariantAccessor",
+		"StonecutterMenuMixin",
 		"SpiderCeilingMixin",
 		"SlimeballSnowballMixin",
 		"SlimeSplitMixin",

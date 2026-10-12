@@ -1,0 +1,17 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"key": {
+		"P": "#minecraft:planks",
+		"S": "minecraft:stick",
+		"I": "minecraft:iron_ingot"
+	},
+	"pattern": [
+		" P ",
+		"SIS",
+		" P "
+	],
+	"result": {
+		"id": "patchwork:woodcutter"
+	}
+}

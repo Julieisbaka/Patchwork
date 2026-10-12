@@ -1,0 +1,19 @@
+{
+	"variants": {
+		"facing=east": {
+			"model": "patchwork:block/woodcutter",
+			"y": 90
+		},
+		"facing=north": {
+			"model": "patchwork:block/woodcutter"
+		},
+		"facing=south": {
+			"model": "patchwork:block/woodcutter",
+			"y": 180
+		},
+		"facing=west": {
+			"model": "patchwork:block/woodcutter",
+			"y": 270
+		}
+	}
+}

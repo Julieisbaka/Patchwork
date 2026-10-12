@@ -1,0 +1,8 @@
+{
+	"type": "minecraft:stonecutting",
+	"ingredient": "#patchwork:woodcutting/jungle_planks",
+	"result": {
+		"id": "minecraft:jungle_trapdoor",
+		"count": 1
+	}
+}

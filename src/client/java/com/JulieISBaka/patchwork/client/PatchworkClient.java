@@ -4,17 +4,21 @@ import com.JulieISBaka.patchwork.PotionCauldronEntity;
 import com.JulieISBaka.patchwork.PotionCauldrons;
 import com.JulieISBaka.patchwork.SoulGolems;
 import com.JulieISBaka.patchwork.SoulFireCharges;
+import com.JulieISBaka.patchwork.Woodcutter;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockColorRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.LivingEntityRenderLayerRegistrationCallback;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.client.renderer.entity.WolfRenderer;
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.gui.screens.inventory.StonecutterScreen;
 import net.minecraft.world.item.alchemy.PotionContents;
 
 public class PatchworkClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
+		MenuScreens.register(Woodcutter.MENU_TYPE, StonecutterScreen::new);
 		EntityRenderers.register(SoulGolems.TYPE, SoulGolemRenderer::new);
 		EntityRenderers.register(SoulFireCharges.PROJECTILE,
 				context -> new ThrownItemRenderer<>(context, 0.5F, true));

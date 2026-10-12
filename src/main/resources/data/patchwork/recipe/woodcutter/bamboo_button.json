@@ -1,0 +1,8 @@
+{
+	"type": "minecraft:stonecutting",
+	"ingredient": "#patchwork:woodcutting/bamboo_planks",
+	"result": {
+		"id": "minecraft:bamboo_button",
+		"count": 1
+	}
+}

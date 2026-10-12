@@ -41,6 +41,10 @@ See the [configuration guide](docs/configuration.md) for defaults and ranges.
 - **Garden and building blocks:** Craft reversible wax blocks from honeycomb,
   find Paeonia in flower forests and meadows, and use it in flower pots or to
   craft magenta dye. Charcoal blocks provide a compact fuel source.
+- **Woodcutter:** Process logs into planks, and planks into stairs, slabs,
+  fences, gates, doors, trapdoors, buttons, pressure plates, or signs in a
+  stonecutter-style workstation. Modpacks can add wood variants to Patchwork's
+  per-wood input tags.
 - **Crafting and decoration:** Craft chainmail armor, add up to nine banner
   patterns, dye shulkers, and wash wool, terracotta, and stained glass in
   cauldrons.

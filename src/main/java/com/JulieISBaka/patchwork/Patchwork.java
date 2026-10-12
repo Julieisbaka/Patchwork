@@ -85,6 +85,7 @@ public class Patchwork implements ModInitializer {
 		PotionCauldrons.register();
 		CharcoalBlocks.register();
 		GardenBlocks.register();
+		Woodcutter.register();
 		SoulFireCharges.register();
 		SoulGolems.register();
 		PumpkinLanterns.register();
@@ -103,6 +104,7 @@ public class Patchwork implements ModInitializer {
 			}
 		});
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register(output -> {
+			output.accept(Woodcutter.ITEM);
 			if (PatchworkConfig.settings().unlitLights()) {
 				output.insertAfter(Items.TORCH, UnlitTorches.TORCH_ITEM);
 				output.insertAfter(Items.SOUL_TORCH, UnlitTorches.SOUL_TORCH_ITEM);
