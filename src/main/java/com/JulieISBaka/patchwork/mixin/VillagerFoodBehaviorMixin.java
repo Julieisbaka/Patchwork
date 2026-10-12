@@ -20,7 +20,7 @@ public abstract class VillagerFoodBehaviorMixin {
 	@Inject(method = "tick", at = @At("TAIL"))
 	private void patchwork$eatToHealAndWarnWhenHungry(CallbackInfo ci) {
 		Villager villager = (Villager) (Object) this;
-		if (!(villager.level() instanceof ServerLevel level) || villager.isBaby()) {
+		if (!(villager.level() instanceof ServerLevel level)) {
 			return;
 		}
 		boolean hasFood = VillagerFoodBehavior.hasFood(villager);

@@ -155,8 +155,7 @@ public class PatchworkGameTests {
 		test.assertTrue(goal.canUse(), "Chicken jockey did not target the nearby player");
 		float health = player.getHealth();
 		goal.tick();
-		test.assertTrue(player.getHealth() < health && player.isOnFire(),
-				"Chicken jockey did not damage and ignite the nearby player");
+		test.assertTrue(player.getHealth() < health, "Chicken jockey did not damage the nearby player");
 		test.succeed();
 	}
 

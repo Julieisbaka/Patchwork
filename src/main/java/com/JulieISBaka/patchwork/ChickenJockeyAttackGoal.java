@@ -55,7 +55,6 @@ public final class ChickenJockeyAttackGoal extends Goal {
 		} else if (this.chicken.distanceToSqr(this.target) < 2.25
 				&& this.chicken.level() instanceof ServerLevel level
 				&& this.target.hurtServer(level, level.damageSources().mobAttack(this.chicken), 2.0F)) {
-			this.target.igniteForSeconds(2.0F);
 			this.attackCooldown = 20;
 		}
 	}

@@ -5,6 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.monster.Blaze;
+import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.level.block.Blocks;
 
 public final class BlazeFireSeekingGoal extends Goal {
@@ -12,6 +13,7 @@ public final class BlazeFireSeekingGoal extends Goal {
 	private BlockPos target;
 	private int healCooldown;
 	private int pathRecalculationCooldown;
+	private int searchCooldown;
 
 	public BlazeFireSeekingGoal(Blaze blaze) {
 		this.blaze = blaze;
@@ -24,7 +26,14 @@ public final class BlazeFireSeekingGoal extends Goal {
 				|| this.blaze.getHealth() >= this.blaze.getMaxHealth()) {
 			return false;
 		}
-		this.target = findNearbyFire(level, this.blaze.blockPosition());
+		if (this.searchCooldown > 0) {
+			this.searchCooldown--;
+			return false;
+		}
+		this.target = findNearbyFire(level, this.blaze, this.blaze.blockPosition());
+		if (this.target == null) {
+			this.searchCooldown = 40;
+		}
 		return this.target != null;
 	}
 
@@ -62,12 +71,16 @@ public final class BlazeFireSeekingGoal extends Goal {
 		}
 	}
 
-	private static BlockPos findNearbyFire(ServerLevel level, BlockPos origin) {
+	private static BlockPos findNearbyFire(ServerLevel level, Blaze blaze, BlockPos origin) {
 		BlockPos best = null;
 		double bestDistance = Double.MAX_VALUE;
 		for (BlockPos pos : BlockPos.betweenClosed(origin.offset(-8, -4, -8), origin.offset(8, 4, 8))) {
 			if (isFire(level, pos) && level.getBlockState(pos.below()).isFaceSturdy(level, pos.below(),
 					net.minecraft.core.Direction.UP)) {
+				Path path = blaze.getNavigation().createPath(pos, 0);
+				if (path == null || !path.canReach()) {
+					continue;
+				}
 				double distance = origin.distSqr(pos);
 				if (distance < bestDistance) {
 					best = pos.immutable();
