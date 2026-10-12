@@ -33,7 +33,7 @@ API calls fail the build rather than being hidden or suppressed.
 With cheats/operator permissions, run:
 
 ```text
-/test run patchwork:patchwork_game_tests_unlit_torch_variants
+/test run patchwork:patchwork_blocks_game_tests_unlit_torch_variants
 ```
 
 Tab completion lists other tests. `/test runfailed` reruns failures;

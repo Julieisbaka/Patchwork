@@ -336,7 +336,7 @@ public final class PatchworkMobsGameTests {
 		rabbit.snapTo(Vec3.atBottomCenterOf(test.absolutePos(new BlockPos(5, 1, 5))));
 		var wild = test.spawn(EntityTypes.RABBIT, new BlockPos(3, 1, 5));
 		float rabbitHealth = rabbit.getHealth();
-		((com.JulieISBaka.patchwork.mixin.PlayerSweepAccessor) owner).patchwork$doSweepAttack(
+		((PlayerSweepAccessor) owner).patchwork$doSweepAttack(
 				target, 4, test.getLevel().damageSources().playerAttack(owner), 1);
 		test.assertTrue(rabbit.getHealth() == rabbitHealth, "Owner's sweep attack hurt their rabbit");
 		test.assertTrue(wild.getHealth() < wild.getMaxHealth(), "Sweep protection affected wild rabbits");
@@ -350,7 +350,7 @@ public final class PatchworkMobsGameTests {
 			var raid = new net.minecraft.world.entity.raid.Raid(test.absolutePos(CENTER), difficulty);
 			raid.setRaidOmenLevel(2);
 			for (int wave = 1; wave <= raid.getNumGroups(difficulty) + 1; wave++) {
-				((com.JulieISBaka.patchwork.mixin.RaidAccessor) (Object) raid)
+				((RaidAccessor) (Object) raid)
 						.patchwork$spawnGroup(test.getLevel(), test.absolutePos(CENTER));
 				var raiders = raid.getAllRaiders();
 				var illusioners = raiders.stream().filter(raider -> raider.getType() == EntityTypes.ILLUSIONER)

@@ -7,6 +7,9 @@ Over 50 gameplay tuning settings cover animal food searches, mob ranges and
 timing, damage, cooldowns, and more, in both the properties file and Mod Menu.
 See the [configuration guide](docs/configuration.md) for defaults and ranges.
 
+**New to Patchwork?** Start with [installation](#installation), browse the
+[feature list](#features), or jump to [changing settings](docs/configuration.md).
+
 ## Features
 
 ### Building, crafting, and utility
@@ -112,13 +115,24 @@ Vanilla campfire and soul campfire drops are otherwise unchanged.
 
 ## Installation
 
-Use Minecraft Java Edition 26.3 with Java 25 or newer, Fabric Loader 0.19.5 or
-newer, and the matching Fabric API. Mod Menu 21.0.0 is optional and adds an
-in-game configuration screen.
+Patchwork currently supports **Minecraft Java Edition 26.3**. You will need:
 
-Install Patchwork and its required dependencies in the Fabric `mods` folder.
-Gameplay options are controlled by the server in multiplayer; see the
-[configuration guide](docs/configuration.md) for details.
+- Java 25 or newer
+- Fabric Loader 0.19.5 or newer
+- Fabric API for Minecraft 26.3
+
+1. Install Fabric Loader for Minecraft 26.3.
+2. Download the matching Patchwork jar from the
+   [GitHub releases page](https://github.com/Julieisbaka/Patchwork/releases)
+   and put it in your instance's `mods` folder.
+3. Put the matching Fabric API jar in the same `mods` folder.
+4. Launch the Fabric profile. Add Mod Menu if you want to change settings
+   from the in-game Mods screen; it is optional.
+
+For multiplayer, install Patchwork and its required dependencies on the server
+and each player's client. The server's settings control gameplay for everyone;
+see [changing settings](docs/configuration.md) for the config screen, file
+location, and examples.
 
 ## Building from source
 

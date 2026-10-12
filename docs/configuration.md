@@ -4,6 +4,10 @@ Make animals find food farther away, tone down combat, or disable features
 you do not want. You do not need to edit anything to play: the defaults give
 you Patchwork's standard experience.
 
+If you only want to turn a feature on or off, use the
+[feature switches](#feature-switches). For a specific mob range, delay, or
+damage value, go to the [gameplay tuning reference](#gameplay-tuning-reference).
+
 ## Quick start
 
 ### In game (recommended)

@@ -1,6 +1,5 @@
 package com.JulieISBaka.patchwork.config;
 
-import com.JulieISBaka.patchwork.Patchwork;
 import java.util.EnumMap;
 import java.util.Map;
 

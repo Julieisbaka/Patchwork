@@ -3,7 +3,7 @@
 	"id": "patchwork",
 	"version": "${version}",
 	"name": "Patchwork",
-	"description": "A Fabric mod for Minecraft Java Edition that adds a patchwork of new features and changes to the game.",
+	"description": "Adds new building blocks, crafting options, mob behaviors, and configurable gameplay changes.",
 	"authors": [
 		"JulieISBaka"
 	],
@@ -13,7 +13,13 @@
 			"com.JulieISBaka.patchwork.Patchwork"
 		],
 		"fabric-gametest": [
-			"com.JulieISBaka.patchwork.PatchworkGameTests"
+			"com.JulieISBaka.patchwork.config.PatchworkConfigGameTests",
+			"com.JulieISBaka.patchwork.features.blocks.PatchworkBlocksGameTests",
+			"com.JulieISBaka.patchwork.features.combat.PatchworkCombatGameTests",
+			"com.JulieISBaka.patchwork.features.gameplay.PatchworkGameplayGameTests",
+			"com.JulieISBaka.patchwork.features.items.PatchworkItemsGameTests",
+			"com.JulieISBaka.patchwork.features.mobs.PatchworkMobsGameTests",
+			"com.JulieISBaka.patchwork.features.world.PatchworkWorldGameTests"
 		],
 		"fabric-client-gametest": [
 			"com.JulieISBaka.patchwork.client.PatchworkClientGameTests"

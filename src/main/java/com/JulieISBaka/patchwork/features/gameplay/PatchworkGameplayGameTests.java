@@ -33,7 +33,7 @@ public final class PatchworkGameplayGameTests {
 		require(test, PatchworkConfig.settings().experienceClumping(), "experienceClumping");
 		Vec3 center = Vec3.atCenterOf(test.absolutePos(CENTER));
 		var first = new net.minecraft.world.entity.ExperienceOrb(test.getLevel(), center.x, center.y, center.z, 7);
-		((com.JulieISBaka.patchwork.mixin.ExperienceOrbAccessor) first).patchwork$setCount(3);
+		((ExperienceOrbAccessor) first).patchwork$setCount(3);
 		var second = new net.minecraft.world.entity.ExperienceOrb(test.getLevel(), center.x + 1.5, center.y, center.z,
 				11);
 		var far = new net.minecraft.world.entity.ExperienceOrb(test.getLevel(), center.x, center.y, center.z + 2.1, 5);
@@ -64,7 +64,7 @@ public final class PatchworkGameplayGameTests {
 		tool.setDamageValue(20);
 		player.setItemInHand(InteractionHand.MAIN_HAND, tool);
 		var orb = new net.minecraft.world.entity.ExperienceOrb(test.getLevel(), 0, 0, 0, 15);
-		((com.JulieISBaka.patchwork.mixin.ExperienceOrbAccessor) orb).patchwork$setCount(2);
+		((ExperienceOrbAccessor) orb).patchwork$setCount(2);
 		test.getLevel().addFreshEntity(orb);
 		int before = player.totalExperience;
 		player.takeXpDelay = 0;
@@ -138,13 +138,13 @@ public final class PatchworkGameplayGameTests {
 		test.assertTrue(clumping ? awarded.size() == 1 : awarded.size() > 1,
 				"XP award did not respect the clumping setting");
 		long total = awarded.stream().mapToLong(orb -> (long) orb.getValue()
-				* ((com.JulieISBaka.patchwork.mixin.ExperienceOrbAccessor) orb).patchwork$count()).sum();
+				* ((ExperienceOrbAccessor) orb).patchwork$count()).sum();
 		test.assertTrue(total == 30, "Vanilla XP award lost value");
 		awarded.forEach(net.minecraft.world.entity.ExperienceOrb::discard);
 
 		var player = test.makeMockServerPlayer(GameType.SURVIVAL);
 		var stacked = new net.minecraft.world.entity.ExperienceOrb(test.getLevel(), center.x, center.y, center.z, 15);
-		var data = (com.JulieISBaka.patchwork.mixin.ExperienceOrbAccessor) stacked;
+		var data = (ExperienceOrbAccessor) stacked;
 		data.patchwork$setCount(2);
 		test.getLevel().addFreshEntity(stacked);
 		int before = player.totalExperience;
