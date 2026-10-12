@@ -36,6 +36,7 @@ import net.minecraft.world.entity.monster.spider.Spider;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.hurtingprojectile.DragonFireball;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SpawnEggItem;
@@ -90,9 +91,59 @@ public final class PatchworkMobsGameTests {
 		EnderDragonBehavior.reinforceCrystalCage(level,
 				new net.minecraft.world.level.levelgen.feature.EndSpikeFeature.EndSpike(
 						center.getX(), center.getZ(), 2, center.getY() + 4, true));
-		test.assertBlockPresent(Blocks.OBSIDIAN, center.offset(3, 4, 0));
-		test.assertBlockPresent(Blocks.OBSIDIAN, center.offset(-3, 2, 0));
-		test.assertBlockPresent(Blocks.OBSIDIAN, center.offset(0, 5, 3));
+		test.assertTrue(level.getBlockState(center.offset(3, 4, 0)).is(Blocks.OBSIDIAN),
+				"Crystal cage did not receive an outer obsidian wall");
+		test.assertTrue(level.getBlockState(center.offset(-3, 2, 0)).is(Blocks.OBSIDIAN),
+				"Crystal cage reinforcement is missing on the opposite wall");
+		test.assertTrue(level.getBlockState(center.offset(0, 5, 3)).is(Blocks.OBSIDIAN),
+				"Crystal cage did not receive an obsidian roof");
+		test.succeed();
+	}
+
+	@GameTest
+	public void endCrystalExplosionsSpareDragonAndNaturalCrystalsAreStronger(GameTestHelper test) {
+		var level = (net.minecraft.server.level.ServerLevel) test.getLevel();
+		EnderDragon dragon = EntityTypes.ENDER_DRAGON.create(level, EntitySpawnReason.TRIGGERED);
+		BlockPos center = test.absolutePos(CENTER);
+		EndCrystal naturalCrystal = new EndCrystal(level, center.getX(), center.getY(), center.getZ());
+		EndCrystal playerCrystal = new EndCrystal(level, center.getX() + 2, center.getY(), center.getZ());
+		test.assertTrue(dragon != null, "Could not create Ender Dragon for crystal test");
+		EnderDragonBehavior.markNaturalCrystal(naturalCrystal);
+		test.assertTrue(EnderDragonBehavior.crystalExplosionPower(6.0F, naturalCrystal) == 9.0F,
+				"Naturally generated End Crystal explosion power was not increased");
+		test.assertTrue(EnderDragonBehavior.crystalExplosionPower(6.0F, playerCrystal) == 6.0F,
+				"Player-placed End Crystal explosion power changed");
+		float health = dragon.getHealth();
+		boolean damaged = dragon.hurtServer(level, level.damageSources().explosion(naturalCrystal, naturalCrystal),
+				10.0F);
+		test.assertTrue(!damaged && dragon.getHealth() == health,
+				"End Crystal explosion damaged the Ender Dragon");
+		test.succeed();
+	}
+
+	@GameTest
+	public void dragonFireballsDamageEntitiesOnImpact(GameTestHelper test) {
+		var level = (net.minecraft.server.level.ServerLevel) test.getLevel();
+		EnderDragon owner = EntityTypes.ENDER_DRAGON.create(level, EntitySpawnReason.TRIGGERED);
+		Player target = test.makeMockPlayer(GameType.SURVIVAL);
+		BlockPos center = test.absolutePos(CENTER);
+		target.setPos(center.getX() + 1.0, center.getY(), center.getZ() + 1.0);
+		test.assertTrue(owner != null && level.addFreshEntity(target),
+				"Could not create a dragon owner and player target");
+		class TestDragonFireball extends DragonFireball {
+			TestDragonFireball(net.minecraft.server.level.ServerLevel serverLevel, EnderDragon dragonOwner) {
+				super(serverLevel, dragonOwner, Vec3.ZERO);
+			}
+
+			void impact(Player player) {
+				this.onHit(new net.minecraft.world.phys.EntityHitResult(player));
+			}
+		}
+		TestDragonFireball fireball = new TestDragonFireball(level, owner);
+		fireball.setPos(target.position());
+		float health = target.getHealth();
+		fireball.impact(target);
+		test.assertTrue(target.getHealth() < health, "Dragon fireball impact did not directly damage its target");
 		test.succeed();
 	}
 

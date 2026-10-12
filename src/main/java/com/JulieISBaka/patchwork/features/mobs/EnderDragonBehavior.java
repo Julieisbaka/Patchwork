@@ -27,6 +27,10 @@ public final class EnderDragonBehavior {
 		crystal.addTag(NATURAL_CRYSTAL_TAG);
 	}
 
+	public static float crystalExplosionPower(float vanillaPower, EndCrystal crystal) {
+		return crystal.entityTags().contains(NATURAL_CRYSTAL_TAG) ? vanillaPower * 1.5F : vanillaPower;
+	}
+
 	public static void reinforceCrystalCage(ServerLevelAccessor level, EndSpikeFeature.EndSpike spike) {
 		if (!spike.isGuarded()) {
 			return;
