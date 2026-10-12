@@ -124,6 +124,10 @@ starting successfully is not by itself evidence that the selected tests ran.
   `patchwork:*steep_surface*`, `patchwork:*spiders_are_fast*`,
   `patchwork:*soul_valley*`, `patchwork:*renaming_an_item*`, or
   `patchwork:*blue_wither_skulls*`.
+- Elder guardian boss attributes, fire/explosion immunity, and boss bar;
+  zombie jockey/leader behaviors; wither-killed skeleton conversion; pillager
+  firing range; and witch jump-potion behavior have dedicated feature coverage
+  in the corresponding new mob GameTests.
 - Paeonia ground support, flower tags, compost component, potting and pot
   drops, magenta dye recipe, actual feature placement, and biome registration
   in flower forests/meadows but not plains. Select these with `patchwork:*garden*`.

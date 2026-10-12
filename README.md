@@ -97,6 +97,12 @@ Vanilla campfire and soul campfire drops are otherwise unchanged.
   from farther away, and take no fall damage. Soul Sand Valleys spawn bow-
   wielding wither skeletons instead of normal skeletons, and blue wither skulls
   home toward nearby players.
+- **More hostile mob changes:** Elder guardians have 150 health, 8 armor, a
+  boss bar, and immunity to fire, lava, magma blocks, and explosions. Rare
+  zombie spawns include baby-zombie jockeys and banner-marked zombie leaders
+  riding zombie horses. Wither damage can turn regular skeletons into wither
+  skeletons; pillagers can fire from 15 blocks, and witches can use jump boost
+  and leap when attacking elevated targets.
 - **Anvils and terrain:** Renaming an item preserves its prior-work repair cost.
   Mountain steep-surface rules now recognize slopes facing all directions
   (MC-258859).

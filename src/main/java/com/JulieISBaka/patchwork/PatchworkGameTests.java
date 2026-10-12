@@ -211,7 +211,8 @@ public class PatchworkGameTests {
 		BlockPos center = test.absolutePos(CENTER);
 		Spider shooter = new Spider(EntityTypes.SPIDER, level);
 		shooter.setPos(center.getX() + 0.5, center.getY(), center.getZ() + 0.5);
-		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		var player = (net.minecraft.server.level.ServerPlayer) test.makeMockServerPlayer(GameType.SURVIVAL);
+		level.addNewPlayer(player);
 		player.setPos(center.getX() + 0.5, center.getY(), center.getZ() + 6.5);
 		Spider nearerMob = new Spider(EntityTypes.SPIDER, level);
 		nearerMob.setPos(center.getX() + 1.5, center.getY(), center.getZ() + 0.5);

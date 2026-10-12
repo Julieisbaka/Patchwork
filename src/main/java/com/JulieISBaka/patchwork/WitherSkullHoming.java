@@ -16,7 +16,7 @@ public final class WitherSkullHoming {
 
 	public static Optional<Player> findPlayerTarget(WitherSkull skull, ServerLevel level) {
 		return level.getEntitiesOfClass(Player.class, skull.getBoundingBox().inflate(TARGET_RANGE),
-				player -> player.isAlive() && !player.isSpectator() && skull.getOwner() != player)
+				player -> player.isAlive() && !player.isSpectator())
 				.stream().min(Comparator.comparingDouble(skull::distanceToSqr));
 	}
 
