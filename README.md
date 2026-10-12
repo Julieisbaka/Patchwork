@@ -47,6 +47,11 @@ See the [configuration guide](docs/configuration.md) for defaults and ranges.
   `patchwork:woodcutting/<wood>_logs` and
   `patchwork:woodcutting/<wood>_planks` input tags and add matching
   `minecraft:stonecutting` recipes with recipe IDs under `woodcutter/`.
+- **Snow under leaves:** Snow can accumulate naturally on the ground beneath
+  canopies up to two leaf blocks thick.
+- **Iron golem gifts:** Baby villagers can pick up poppies offered by iron
+  golems.
+- **Blaze rods:** Dropped blaze rods survive fire and lava.
 - **Crafting and decoration:** Craft chainmail armor, add up to nine banner
   patterns, dye shulkers, and wash wool, terracotta, and stained glass in
   cauldrons.

@@ -20,6 +20,8 @@ import net.minecraft.world.entity.monster.breeze.Breeze;
 import net.minecraft.world.entity.monster.hoglin.Hoglin;
 import net.minecraft.world.entity.monster.spider.CaveSpider;
 import net.minecraft.world.entity.monster.spider.Spider;
+import net.minecraft.world.entity.animal.golem.IronGolem;
+import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.projectile.hurtingprojectile.LargeFireball;
@@ -50,6 +52,69 @@ import net.minecraft.world.phys.BlockHitResult;
 
 public class PatchworkGameTests {
 	private static final BlockPos CENTER = new BlockPos(3, 1, 3);
+
+	@GameTest
+	public void snowAccumulatesUnderAtMostTwoLeafLayers(GameTestHelper test) {
+		var level = (net.minecraft.server.level.ServerLevel) test.getLevel();
+		BlockPos target = test.absolutePos(CENTER);
+		level.setBlockAndUpdate(target.below(), Blocks.STONE.defaultBlockState());
+		level.setBlockAndUpdate(target.above(), Blocks.OAK_LEAVES.defaultBlockState());
+		var oneLayerPosition = SnowAccumulation.findSnowPositionUnderLeaves(level, target.above(2));
+		test.assertTrue(oneLayerPosition.isPresent() && oneLayerPosition.get().equals(target),
+				"One leaf layer did not resolve to the covered block");
+		level.setBlockAndUpdate(target.above(2), Blocks.OAK_LEAVES.defaultBlockState());
+		var snowPosition = SnowAccumulation.findSnowPositionUnderLeaves(level, target.above(3));
+		test.assertTrue(snowPosition.orElse(null) != null && snowPosition.get().equals(target),
+				"Two leaf layers did not resolve to the covered block");
+		test.assertTrue(SnowAccumulation.accumulateAt(level, target, 2), "Snow did not accumulate under leaves");
+		test.assertTrue(SnowAccumulation.accumulateAt(level, target, 2), "Snow did not gain a second layer");
+		test.assertTrue(!SnowAccumulation.accumulateAt(level, target, 2)
+				&& level.getBlockState(target).getValue(net.minecraft.world.level.block.SnowLayerBlock.LAYERS) == 2,
+				"Snow exceeded the configured maximum");
+
+		level.setBlockAndUpdate(target.above(3), Blocks.OAK_LEAVES.defaultBlockState());
+		test.assertTrue(SnowAccumulation.findSnowPositionUnderLeaves(level, target.above(4)).isEmpty(),
+				"Snow accumulated under more than two leaf layers");
+		test.succeed();
+	}
+
+	@GameTest
+	public void babyVillagersAcceptIronGolemPoppies(GameTestHelper test) {
+		var level = (net.minecraft.server.level.ServerLevel) test.getLevel();
+		Villager baby = new Villager(EntityTypes.VILLAGER, level);
+		baby.setBaby(true);
+		BlockPos center = test.absolutePos(CENTER);
+		baby.setPos(center.getX() + 0.5, center.getY(), center.getZ() + 0.5);
+		IronGolem golem = new IronGolem(EntityTypes.IRON_GOLEM, level);
+		golem.setPos(center.getX() + 1.5, center.getY(), center.getZ() + 0.5);
+		test.assertTrue(level.addFreshEntity(baby) && level.addFreshEntity(golem),
+				"Could not add villager or golem for flower test");
+		test.assertTrue(baby.wantsToPickUp(level, Items.POPPY.getDefaultInstance()),
+				"Baby villager rejected a poppy");
+		test.assertTrue(VillagerRoseOffering.offerToBaby(level, golem, baby),
+				"Iron golem did not offer a poppy to the baby villager");
+		test.assertTrue(test.getEntities(EntityTypes.ITEM).stream()
+				.anyMatch(item -> item.getItem().is(Items.POPPY)), "The offered poppy item was not spawned");
+		Villager adult = new Villager(EntityTypes.VILLAGER, level);
+		test.assertTrue(!adult.wantsToPickUp(level, Items.POPPY.getDefaultInstance()),
+				"Adult villager unexpectedly accepted an iron golem poppy");
+		test.succeed();
+	}
+
+	@GameTest
+	public void blazeRodsDoNotBurnInFireOrLava(GameTestHelper test) {
+		var level = (net.minecraft.server.level.ServerLevel) test.getLevel();
+		BlockPos center = test.absolutePos(CENTER);
+		ItemEntity rods = new ItemEntity(level, center.getX() + 0.5, center.getY(), center.getZ() + 0.5,
+				new ItemStack(Items.BLAZE_ROD));
+		test.assertTrue(level.addFreshEntity(rods), "Could not add blaze rods for fire-resistance test");
+		test.assertTrue(rods.fireImmune(), "Blaze rods are not fire immune");
+		test.assertTrue(!rods.hurtServer(level, level.damageSources().lava(), 5.0F) && !rods.isRemoved(),
+				"Blaze rods were destroyed by lava damage");
+		test.assertTrue(!rods.hurtServer(level, level.damageSources().inFire(), 5.0F) && !rods.isRemoved(),
+				"Blaze rods were destroyed by fire damage");
+		test.succeed();
+	}
 
 	@GameTest
 	public void woodcutterRegistersWoodcuttingRecipes(GameTestHelper test) {

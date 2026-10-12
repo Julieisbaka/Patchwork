@@ -113,6 +113,10 @@ starting successfully is not by itself evidence that the selected tests ran.
   wax block, incomplete/wrong ingredient rejection, and block drops.
 - Woodcutter block/item and menu registration, plus loaded oak log-to-planks and
   plank-to-stairs recipes. Select with `patchwork:*woodcutter_registers*`.
+- Snow placement beneath one and two leaf layers, the two-layer maximum, baby
+  villager poppy acceptance and iron golem gifts, and blaze-rod fire/lava
+  immunity. Select with `patchwork:*snow_accumulates*`,
+  `patchwork:*baby_villagers_accept*`, or `patchwork:*blaze_rods_do_not_burn*`.
 - Paeonia ground support, flower tags, compost component, potting and pot
   drops, magenta dye recipe, actual feature placement, and biome registration
   in flower forests/meadows but not plains. Select these with `patchwork:*garden*`.

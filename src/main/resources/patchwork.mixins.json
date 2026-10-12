@@ -4,6 +4,9 @@
 	"compatibilityLevel": "JAVA_25",
 	"mixins": [
 		"BannerDuplicateRecipeMixin",
+		"BabyVillagerPoppyPickupMixin",
+		"BabyVillagerRoseMixin",
+		"BlazeRodFireproofMixin",
 		"CaveSpiderNauseaMixin",
 		"AnimalFoodMixin",
 		"AbstractArrowAccessor",
@@ -32,6 +35,7 @@
 		"RabbitMixin",
 		"RabbitAvoidOwnerMixin",
 		"ShulkerVariantAccessor",
+		"SnowAccumulationMixin",
 		"StonecutterMenuMixin",
 		"SpiderCeilingMixin",
 		"SlimeballSnowballMixin",
