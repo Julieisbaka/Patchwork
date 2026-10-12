@@ -281,5 +281,6 @@
 	"patchwork.config.unlitLights": "??????",
 	"patchwork.config.soulCopperLightBlocks": "?????????",
 	"patchwork.config.restoredPaintings": "?????",
-	"patchwork.config.illusionerRaidSpawns": "????????"
+	"patchwork.config.illusionerRaidSpawns": "????????",
+	"chat.patchwork.villager_out_of_food": "Your villager friend, %s is out of food..."
 }

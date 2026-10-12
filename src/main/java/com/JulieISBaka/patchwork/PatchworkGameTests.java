@@ -17,11 +17,14 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.monster.cubemob.Slime;
 import net.minecraft.world.entity.monster.Shulker;
+import net.minecraft.world.entity.monster.Blaze;
+import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.entity.monster.breeze.Breeze;
 import net.minecraft.world.entity.monster.hoglin.Hoglin;
 import net.minecraft.world.entity.monster.spider.CaveSpider;
 import net.minecraft.world.entity.monster.spider.Spider;
 import net.minecraft.world.entity.animal.golem.IronGolem;
+import net.minecraft.world.entity.animal.chicken.Chicken;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -115,6 +118,66 @@ public class PatchworkGameTests {
 				"Blaze rods were destroyed by lava damage");
 		test.assertTrue(!rods.hurtServer(level, level.damageSources().inFire(), 5.0F) && !rods.isRemoved(),
 				"Blaze rods were destroyed by fire damage");
+		test.succeed();
+	}
+
+	@GameTest
+	public void villagersConsumeFoodToHeal(GameTestHelper test) {
+		Villager villager = new Villager(EntityTypes.VILLAGER, test.getLevel());
+		villager.setHealth(10.0F);
+		villager.getInventory().setItem(0, new ItemStack(Items.BREAD));
+		test.assertTrue(VillagerFoodBehavior.eatToHeal(villager), "Villager did not consume food to heal");
+		test.assertTrue(villager.getHealth() == 12.0F, "Villager did not heal two health points");
+		test.assertTrue(VillagerFoodBehavior.foodItemCount(villager) == 0,
+				"Villager did not consume its bread");
+		test.assertTrue(!VillagerFoodBehavior.eatToHeal(villager), "Villager healed without any food");
+		test.succeed();
+	}
+
+	@GameTest
+	public void babyZombieChickenJockeyAttacksPlayers(GameTestHelper test) {
+		var level = (net.minecraft.server.level.ServerLevel) test.getLevel();
+		BlockPos center = test.absolutePos(CENTER);
+		Chicken chicken = new Chicken(EntityTypes.CHICKEN, level);
+		chicken.setPos(center.getX() + 0.5, center.getY(), center.getZ() + 0.5);
+		Zombie rider = new Zombie(EntityTypes.ZOMBIE, level);
+		rider.setBaby(true);
+		rider.setPos(center.getX() + 0.5, center.getY(), center.getZ() + 0.5);
+		var player = (net.minecraft.server.level.ServerPlayer) test.makeMockServerPlayer(GameType.SURVIVAL);
+		player.setPos(center.getX() + 1.0, center.getY(), center.getZ() + 0.5);
+		test.assertTrue(level.addFreshEntity(chicken) && level.addFreshEntity(rider),
+				"Could not add chicken jockey entities");
+		level.addNewPlayer(player);
+		test.assertTrue(rider.startRiding(chicken), "Baby zombie could not ride the chicken");
+		test.assertTrue(ChickenJockeyAttackGoal.isBabyZombieJockey(chicken),
+				"Baby zombie chicken jockey was not recognized");
+		ChickenJockeyAttackGoal goal = new ChickenJockeyAttackGoal(chicken);
+		test.assertTrue(goal.canUse(), "Chicken jockey did not target the nearby player");
+		float health = player.getHealth();
+		goal.tick();
+		test.assertTrue(player.getHealth() < health && player.isOnFire(),
+				"Chicken jockey did not damage and ignite the nearby player");
+		test.succeed();
+	}
+
+	@GameTest
+	public void blazesHealFromFireSeekItAndResistEffects(GameTestHelper test) {
+		var level = (net.minecraft.server.level.ServerLevel) test.getLevel();
+		BlockPos center = test.absolutePos(CENTER);
+		level.setBlockAndUpdate(center.below(), Blocks.STONE.defaultBlockState());
+		level.setBlockAndUpdate(center, Blocks.FIRE.defaultBlockState());
+		Blaze blaze = new Blaze(EntityTypes.BLAZE, level);
+		blaze.setPos(center.getX() + 3.5, center.getY(), center.getZ() + 0.5);
+		test.assertTrue(level.addFreshEntity(blaze), "Could not add blaze for fire behavior test");
+		blaze.setHealth(8.0F);
+		test.assertTrue(!blaze.hurtServer(level, level.damageSources().onFire(), 4.0F)
+				&& blaze.getHealth() > 8.0F, "Fire damage did not heal the blaze");
+		test.assertTrue(!blaze.canBeAffected(new net.minecraft.world.effect.MobEffectInstance(MobEffects.POISON))
+				&& !blaze.canBeAffected(new net.minecraft.world.effect.MobEffectInstance(MobEffects.WITHER))
+				&& !blaze.canBeAffected(new net.minecraft.world.effect.MobEffectInstance(MobEffects.HUNGER)),
+				"Blaze accepted poison, wither, or hunger");
+		BlazeFireSeekingGoal goal = new BlazeFireSeekingGoal(blaze);
+		test.assertTrue(goal.canUse(), "Injured blaze did not find nearby fire");
 		test.succeed();
 	}
 

@@ -4,6 +4,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Witch;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
@@ -29,7 +30,7 @@ public abstract class WitchJumpPotionMixin {
 	private void patchwork$jumpAndAimAtElevatedTarget(LivingEntity target, float distance, CallbackInfo ci) {
 		Witch witch = (Witch) (Object) this;
 		double height = target.getEyeY() - 1.1 - witch.getY();
-		if (height > 1.0) {
+		if (witch.getMainHandItem().is(Items.SPLASH_POTION) && height > 1.0) {
 			Vec3 velocity = witch.getDeltaMovement();
 			witch.setDeltaMovement(velocity.x, Math.max(velocity.y, 0.42), velocity.z);
 			witch.jumpFromGround();

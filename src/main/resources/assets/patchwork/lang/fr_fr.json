@@ -281,5 +281,6 @@
 	"patchwork.config.unlitLights": "Lumi?res ?teintes",
 	"patchwork.config.soulCopperLightBlocks": "Blocs lumineux des ?mes et de cuivre",
 	"patchwork.config.restoredPaintings": "Peintures restaur?es",
-	"patchwork.config.illusionerRaidSpawns": "Apparition des illusionnistes dans les raids"
+	"patchwork.config.illusionerRaidSpawns": "Apparition des illusionnistes dans les raids",
+	"chat.patchwork.villager_out_of_food": "Your villager friend, %s is out of food..."
 }
