@@ -143,11 +143,11 @@ public class PatchworkGameTests {
 		Zombie rider = new Zombie(EntityTypes.ZOMBIE, level);
 		rider.setBaby(true);
 		rider.setPos(center.getX() + 0.5, center.getY(), center.getZ() + 0.5);
-		var player = (net.minecraft.server.level.ServerPlayer) test.makeMockServerPlayer(GameType.SURVIVAL);
+		Player player = test.makeMockPlayer(GameType.SURVIVAL);
 		player.setPos(center.getX() + 1.0, center.getY(), center.getZ() + 0.5);
 		test.assertTrue(level.addFreshEntity(chicken) && level.addFreshEntity(rider),
 				"Could not add chicken jockey entities");
-		level.addNewPlayer(player);
+		test.assertTrue(level.addFreshEntity(player), "Could not add player for chicken jockey test");
 		test.assertTrue(rider.startRiding(chicken), "Baby zombie could not ride the chicken");
 		test.assertTrue(ChickenJockeyAttackGoal.isBabyZombieJockey(chicken),
 				"Baby zombie chicken jockey was not recognized");
@@ -178,6 +178,11 @@ public class PatchworkGameTests {
 				"Blaze accepted poison, wither, or hunger");
 		BlazeFireSeekingGoal goal = new BlazeFireSeekingGoal(blaze);
 		test.assertTrue(goal.canUse(), "Injured blaze did not find nearby fire");
+		Player target = test.makeMockPlayer(GameType.SURVIVAL);
+		target.setPos(blaze.getX() + 1.0, blaze.getY(), blaze.getZ());
+		test.assertTrue(level.addFreshEntity(target), "Could not add melee target for blaze test");
+		test.assertTrue(blaze.doHurtTarget(level, target), "Blaze melee attack did not hit its target");
+		test.assertTrue(target.isOnFire(), "Blaze melee attack did not set its target on fire");
 		test.succeed();
 	}
 

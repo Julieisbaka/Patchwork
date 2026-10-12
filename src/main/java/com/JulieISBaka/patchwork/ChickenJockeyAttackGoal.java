@@ -61,7 +61,7 @@ public final class ChickenJockeyAttackGoal extends Goal {
 	}
 
 	public static boolean isBabyZombieJockey(Chicken chicken) {
-		return chicken.isChickenJockey() && chicken.getPassengers().stream()
+		return chicken.getPassengers().stream()
 				.anyMatch(passenger -> passenger instanceof Zombie zombie && zombie.isBaby());
 	}
 }

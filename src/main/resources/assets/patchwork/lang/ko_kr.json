@@ -282,5 +282,5 @@
 	"patchwork.config.soulCopperLightBlocks": "?? ? ?? ?? ??",
 	"patchwork.config.restoredPaintings": "??? ??",
 	"patchwork.config.illusionerRaidSpawns": "?? ??? ??",
-	"chat.patchwork.villager_out_of_food": "Your villager friend, %s is out of food..."
+	"chat.patchwork.villager_out_of_food": "주민 친구 %s에게 먹을 것이 없습니다..."
 }

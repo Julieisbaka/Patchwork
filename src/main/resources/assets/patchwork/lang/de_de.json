@@ -282,5 +282,5 @@
 	"patchwork.config.soulCopperLightBlocks": "Seelen- und Kupferleuchtbl?cke",
 	"patchwork.config.restoredPaintings": "Wiederhergestellte Gem?lde",
 	"patchwork.config.illusionerRaidSpawns": "Illusion?r-Raidspawns",
-	"chat.patchwork.villager_out_of_food": "Your villager friend, %s is out of food..."
+	"chat.patchwork.villager_out_of_food": "Dein Dorfbewohnerfreund %s hat kein Essen mehr..."
 }
