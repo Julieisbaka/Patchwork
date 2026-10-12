@@ -1,7 +1,6 @@
 package com.JulieISBaka.patchwork.mixins.items;
 
 import com.JulieISBaka.patchwork.features.items.BannerCustomization;
-
 import net.minecraft.world.item.crafting.BannerDuplicateRecipe;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Constant;

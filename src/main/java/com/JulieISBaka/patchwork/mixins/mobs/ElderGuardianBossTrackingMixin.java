@@ -1,7 +1,6 @@
 package com.JulieISBaka.patchwork.mixins.mobs;
 
 import com.JulieISBaka.patchwork.features.mobs.ElderGuardianBossAccess;
-
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.monster.ElderGuardian;

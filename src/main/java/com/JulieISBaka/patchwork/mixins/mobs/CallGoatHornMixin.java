@@ -2,7 +2,6 @@ package com.JulieISBaka.patchwork.mixins.mobs;
 
 import com.JulieISBaka.patchwork.features.mobs.RabbitPet;
 import com.JulieISBaka.patchwork.features.mobs.RabbitPets;
-
 import com.JulieISBaka.patchwork.config.PatchworkConfig;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;

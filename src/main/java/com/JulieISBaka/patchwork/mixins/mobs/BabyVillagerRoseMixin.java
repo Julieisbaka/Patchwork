@@ -1,7 +1,6 @@
 package com.JulieISBaka.patchwork.mixins.mobs;
 
 import com.JulieISBaka.patchwork.features.mobs.VillagerRoseOffering;
-
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.OfferFlowerGoal;

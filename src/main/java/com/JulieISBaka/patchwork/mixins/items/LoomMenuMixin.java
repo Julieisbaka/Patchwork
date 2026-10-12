@@ -1,7 +1,6 @@
 package com.JulieISBaka.patchwork.mixins.items;
 
 import com.JulieISBaka.patchwork.features.items.BannerCustomization;
-
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.inventory.LoomMenu;

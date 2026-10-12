@@ -1,7 +1,6 @@
 package com.JulieISBaka.patchwork.mixins.mobs;
 
 import com.JulieISBaka.patchwork.features.mobs.SoulGolems;
-
 import com.JulieISBaka.patchwork.config.PatchworkConfig;
 import com.JulieISBaka.patchwork.features.blocks.PumpkinLanterns;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;

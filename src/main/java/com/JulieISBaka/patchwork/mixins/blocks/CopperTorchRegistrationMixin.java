@@ -1,7 +1,6 @@
 package com.JulieISBaka.patchwork.mixins.blocks;
 
 import com.JulieISBaka.patchwork.features.blocks.CopperTorches;
-
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import java.util.function.Function;

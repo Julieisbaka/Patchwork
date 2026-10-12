@@ -2,7 +2,6 @@ package com.JulieISBaka.patchwork.mixins.mobs;
 
 import com.JulieISBaka.patchwork.features.mobs.BlazeFireSeekingGoal;
 import com.JulieISBaka.patchwork.features.mobs.ChickenJockeyAttackGoal;
-
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.GoalSelector;

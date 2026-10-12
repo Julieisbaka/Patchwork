@@ -1,7 +1,6 @@
 package com.JulieISBaka.patchwork.mixins.blocks;
 
 import com.JulieISBaka.patchwork.features.blocks.LightVariants;
-
 import com.JulieISBaka.patchwork.config.PatchworkConfig;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.CandleBlock;

@@ -1,7 +1,6 @@
 package com.JulieISBaka.patchwork.mixins.world;
 
 import com.JulieISBaka.patchwork.features.world.SnowAccumulation;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import org.spongepowered.asm.mixin.Mixin;

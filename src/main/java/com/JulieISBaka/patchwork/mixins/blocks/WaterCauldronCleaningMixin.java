@@ -2,7 +2,6 @@ package com.JulieISBaka.patchwork.mixins.blocks;
 
 import com.JulieISBaka.patchwork.features.blocks.CauldronCleaningItems;
 import com.JulieISBaka.patchwork.features.blocks.PotionCauldrons;
-
 import com.JulieISBaka.patchwork.Patchwork;
 import com.JulieISBaka.patchwork.config.PatchworkConfig;
 import net.minecraft.core.cauldron.CauldronInteraction;

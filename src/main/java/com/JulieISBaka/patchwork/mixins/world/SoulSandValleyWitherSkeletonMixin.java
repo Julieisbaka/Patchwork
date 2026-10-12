@@ -1,7 +1,6 @@
 package com.JulieISBaka.patchwork.mixins.world;
 
 import com.JulieISBaka.patchwork.features.world.SoulSandValleySpawns;
-
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.SpawnGroupData;

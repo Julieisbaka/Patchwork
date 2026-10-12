@@ -1,7 +1,6 @@
 package com.JulieISBaka.patchwork.mixins.blocks;
 
 import com.JulieISBaka.patchwork.features.blocks.WoodcutterMenu;
-
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.minecraft.world.inventory.StonecutterMenu;
 import net.minecraft.world.item.crafting.SelectableRecipe;

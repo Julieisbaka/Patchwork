@@ -1,7 +1,6 @@
 package com.JulieISBaka.patchwork.mixins.items;
 
 import com.JulieISBaka.patchwork.features.items.SoulFireSupport;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;

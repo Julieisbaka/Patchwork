@@ -1,7 +1,6 @@
 package com.JulieISBaka.patchwork.mixins.combat;
 
 import com.JulieISBaka.patchwork.features.combat.WitherSkullHoming;
-
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.projectile.hurtingprojectile.AbstractHurtingProjectile;
 import net.minecraft.world.entity.projectile.hurtingprojectile.WitherSkull;

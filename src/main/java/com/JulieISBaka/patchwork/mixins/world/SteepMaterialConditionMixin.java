@@ -1,7 +1,6 @@
 package com.JulieISBaka.patchwork.mixins.world;
 
 import com.JulieISBaka.patchwork.features.world.SteepMaterialConditionFix;
-
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
