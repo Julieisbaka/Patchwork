@@ -43,8 +43,10 @@ See the [configuration guide](docs/configuration.md) for defaults and ranges.
   craft magenta dye. Charcoal blocks provide a compact fuel source.
 - **Woodcutter:** Process logs into planks, and planks into stairs, slabs,
   fences, gates, doors, trapdoors, buttons, pressure plates, or signs in a
-  stonecutter-style workstation. Modpacks can add wood variants to Patchwork's
-  per-wood input tags.
+  stonecutter-style workstation. Modpacks can add variants to the
+  `patchwork:woodcutting/<wood>_logs` and
+  `patchwork:woodcutting/<wood>_planks` input tags and add matching
+  `minecraft:stonecutting` recipes with recipe IDs under `woodcutter/`.
 - **Crafting and decoration:** Craft chainmail armor, add up to nine banner
   patterns, dye shulkers, and wash wool, terracotta, and stained glass in
   cauldrons.
