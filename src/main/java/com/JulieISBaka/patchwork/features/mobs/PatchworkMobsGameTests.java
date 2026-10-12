@@ -17,14 +17,20 @@ import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.animal.chicken.Chicken;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
+import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.animal.golem.IronGolem;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Blaze;
 import net.minecraft.world.entity.monster.breeze.Breeze;
+import net.minecraft.world.entity.monster.Enderman;
 import net.minecraft.world.entity.monster.hoglin.Hoglin;
+import net.minecraft.world.entity.monster.skeleton.WitherSkeleton;
 import net.minecraft.world.entity.monster.spider.CaveSpider;
 import net.minecraft.world.entity.monster.spider.Spider;
 import net.minecraft.world.entity.monster.zombie.Zombie;
@@ -44,6 +50,74 @@ import net.minecraft.world.phys.Vec3;
 
 public final class PatchworkMobsGameTests {
 	private static final BlockPos CENTER = new BlockPos(3, 1, 3);
+
+	@GameTest
+	public void enderDragonHasEnhancedStatsAndFlightSpeed(GameTestHelper test) {
+		var level = (net.minecraft.server.level.ServerLevel) test.getLevel();
+		EnderDragon dragon = EntityTypes.ENDER_DRAGON.create(level, EntitySpawnReason.TRIGGERED);
+		test.assertTrue(dragon != null, "Could not create Ender Dragon for attribute test");
+		test.assertTrue(dragon.getMaxHealth() == 500.0F, "Ender Dragon maximum health was not increased to 500");
+		test.assertTrue(dragon.getAttribute(Attributes.KNOCKBACK_RESISTANCE).getBaseValue() > 0.0,
+				"Ender Dragon knockback resistance was not increased");
+		Vec3 movement = EnderDragonBehavior.increaseFlightSpeed(new Vec3(2.0, 4.0, 6.0));
+		test.assertTrue(movement.equals(new Vec3(3.0, 6.0, 9.0)), "Dragon flight movement was not increased by 50%");
+		test.succeed();
+	}
+
+	@GameTest
+	public void enderDragonSpecialMoveAngersIslandEndermen(GameTestHelper test) {
+		var level = (net.minecraft.server.level.ServerLevel) test.getLevel();
+		BlockPos center = test.absolutePos(CENTER);
+		Player target = test.makeMockPlayer(GameType.SURVIVAL);
+		target.setPos(center.getX() + 1.0, center.getY(), center.getZ() + 1.0);
+		Enderman enderman = new Enderman(EntityTypes.ENDERMAN, level);
+		enderman.setPos(center.getX() + 3.0, center.getY(), center.getZ() + 1.0);
+		EnderDragon dragon = EntityTypes.ENDER_DRAGON.create(level, EntitySpawnReason.TRIGGERED);
+		test.assertTrue(dragon != null, "Could not create Ender Dragon for special-move test");
+		dragon.setFightOrigin(center);
+		test.assertTrue(level.addFreshEntity(target) && level.addFreshEntity(enderman),
+				"Could not add special-move test entities");
+		test.assertTrue(EnderDragonBehavior.enrageIslandEndermen(level, dragon) == 1,
+				"Dragon special move did not anger the nearby island Enderman");
+		test.assertTrue(enderman.getTarget() == target, "Angered Enderman did not target the player");
+		test.succeed();
+	}
+
+	@GameTest
+	public void guardedEndCrystalsReceiveReinforcedObsidianCages(GameTestHelper test) {
+		var level = (net.minecraft.server.level.ServerLevel) test.getLevel();
+		BlockPos center = test.absolutePos(CENTER);
+		EnderDragonBehavior.reinforceCrystalCage(level,
+				new net.minecraft.world.level.levelgen.feature.EndSpikeFeature.EndSpike(
+						center.getX(), center.getZ(), 2, center.getY() + 4, true));
+		test.assertBlockPresent(Blocks.OBSIDIAN, center.offset(3, 4, 0));
+		test.assertBlockPresent(Blocks.OBSIDIAN, center.offset(-3, 2, 0));
+		test.assertBlockPresent(Blocks.OBSIDIAN, center.offset(0, 5, 3));
+		test.succeed();
+	}
+
+	@GameTest
+	public void witherSummonsTargetingWitherSkeletonMinions(GameTestHelper test) {
+		var level = (net.minecraft.server.level.ServerLevel) test.getLevel();
+		BlockPos center = test.absolutePos(CENTER);
+		WitherBoss wither = new WitherBoss(EntityTypes.WITHER, level);
+		wither.setPos(center.getX() + 0.5, center.getY(), center.getZ() + 0.5);
+		Player target = test.makeMockPlayer(GameType.SURVIVAL);
+		target.setPos(center.getX() + 4.0, center.getY(), center.getZ() + 0.5);
+		test.assertTrue(level.addFreshEntity(wither) && level.addFreshEntity(target),
+				"Could not add Wither and target for minion test");
+		test.assertTrue(WitherMinions.summon(level, wither, target) == 2,
+				"Wither did not summon two skeleton minions");
+		var minions = level.getEntitiesOfClass(WitherSkeleton.class, wither.getBoundingBox().inflate(32.0),
+				skeleton -> skeleton.entityTags().contains(WitherMinions.MINION_TAG)
+						&& skeleton.getTarget() == target);
+		test.assertTrue(minions.size() == 2, "Summoned Wither Skeletons did not target the Wither's enemy");
+		test.assertTrue(WitherMinions.summon(level, wither, target) == 2,
+				"Wither minion cap failed to allow its remaining nearby slots");
+		test.assertTrue(WitherMinions.summon(level, wither, target) == 0,
+				"Wither exceeded its four-minion nearby cap");
+		test.succeed();
+	}
 
 	@GameTest
 	public void babyVillagersAcceptIronGolemPoppies(GameTestHelper test) {
