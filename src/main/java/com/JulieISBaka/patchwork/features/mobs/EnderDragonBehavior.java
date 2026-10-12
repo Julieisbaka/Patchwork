@@ -57,10 +57,12 @@ public final class EnderDragonBehavior {
 			origin = BlockPos.ZERO;
 		}
 		BlockPos fightCenter = origin;
-		var target = level.players().stream()
-				.filter(player -> player.isAlive()
+		AABB island = new AABB(fightCenter.getX() - 128.0, level.getMinY(), fightCenter.getZ() - 128.0,
+				fightCenter.getX() + 128.0, level.getMaxY(), fightCenter.getZ() + 128.0);
+		var target = level.getEntitiesOfClass(net.minecraft.world.entity.player.Player.class, island,
+				player -> player.isAlive()
 						&& player.distanceToSqr(fightCenter.getX(), player.getY(), fightCenter.getZ()) <= 128 * 128)
-				.min(Comparator.comparingDouble(dragon::distanceToSqr))
+				.stream().min(Comparator.comparingDouble(dragon::distanceToSqr))
 				.orElse(null);
 		if (target == null) {
 			return 0;
