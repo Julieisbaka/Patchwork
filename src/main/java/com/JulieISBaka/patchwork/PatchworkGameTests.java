@@ -51,6 +51,24 @@ import net.minecraft.world.phys.BlockHitResult;
 public class PatchworkGameTests {
 	private static final BlockPos CENTER = new BlockPos(3, 1, 3);
 
+	@GameTest
+	public void woodcutterRegistersWoodcuttingRecipes(GameTestHelper test) {
+		var recipes = test.getLevel().recipeAccess().stonecutterRecipes();
+		var plankRecipes = recipes.selectByInput(new ItemStack(Items.OAK_PLANKS));
+		var logRecipes = recipes.selectByInput(new ItemStack(Items.OAK_LOG));
+		test.assertTrue(Woodcutter.BLOCK.asItem() == Woodcutter.ITEM, "Woodcutter block item was not registered");
+		test.assertTrue(Patchwork.id("woodcutter")
+				.equals(net.minecraft.core.registries.BuiltInRegistries.MENU.getKey(Woodcutter.MENU_TYPE)),
+				"Woodcutter menu type was not registered");
+		test.assertTrue(plankRecipes.entries().stream().anyMatch(entry -> entry.recipe().recipe()
+				.map(holder -> holder.id().identifier().equals(Patchwork.id("woodcutter/oak_stairs"))).orElse(false)),
+				"Oak plank to stair recipe was not loaded");
+		test.assertTrue(logRecipes.entries().stream().anyMatch(entry -> entry.recipe().recipe()
+				.map(holder -> holder.id().identifier().equals(Patchwork.id("woodcutter/oak_planks_from_logs")))
+				.orElse(false)), "Oak log to planks recipe was not loaded");
+		test.succeed();
+	}
+
 	private static void require(GameTestHelper test, boolean enabled, String setting) {
 		test.assertTrue(enabled, "Enable " + setting + " in config/patchwork.properties before running this test");
 	}

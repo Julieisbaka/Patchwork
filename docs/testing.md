@@ -111,6 +111,8 @@ starting successfully is not by itself evidence that the selected tests ran.
   Select these with `patchwork:*restored*`.
 - Wax block's exact nine-honeycomb recipe, recovery of nine honeycomb from one
   wax block, incomplete/wrong ingredient rejection, and block drops.
+- Woodcutter block/item and menu registration, plus loaded oak log-to-planks and
+  plank-to-stairs recipes. Select with `patchwork:*woodcutter_registers*`.
 - Paeonia ground support, flower tags, compost component, potting and pot
   drops, magenta dye recipe, actual feature placement, and biome registration
   in flower forests/meadows but not plains. Select these with `patchwork:*garden*`.
