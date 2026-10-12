@@ -39,8 +39,7 @@ public abstract class VillagerFoodBehaviorMixin {
 			this.patchwork$healFoodCooldown--;
 			return;
 		}
-		if (VillagerFoodBehavior.eatToHeal(villager)) {
-			this.patchwork$healFoodCooldown = 100;
-		}
+		VillagerFoodBehavior.eatToHeal(villager);
+		this.patchwork$healFoodCooldown = 100;
 	}
 }
