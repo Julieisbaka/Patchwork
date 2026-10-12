@@ -7,17 +7,15 @@ import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.Constant;
 
 
 @Mixin(EnderDragon.class)
@@ -52,13 +50,13 @@ public abstract class EnderDragonMixin {
 				&& dragon.level() instanceof net.minecraft.server.level.ServerLevel level) {
 			EnderDragonBehavior.enrageIslandEndermen(level, dragon);
 		}
+	}
 
-		@Inject(method = "hurtServer", at = @At("HEAD"), cancellable = true)
-		private void patchwork$ignoreCrystalExplosions(ServerLevel level, DamageSource source, float amount,
-				CallbackInfoReturnable<Boolean> cir) {
-			if (source.getDirectEntity() instanceof EndCrystal) {
-				cir.setReturnValue(false);
-			}
+	@Inject(method = "hurtServer", at = @At("HEAD"), cancellable = true)
+	private void patchwork$ignoreCrystalExplosions(ServerLevel level, DamageSource source, float amount,
+			CallbackInfoReturnable<Boolean> cir) {
+		if (source.getDirectEntity() instanceof EndCrystal) {
+			cir.setReturnValue(false);
 		}
 	}
 }
