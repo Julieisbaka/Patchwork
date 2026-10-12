@@ -5,6 +5,6 @@ public final class SteepMaterialConditionFix {
 	}
 
 	public static boolean isSteep(int firstHeight, int secondHeight) {
-		return Math.abs(firstHeight - secondHeight) >= 4;
+		return Math.abs((long) firstHeight - secondHeight) >= 4;
 	}
 }

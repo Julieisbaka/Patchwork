@@ -51,7 +51,7 @@
 		"SoulGolemOwnerMixin",
 		"SoulFireSupportMixin",
 		"SteepMaterialConditionMixin",
-		"SurfaceRulesContextAccessor",
+		"MaterialRuleContextAccessor",
 		"SkeletonCoverMixin",
 		"SpiderWebMixin",
 		"SugarCaneMudMixin",
