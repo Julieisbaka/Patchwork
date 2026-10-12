@@ -6,6 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.cauldron.CauldronInteractions;
+import net.minecraft.tags.BlockTags;
 import com.JulieISBaka.patchwork.mixin.PotionArrowItemAccessor;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.effect.MobEffects;
@@ -26,6 +27,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.projectile.hurtingprojectile.LargeFireball;
 import net.minecraft.world.entity.projectile.throwableitemprojectile.Snowball;
+import net.minecraft.world.entity.projectile.hurtingprojectile.WitherSkull;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -131,6 +133,104 @@ public class PatchworkGameTests {
 		test.assertTrue(logRecipes.entries().stream().anyMatch(entry -> entry.recipe().recipe()
 				.map(holder -> holder.id().identifier().equals(Patchwork.id("woodcutter/oak_planks_from_logs")))
 				.orElse(false)), "Oak log to planks recipe was not loaded");
+		test.succeed();
+	}
+
+	@GameTest
+	public void glassAndBeaconsUsePickaxeMiningTag(GameTestHelper test) {
+		test.assertTrue(Blocks.GLASS.defaultBlockState().is(BlockTags.MINEABLE_WITH_PICKAXE),
+				"Glass is not tagged as mineable with a pickaxe");
+		test.assertTrue(Blocks.GLASS_PANE.defaultBlockState().is(BlockTags.MINEABLE_WITH_PICKAXE),
+				"Glass panes are not tagged as mineable with a pickaxe");
+		test.assertTrue(Blocks.TINTED_GLASS.defaultBlockState().is(BlockTags.MINEABLE_WITH_PICKAXE),
+				"Tinted glass is not tagged as mineable with a pickaxe");
+		test.assertTrue(Blocks.BEACON.defaultBlockState().is(BlockTags.MINEABLE_WITH_PICKAXE),
+				"Beacons are not tagged as mineable with a pickaxe");
+		test.succeed();
+	}
+
+	@GameTest
+	public void steepSurfaceDetectsBothSlopeDirections(GameTestHelper test) {
+		test.assertTrue(SteepMaterialConditionFix.isSteep(10, 6),
+				"A four-block descending slope was not classified as steep");
+		test.assertTrue(SteepMaterialConditionFix.isSteep(6, 10),
+				"A four-block ascending slope was not classified as steep");
+		test.assertTrue(!SteepMaterialConditionFix.isSteep(10, 7),
+				"A slope under four blocks was classified as steep");
+		test.succeed();
+	}
+
+	@GameTest
+	public void spidersAreFastHaveLongSightAndTakeNoFallDamage(GameTestHelper test) {
+		var level = (net.minecraft.server.level.ServerLevel) test.getLevel();
+		Spider spider = test.spawn(EntityTypes.SPIDER, CENTER);
+		CaveSpider caveSpider = test.spawn(EntityTypes.CAVE_SPIDER, CENTER.offset(2, 0, 0));
+		for (Spider mob : new Spider[] { spider, caveSpider }) {
+			test.assertTrue(mob.getAttributeValue(Attributes.MOVEMENT_SPEED) == 0.4,
+					"Spider movement speed was not increased");
+			test.assertTrue(mob.getAttributeValue(Attributes.FOLLOW_RANGE) == 32.0,
+					"Spider follow range was not increased");
+			float health = mob.getHealth();
+			test.assertTrue(!mob.causeFallDamage(20.0, 1.0F, level.damageSources().fall())
+					&& mob.getHealth() == health, "Spider took fall damage");
+		}
+		test.succeed();
+	}
+
+	@GameTest
+	public void soulValleyWitherSkeletonEquipmentIsBowCapable(GameTestHelper test) {
+		var level = (net.minecraft.server.level.ServerLevel) test.getLevel();
+		var skeleton = new net.minecraft.world.entity.monster.skeleton.WitherSkeleton(EntityTypes.WITHER_SKELETON,
+				level);
+		SoulSandValleySpawns.equipBow(skeleton);
+		test.assertTrue(skeleton.getMainHandItem().is(Items.BOW),
+				"Soul Sand Valley wither skeleton did not receive a bow");
+		test.assertTrue(skeleton.canUseNonMeleeWeapon(skeleton.getMainHandItem()),
+				"Wither skeleton cannot use its assigned bow");
+		test.succeed();
+	}
+
+	@GameTest
+	public void renamingAnItemDoesNotIncreaseItsAnvilRepairCost(GameTestHelper test) {
+		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		var menu = new net.minecraft.world.inventory.AnvilMenu(1, player.getInventory());
+		ItemStack input = new ItemStack(Items.DIAMOND_PICKAXE);
+		input.set(DataComponents.REPAIR_COST, 12);
+		menu.getSlot(net.minecraft.world.inventory.AnvilMenu.INPUT_SLOT).set(input);
+		test.assertTrue(menu.setItemName("Renamed pickaxe"), "Anvil did not accept the new custom name");
+		ItemStack output = menu.getSlot(net.minecraft.world.inventory.AnvilMenu.RESULT_SLOT).getItem();
+		test.assertTrue(!output.isEmpty()
+				&& output.getOrDefault(DataComponents.REPAIR_COST, 0) == 12,
+				"Renaming increased the item's anvil repair cost");
+		test.succeed();
+	}
+
+	@GameTest
+	public void blueWitherSkullsHomeTowardPlayers(GameTestHelper test) {
+		var level = (net.minecraft.server.level.ServerLevel) test.getLevel();
+		BlockPos center = test.absolutePos(CENTER);
+		Spider shooter = new Spider(EntityTypes.SPIDER, level);
+		shooter.setPos(center.getX() + 0.5, center.getY(), center.getZ() + 0.5);
+		Player player = test.makeMockPlayer(GameType.SURVIVAL);
+		player.setPos(center.getX() + 0.5, center.getY(), center.getZ() + 6.5);
+		Spider nearerMob = new Spider(EntityTypes.SPIDER, level);
+		nearerMob.setPos(center.getX() + 1.5, center.getY(), center.getZ() + 0.5);
+		test.assertTrue(level.addFreshEntity(shooter) && level.addFreshEntity(nearerMob),
+				"Could not add entities for wither-skull homing test");
+		WitherSkull skull = new WitherSkull(level, shooter, new Vec3(1.0, 0.0, 0.0));
+		skull.setPos(center.getX() + 0.5, center.getY() + 1.0, center.getZ() + 0.5);
+		skull.setDangerous(true);
+		skull.setDeltaMovement(new Vec3(1.0, 0.0, 0.0));
+		test.assertTrue(WitherSkullHoming.findPlayerTarget(skull, level).orElse(null) == player,
+				"Blue wither skull did not prioritize a player over a closer mob");
+		WitherSkullHoming.steerTowardPlayer(skull, level);
+		test.assertTrue(skull.getDeltaMovement().z > 0.0,
+				"Blue wither skull did not steer toward the player");
+		Vec3 steeredVelocity = skull.getDeltaMovement();
+		skull.setDangerous(false);
+		WitherSkullHoming.steerTowardPlayer(skull, level);
+		test.assertTrue(skull.getDeltaMovement().equals(steeredVelocity),
+				"Normal wither skull unexpectedly homed");
 		test.succeed();
 	}
 

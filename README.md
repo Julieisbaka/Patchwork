@@ -52,6 +52,9 @@ See the [configuration guide](docs/configuration.md) for defaults and ranges.
 - **Iron golem gifts:** Baby villagers can pick up poppies offered by iron
   golems.
 - **Blaze rods:** Dropped blaze rods survive fire and lava.
+- **Pickaxe mining:** Glass blocks and panes, stained glass, tinted glass, and
+  beacons are tagged for pickaxe mining. Silk Touch is still required to
+  collect glass blocks.
 - **Crafting and decoration:** Craft chainmail armor, add up to nine banner
   patterns, dye shulkers, and wash wool, terracotta, and stained glass in
   cauldrons.
@@ -90,6 +93,13 @@ Vanilla campfire and soul campfire drops are otherwise unchanged.
   Enderman block defense, pursuit webs from Spiders, Slime split clouds,
   Breeze shockwaves, Hoglin charges, Skeleton cover, and Creeper chain
   reactions.
+- **Hostile mob changes:** Spiders and cave spiders move faster, detect players
+  from farther away, and take no fall damage. Soul Sand Valleys spawn bow-
+  wielding wither skeletons instead of normal skeletons, and blue wither skulls
+  home toward nearby players.
+- **Anvils and terrain:** Renaming an item preserves its prior-work repair cost.
+  Mountain steep-surface rules now recognize slopes facing all directions
+  (MC-258859).
 - **Illusioner raids:** One illusioner joins each raid wave from wave 5 onward,
   including bonus waves, alongside the existing raiders. Easy raids remain
   unchanged because they end before wave 5.

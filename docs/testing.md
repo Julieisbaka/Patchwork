@@ -117,6 +117,13 @@ starting successfully is not by itself evidence that the selected tests ran.
   villager poppy acceptance and iron golem gifts, and blaze-rod fire/lava
   immunity. Select with `patchwork:*snow_accumulates*`,
   `patchwork:*baby_villagers_accept*`, or `patchwork:*blaze_rods_do_not_burn*`.
+- Pickaxe mining tags for glass and beacons, steep-slope detection in both
+  directions (MC-258859), spider and cave-spider movement/sight/fall behavior,
+  Soul Sand Valley wither-skeleton bow equipment, rename-only anvil repair
+  cost, and blue wither-skull homing. Select with `patchwork:*glass_and_beacons*`,
+  `patchwork:*steep_surface*`, `patchwork:*spiders_are_fast*`,
+  `patchwork:*soul_valley*`, `patchwork:*renaming_an_item*`, or
+  `patchwork:*blue_wither_skulls*`.
 - Paeonia ground support, flower tags, compost component, potting and pot
   drops, magenta dye recipe, actual feature placement, and biome registration
   in flower forests/meadows but not plains. Select these with `patchwork:*garden*`.
