@@ -18,6 +18,6 @@ public abstract class EnderDragonCrystalMixin {
 			target = "Lnet/minecraft/server/level/ServerLevel;explode(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/damagesource/DamageSource;Lnet/minecraft/world/level/ExplosionDamageCalculator;DDDFZLnet/minecraft/world/level/Level$ExplosionInteraction;)V"), index = 6)
 	private float patchwork$increaseNaturalCrystalExplosion(float power) {
 		EndCrystal crystal = (EndCrystal) (Object) this;
-		return crystal.getTags().contains(EnderDragonBehavior.NATURAL_CRYSTAL_TAG) ? power * 1.5F : power;
+		return crystal.entityTags().contains(EnderDragonBehavior.NATURAL_CRYSTAL_TAG) ? power * 1.5F : power;
 	}
 }

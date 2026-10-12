@@ -22,7 +22,7 @@ public abstract class DragonFireballMixin {
 		}
 
 		DragonFireball fireball = (DragonFireball) (Object) this;
-		if (!fireball.ownedBy(target)) {
+		if (fireball.getOwner() != target) {
 			target.hurtServer(level, level.damageSources().indirectMagic(fireball, fireball.getOwner()), 6.0F);
 		}
 	}

@@ -4,10 +4,10 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.monster.skeleton.WitherSkeleton;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.phys.AABB;
 
 
@@ -24,7 +24,7 @@ public final class WitherMinions {
 		}
 
 		int existing = level.getEntitiesOfClass(WitherSkeleton.class, wither.getBoundingBox().inflate(32.0),
-				skeleton -> skeleton.getTags().contains(MINION_TAG)).size();
+				skeleton -> skeleton.entityTags().contains(MINION_TAG)).size();
 		int count = Math.min(2, MAX_NEARBY_MINIONS - existing);
 		int spawned = 0;
 		for (int i = 0; i < count; i++) {

@@ -5,7 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
-import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.Enderman;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.feature.EndSpikeFeature;
@@ -68,7 +68,7 @@ public final class EnderDragonBehavior {
 
 		AABB searchArea = target.getBoundingBox().inflate(64.0, 32.0, 64.0);
 		int angered = 0;
-		for (EnderMan enderman : level.getEntitiesOfClass(EnderMan.class, searchArea,
+		for (Enderman enderman : level.getEntitiesOfClass(Enderman.class, searchArea,
 				mob -> mob.distanceToSqr(fightCenter.getX(), mob.getY(), fightCenter.getZ()) <= 128 * 128)) {
 			enderman.setTarget(target);
 			angered++;
