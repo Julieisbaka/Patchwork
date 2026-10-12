@@ -93,9 +93,9 @@ public final class PatchworkMobsGameTests {
 						center.getX(), center.getZ(), 2, center.getY() + 4, true));
 		test.assertTrue(level.getBlockState(center.offset(3, 4, 0)).is(Blocks.OBSIDIAN),
 				"Crystal cage did not receive an outer obsidian wall");
-		test.assertTrue(level.getBlockState(center.offset(-3, 2, 0)).is(Blocks.OBSIDIAN),
+		test.assertTrue(level.getBlockState(center.offset(-3, 6, 0)).is(Blocks.OBSIDIAN),
 				"Crystal cage reinforcement is missing on the opposite wall");
-		test.assertTrue(level.getBlockState(center.offset(0, 5, 3)).is(Blocks.OBSIDIAN),
+		test.assertTrue(level.getBlockState(center.offset(0, 9, 0)).is(Blocks.OBSIDIAN),
 				"Crystal cage did not receive an obsidian roof");
 		test.succeed();
 	}
@@ -168,6 +168,27 @@ public final class PatchworkMobsGameTests {
 		test.assertTrue(WitherMinions.summon(level, wither, target) == 0,
 				"Wither exceeded its four-minion nearby cap");
 		test.succeed();
+	}
+
+	@GameTest(maxTicks = 10)
+	public void witherAiPeriodicallySummonsMinions(GameTestHelper test) {
+		var level = (net.minecraft.server.level.ServerLevel) test.getLevel();
+		BlockPos center = test.absolutePos(CENTER);
+		WitherBoss wither = new WitherBoss(EntityTypes.WITHER, level);
+		wither.setPos(center.getX() + 0.5, center.getY(), center.getZ() + 0.5);
+		wither.tickCount = 599;
+		Zombie target = new Zombie(EntityTypes.ZOMBIE, level);
+		target.setNoAi(true);
+		target.setPos(center.getX() + 4.0, center.getY(), center.getZ() + 0.5);
+		wither.setTarget(target);
+		test.assertTrue(level.addFreshEntity(wither) && level.addFreshEntity(target),
+				"Could not add Wither and target for timed minion test");
+		test.runAfterDelay(3, () -> {
+			var minions = level.getEntitiesOfClass(WitherSkeleton.class, wither.getBoundingBox().inflate(32.0),
+					skeleton -> skeleton.entityTags().contains(WitherMinions.MINION_TAG));
+			test.assertTrue(minions.size() == 2, "Wither AI did not summon minions when its cooldown elapsed");
+			test.succeed();
+		});
 	}
 
 	@GameTest
