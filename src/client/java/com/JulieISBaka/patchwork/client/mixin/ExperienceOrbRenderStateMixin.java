@@ -5,6 +5,7 @@ import net.minecraft.client.renderer.entity.state.ExperienceOrbRenderState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
+
 @Mixin(ExperienceOrbRenderState.class)
 public class ExperienceOrbRenderStateMixin implements ExperienceOrbState {
 	@Unique

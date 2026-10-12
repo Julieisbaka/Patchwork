@@ -3,6 +3,7 @@ package com.JulieISBaka.patchwork.client;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 
+
 /** Entry point that delegates visual regression checks to focused client GameTest suites. */
 public final class PatchworkClientGameTests implements FabricClientGameTest {
 	/** Runs each client test group, or only config-screen coverage when requested. */

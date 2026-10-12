@@ -1,13 +1,14 @@
 package com.JulieISBaka.patchwork.client;
 
-import com.JulieISBaka.patchwork.RabbitPet;
 import com.JulieISBaka.patchwork.client.mixin.LivingEntityRendererAccessor;
+import com.JulieISBaka.patchwork.features.mobs.RabbitPet;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.minecraft.client.renderer.entity.SpiderRenderer;
-import net.minecraft.world.entity.monster.spider.Spider;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.monster.spider.Spider;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+
 
 /** Client synchronization and rendering checks for pets. */
 final class PatchworkClientPetGameTests {

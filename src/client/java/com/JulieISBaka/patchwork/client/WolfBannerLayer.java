@@ -1,6 +1,6 @@
 package com.JulieISBaka.patchwork.client;
 
-import com.JulieISBaka.patchwork.PatchworkConfig;
+import com.JulieISBaka.patchwork.config.PatchworkConfig;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.animal.wolf.WolfModel;
 import net.minecraft.client.model.geom.EntityModelSet;
@@ -16,6 +16,7 @@ import net.minecraft.world.item.BannerItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.BannerBlock.AttachmentType;
 import net.minecraft.world.level.block.entity.BannerPatternLayers;
+
 
 public class WolfBannerLayer extends RenderLayer<WolfRenderState, WolfModel> {
 	private final BannerRenderer bannerRenderer;

@@ -1,7 +1,7 @@
 package com.JulieISBaka.patchwork.client;
 
-import com.JulieISBaka.patchwork.PotionCauldronEntity;
-import com.JulieISBaka.patchwork.PotionCauldrons;
+import com.JulieISBaka.patchwork.features.blocks.PotionCauldronEntity;
+import com.JulieISBaka.patchwork.features.blocks.PotionCauldrons;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +16,7 @@ import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
+
 
 /** Rendered potion-cauldron tint regression checks. */
 final class PatchworkClientPotionGameTests {

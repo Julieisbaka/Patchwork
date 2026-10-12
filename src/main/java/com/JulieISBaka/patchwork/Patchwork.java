@@ -1,5 +1,21 @@
 package com.JulieISBaka.patchwork;
 
+import com.JulieISBaka.patchwork.config.NumericSetting;
+import com.JulieISBaka.patchwork.config.PatchworkConfig;
+import com.JulieISBaka.patchwork.features.blocks.CharcoalBlocks;
+import com.JulieISBaka.patchwork.features.blocks.GardenBlocks;
+import com.JulieISBaka.patchwork.features.blocks.GoldDoors;
+import com.JulieISBaka.patchwork.features.blocks.LightVariants;
+import com.JulieISBaka.patchwork.features.blocks.PotionCauldrons;
+import com.JulieISBaka.patchwork.features.blocks.PumpkinLanterns;
+import com.JulieISBaka.patchwork.features.blocks.UnlitLanterns;
+import com.JulieISBaka.patchwork.features.blocks.UnlitTorches;
+import com.JulieISBaka.patchwork.features.blocks.Woodcutter;
+import com.JulieISBaka.patchwork.features.items.SoulFireCharges;
+import com.JulieISBaka.patchwork.features.mobs.HappyGhastSpeed;
+import com.JulieISBaka.patchwork.features.mobs.SlimeSplitClouds;
+import com.JulieISBaka.patchwork.features.mobs.SoulGolems;
+import com.JulieISBaka.patchwork.features.world.SoulSandValleySpawns;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import net.fabricmc.api.ModInitializer;
@@ -26,6 +42,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 /** Fabric entrypoint and shared resource-condition utilities for Patchwork. */
 public class Patchwork implements ModInitializer {

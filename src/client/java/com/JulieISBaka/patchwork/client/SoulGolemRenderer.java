@@ -1,8 +1,8 @@
 package com.JulieISBaka.patchwork.client;
 
 import com.JulieISBaka.patchwork.Patchwork;
-import com.JulieISBaka.patchwork.PumpkinLanterns;
-import com.JulieISBaka.patchwork.SoulGolem;
+import com.JulieISBaka.patchwork.features.blocks.PumpkinLanterns;
+import com.JulieISBaka.patchwork.features.mobs.SoulGolem;
 import net.minecraft.client.model.animal.golem.SnowGolemModel;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.block.BlockModelResolver;
@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.entity.SnowGolemRenderer;
 import net.minecraft.client.renderer.entity.layers.SnowGolemHeadLayer;
 import net.minecraft.client.renderer.entity.state.SnowGolemRenderState;
 import net.minecraft.resources.Identifier;
+
 
 public class SoulGolemRenderer extends MobRenderer<SoulGolem, SnowGolemRenderState, SnowGolemModel> {
 	private static final Identifier TEXTURE = Patchwork.id("textures/entity/soul_golem.png");

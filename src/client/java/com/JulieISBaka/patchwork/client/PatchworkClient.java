@@ -1,19 +1,20 @@
 package com.JulieISBaka.patchwork.client;
 
-import com.JulieISBaka.patchwork.PotionCauldronEntity;
-import com.JulieISBaka.patchwork.PotionCauldrons;
-import com.JulieISBaka.patchwork.SoulGolems;
-import com.JulieISBaka.patchwork.SoulFireCharges;
-import com.JulieISBaka.patchwork.Woodcutter;
+import com.JulieISBaka.patchwork.features.blocks.PotionCauldronEntity;
+import com.JulieISBaka.patchwork.features.blocks.PotionCauldrons;
+import com.JulieISBaka.patchwork.features.blocks.Woodcutter;
+import com.JulieISBaka.patchwork.features.items.SoulFireCharges;
+import com.JulieISBaka.patchwork.features.mobs.SoulGolems;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockColorRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.LivingEntityRenderLayerRegistrationCallback;
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.gui.screens.inventory.StonecutterScreen;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.client.renderer.entity.WolfRenderer;
-import net.minecraft.client.gui.screens.MenuScreens;
-import net.minecraft.client.gui.screens.inventory.StonecutterScreen;
 import net.minecraft.world.item.alchemy.PotionContents;
+
 
 public class PatchworkClient implements ClientModInitializer {
 	@Override

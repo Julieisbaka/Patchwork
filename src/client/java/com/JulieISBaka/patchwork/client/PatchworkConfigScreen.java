@@ -1,8 +1,8 @@
 package com.JulieISBaka.patchwork.client;
 
 import com.JulieISBaka.patchwork.Patchwork;
-import com.JulieISBaka.patchwork.PatchworkConfig;
-import com.JulieISBaka.patchwork.NumericSetting;
+import com.JulieISBaka.patchwork.config.NumericSetting;
+import com.JulieISBaka.patchwork.config.PatchworkConfig;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
@@ -16,6 +16,7 @@ import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.options.OptionsSubScreen;
 import net.minecraft.network.chat.Component;
+
 
 public class PatchworkConfigScreen extends OptionsSubScreen {
 	private static final String[] KEYS = { "witherDifficultyHealth", "witherBirthExplosion", "chainmailRecipes",

@@ -1,7 +1,7 @@
 package com.JulieISBaka.patchwork.client;
 
-import com.JulieISBaka.patchwork.NumericSetting;
-import com.JulieISBaka.patchwork.PatchworkConfig;
+import com.JulieISBaka.patchwork.config.NumericSetting;
+import com.JulieISBaka.patchwork.config.PatchworkConfig;
 import java.util.List;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.minecraft.client.gui.components.Button;
@@ -12,6 +12,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
+
 
 /** Config-screen validation, persistence, reopening, and cancellation. */
 final class PatchworkClientConfigGameTests {

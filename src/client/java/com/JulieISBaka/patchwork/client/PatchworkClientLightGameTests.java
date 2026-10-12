@@ -1,14 +1,14 @@
 package com.JulieISBaka.patchwork.client;
 
-import com.JulieISBaka.patchwork.CopperTorches;
-import com.JulieISBaka.patchwork.LightVariants;
 import com.JulieISBaka.patchwork.Patchwork;
-import com.JulieISBaka.patchwork.SoulFireCharges;
-import com.JulieISBaka.patchwork.SoulFireSupport;
-import com.JulieISBaka.patchwork.SoulFireball;
-import com.JulieISBaka.patchwork.SoulGolem;
-import com.JulieISBaka.patchwork.SoulGolems;
-import com.JulieISBaka.patchwork.UnlitLanterns;
+import com.JulieISBaka.patchwork.features.blocks.CopperTorches;
+import com.JulieISBaka.patchwork.features.blocks.LightVariants;
+import com.JulieISBaka.patchwork.features.blocks.UnlitLanterns;
+import com.JulieISBaka.patchwork.features.items.SoulFireCharges;
+import com.JulieISBaka.patchwork.features.items.SoulFireSupport;
+import com.JulieISBaka.patchwork.features.items.SoulFireball;
+import com.JulieISBaka.patchwork.features.mobs.SoulGolem;
+import com.JulieISBaka.patchwork.features.mobs.SoulGolems;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +23,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+
 
 /** Model and texture checks for light variants, Soul Golems, and Soul Fire Charges. */
 final class PatchworkClientLightGameTests {

@@ -1,9 +1,9 @@
 package com.JulieISBaka.patchwork.client;
 
-import com.JulieISBaka.patchwork.CopperTorches;
-import com.JulieISBaka.patchwork.GardenBlocks;
 import com.JulieISBaka.patchwork.Patchwork;
-import com.JulieISBaka.patchwork.UnlitLanterns;
+import com.JulieISBaka.patchwork.features.blocks.CopperTorches;
+import com.JulieISBaka.patchwork.features.blocks.GardenBlocks;
+import com.JulieISBaka.patchwork.features.blocks.UnlitLanterns;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +15,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+
 
 /** Garden block models and supplied/reused artwork checks. */
 final class PatchworkClientArtworkGameTests {
