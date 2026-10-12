@@ -52,10 +52,17 @@ public final class PatchworkBlocksGameTests {
 				ContainerLevelAccess.create(test.getLevel(), test.absolutePos(CENTER)));
 		menu.container.setItem(0, new ItemStack(Items.OAK_PLANKS));
 		menu.slotsChanged(menu.container);
-		test.assertTrue(menu.getVisibleRecipes().entries().stream().anyMatch(entry -> entry.recipe().recipe()
-				.map(holder -> holder.id().identifier().equals(Patchwork.id("woodcutter/oak_stairs"))).orElse(false)),
-				"Saw menu did not display the oak stairs recipe");
-		test.assertTrue(menu.clickMenuButton(player, 0), "Saw menu did not select the oak stairs recipe");
+		int stairsRecipe = -1;
+		for (int i = 0; i < menu.getVisibleRecipes().entries().size(); i++) {
+			if (menu.getVisibleRecipes().entries().get(i).recipe().recipe()
+					.map(holder -> holder.id().identifier().equals(Patchwork.id("woodcutter/oak_stairs")))
+					.orElse(false)) {
+				stairsRecipe = i;
+				break;
+			}
+		}
+		test.assertTrue(stairsRecipe >= 0, "Saw menu did not display the oak stairs recipe");
+		test.assertTrue(menu.clickMenuButton(player, stairsRecipe), "Saw menu did not select the oak stairs recipe");
 		test.assertTrue(menu.getSlot(1).getItem().is(Items.OAK_STAIRS),
 				"Saw menu selection did not produce oak stairs");
 		test.succeed();
