@@ -28,6 +28,22 @@ Fabric GameTests; a successful empty `test` task is not gameplay coverage.
 Both Java source sets compile with `-Xlint:deprecation -Werror`; deprecated
 API calls fail the build rather than being hidden or suppressed.
 
+## Test suites
+
+Server GameTests are grouped by feature package instead of one large class:
+
+- `PatchworkBlocksGameTests` — blocks and building features
+- `PatchworkCombatGameTests` — combat changes
+- `PatchworkGameplayGameTests` — general gameplay behavior
+- `PatchworkItemsGameTests` — item behavior
+- `PatchworkMobsGameTests` — mob behavior
+- `PatchworkWorldGameTests` — world generation and terrain
+- `PatchworkConfigGameTests` — configuration loading and validation
+
+The client-only suite remains `PatchworkClientGameTests`. The suite classes are
+registered in `fabric.mod.json`; test IDs are listed by in-game tab completion
+or can be selected with the headless wildcard filter below.
+
 ## Server GameTests
 
 With cheats/operator permissions, run:
