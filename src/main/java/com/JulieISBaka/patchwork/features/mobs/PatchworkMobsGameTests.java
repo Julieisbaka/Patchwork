@@ -1,14 +1,13 @@
 package com.JulieISBaka.patchwork.features.mobs;
 
-import com.JulieISBaka.patchwork.mixins.mobs.RaidAccessor;
-
 import com.JulieISBaka.patchwork.Patchwork;
 import com.JulieISBaka.patchwork.config.PatchworkConfig;
 import com.JulieISBaka.patchwork.features.blocks.PumpkinLanterns;
 import com.JulieISBaka.patchwork.features.blocks.UnlitLanterns;
 import com.JulieISBaka.patchwork.features.blocks.UnlitTorches;
-import com.JulieISBaka.patchwork.mixins.combat.PlayerSweepAccessor;
 import com.JulieISBaka.patchwork.features.items.SoulFireCharges;
+import com.JulieISBaka.patchwork.mixins.combat.PlayerSweepAccessor;
+import com.JulieISBaka.patchwork.mixins.mobs.RaidAccessor;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -16,23 +15,23 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.animal.chicken.Chicken;
+import net.minecraft.world.entity.animal.golem.IronGolem;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
-import net.minecraft.world.entity.animal.golem.IronGolem;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Blaze;
 import net.minecraft.world.entity.monster.breeze.Breeze;
 import net.minecraft.world.entity.monster.Enderman;
 import net.minecraft.world.entity.monster.hoglin.Hoglin;
-import net.minecraft.world.entity.monster.skeleton.WitherSkeleton;
 import net.minecraft.world.entity.monster.spider.CaveSpider;
 import net.minecraft.world.entity.monster.spider.Spider;
+import net.minecraft.world.entity.monster.skeleton.WitherSkeleton;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.player.Player;
@@ -82,6 +81,28 @@ public final class PatchworkMobsGameTests {
 				"Dragon special move did not anger the nearby island Enderman");
 		test.assertTrue(enderman.getTarget() == target, "Angered Enderman did not target the player");
 		test.succeed();
+	}
+
+	@GameTest(maxTicks = 20)
+	public void enderDragonAiPeriodicallyAngersIslandEndermen(GameTestHelper test) {
+		var level = (net.minecraft.server.level.ServerLevel) test.getLevel();
+		BlockPos center = test.absolutePos(CENTER);
+		Player target = test.makeMockPlayer(GameType.SURVIVAL);
+		target.setPos(center.getX() + 1.0, center.getY(), center.getZ() + 1.0);
+		Enderman enderman = new Enderman(EntityTypes.ENDERMAN, level);
+		enderman.setPos(center.getX() + 3.0, center.getY(), center.getZ() + 1.0);
+		EnderDragon dragon = EntityTypes.ENDER_DRAGON.create(level, EntitySpawnReason.TRIGGERED);
+		test.assertTrue(dragon != null, "Could not create Ender Dragon for timed special-move test");
+		dragon.setPos(center.getX() + 6.0, center.getY(), center.getZ() + 6.0);
+		dragon.setFightOrigin(center);
+		dragon.tickCount = 590;
+		test.assertTrue(level.addFreshEntity(target) && level.addFreshEntity(enderman) && level.addFreshEntity(dragon),
+				"Could not add timed special-move test entities");
+		test.runAfterDelay(12, () -> {
+			test.assertTrue(enderman.getTarget() == target,
+					"Ender Dragon AI did not trigger its Enderman-enraging move");
+			test.succeed();
+		});
 	}
 
 	@GameTest
