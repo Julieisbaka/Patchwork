@@ -125,6 +125,7 @@ public enum NumericSetting {
 
 	/** Formats a value for persistence or display. */
 	public String format(double value) {
+		validate(value);
 		return this.integer ? Integer.toString((int) value) : Double.toString(value);
 	}
 
